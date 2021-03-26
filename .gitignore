@@ -1,0 +1,4 @@
+/Services/Gateway/bin
+/Services/Gateway/obj
+*.txt
+*.html

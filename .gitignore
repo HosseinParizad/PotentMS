@@ -2,6 +2,8 @@
 /Services/Gateway/obj
 /Services/Common/Kafka/bin
 /Services/Common/Kafka/obj
+/Services/iTodo/obj
+/Services/iTodo/bin
 *.txt
 *.html
 *.DS_Store

@@ -2,6 +2,7 @@
 using KafkaHelper;
 using System.Threading;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace iTodo
 {
@@ -20,7 +21,16 @@ namespace iTodo
 
         static void MessageReceived(string message)
         {
-            Console.WriteLine($"i can hear you {message}");
+            try
+            {
+                var msg = (Msg)JsonSerializer.Deserialize(message, typeof(Msg));
+                Console.WriteLine($"i can hear you {msg.Content}");
+            }
+            catch (System.Exception)
+            {
+
+                Console.WriteLine($"format wrong {message}");
+            }
         }
     }
 }

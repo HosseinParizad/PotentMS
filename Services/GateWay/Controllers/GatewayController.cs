@@ -15,7 +15,7 @@ namespace Gateway.Controllers
     public class GatewayController : ControllerBase
     {
         [HttpPost]
-        public IActionResult Post([FromBody] GatewayMessage msg)
+        public IActionResult Post([FromBody] Msg msg)
         {
             {
                 var task = Producer.SendAMessage("task", JsonSerializer.Serialize(msg));

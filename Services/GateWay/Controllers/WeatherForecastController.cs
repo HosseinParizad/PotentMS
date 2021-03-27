@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using KafkaHelper;
 
 namespace GateWay.Controllers
 {
@@ -26,6 +27,11 @@ namespace GateWay.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            Console.WriteLine("step 2");
+            var task = Producer.Test();
+            Console.WriteLine("step 22");
+            task.GetAwaiter().GetResult();
+            Console.WriteLine("step 222");
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

@@ -1,4 +1,7 @@
 /Services/Gateway/bin
 /Services/Gateway/obj
+/Services/Common/Kafka/bin
+/Services/Common/Kafka/obj
 *.txt
 *.html
+*.DS_Store

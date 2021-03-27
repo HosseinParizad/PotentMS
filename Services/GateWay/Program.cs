@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using KafkaHelper;
 
-namespace GateWay
+namespace Gateway
 {
     public class Program
     {

@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "GateWay": {
+    "Gateway": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

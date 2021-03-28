@@ -2,21 +2,24 @@ namespace KafkaHelper
 {
     public class Msg : IMessageContract
     {
-        public Msg(string belongTo, string content)
+        public Msg(string action, string belongTo, string content)
         {
-            if (belongTo is null)
+            if (string.IsNullOrEmpty(action))
             {
-                throw new System.ArgumentNullException(nameof(belongTo));
+                throw new System.ArgumentException($"'{nameof(action)}' cannot be null or empty.", nameof(action));
             }
 
-            if (content is null)
+            if (string.IsNullOrEmpty(belongTo))
             {
-                throw new System.ArgumentNullException(nameof(content));
+                throw new System.ArgumentException($"'{nameof(belongTo)}' cannot be null or empty.", nameof(belongTo));
             }
+
             BelongTo = belongTo;
             Content = content;
+            Action = action;
         }
 
+        public string Action { get; }
         public string Content { get; }
         public string BelongTo { get; }
     }

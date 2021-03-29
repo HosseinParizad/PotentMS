@@ -1,9 +1,6 @@
-/Services/Gateway/bin
-/Services/Gateway/obj
-/Services/Common/Kafka/bin
-/Services/Common/Kafka/obj
-/Services/iTodo/obj
-/Services/iTodo/bin
+Bin/
+obj/
 *.txt
 *.html
 *.DS_Store
+*.feature.cs

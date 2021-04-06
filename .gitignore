@@ -2,5 +2,5 @@ Bin/
 obj/
 *.txt
 *.html
-*.DS_Store
+.DS_Store
 *.feature.cs

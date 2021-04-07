@@ -18,11 +18,9 @@ namespace SpecFlowDemo.Steps
             _scenarioContext = scenarioContext;
         }
 
-        [When("i add (.*) and (.*)")]
-        public void WhenTheTwoNumbersAreAdded(int number1, int number2)
+        [When("i send a request to add task (.*) for (.*)")]
+        public void WhenTheTwoNumbersAreAdded(string desc, string belongTo)
         {
-            num1 = number1;
-            num2 = number2;
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
@@ -34,8 +32,8 @@ namespace SpecFlowDemo.Steps
                     {
                         request.Headers.TryAddWithoutValidation("Accept", "application/json");
 
-                        var content = new iTask() { Id = "1234", Description = "ggggg" };
-                        var msg = new Msg() { Action = "newTask", BelongTo = "ali", Content = JsonSerializer.Serialize(content) };
+                        var content = new iTask() { Id = "1234", Description = desc };
+                        var msg = new Msg() { Action = "newTask", BelongTo = belongTo, Content = JsonSerializer.Serialize(content) };
                         var mmm = JsonSerializer.Serialize(msg);
                         request.Content = new StringContent(mmm, Encoding.UTF8, "application/json");
 
@@ -50,7 +48,7 @@ namespace SpecFlowDemo.Steps
         [Then("the result should be (.*)")]
         public void ThenTheResultShouldBe(int result)
         {
-            Assert.AreEqual((num1 + num2), result);
+            Assert.AreEqual(5, result);
         }
     }
 

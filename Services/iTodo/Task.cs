@@ -1,6 +1,6 @@
-using System.IO;
 using System;
 using System.Collections.Generic;
+using KafkaHelper;
 
 namespace iTodo
 {
@@ -39,6 +39,8 @@ namespace iTodo
         public static void CreateNewTask(string belongTo, string content)
         {
             Console.WriteLine($"you rech me {belongTo} , {content}");
+            var task = Producer.SendAMessage("taskCreated", "");
+            task.GetAwaiter().GetResult();
         }
         public static void UpdateTask(string belongTo, string content)
         {

@@ -20,7 +20,7 @@ namespace iTodo
                 {
                     throw new Exception($"action is not specified. {messege}");
                 }
-                Console.WriteLine($"i can hear you {messege}");
+                Console.WriteLine($":| , i can hear you {messege}");
             }
             catch (System.Exception)
             {

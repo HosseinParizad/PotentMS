@@ -1,22 +1,46 @@
-﻿using System;
-using KafkaHelper;
-using System.Threading;
+using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using KafkaHelper;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace iTodo
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            var source = new CancellationTokenSource();
-            var token = source.Token;
+            Parallel.Invoke(
+                () => CreateHostBuilder(args).Build().Run(),
+                () =>
+                    {
+                        try
+                        {
+                            var source = new CancellationTokenSource();
+                            var token = source.Token;
 
-            var topics = new List<string>() { "task" };
-            var iTodoConsumer = new Consumer("localhost:9092", topics, token, MessageProcessor.MessageReceived);
-            Console.WriteLine("Hello World!");
-            Console.ReadLine();
+                            var topics = new List<string>() { "task" };
+                            var iTodoConsumer = new Consumer("localhost:9092", topics, token, MessageProcessor.MessageReceived);
+
+                        }
+                        catch (System.Exception)
+                        {
+                        }
+
+                    }
+            );
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

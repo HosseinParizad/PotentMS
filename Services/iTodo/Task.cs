@@ -4,9 +4,9 @@ using KafkaHelper;
 
 namespace iTodo
 {
-    internal class Task
+    public class ToDoItem
     {
-        public Task(string description, string groupKey)
+        public ToDoItem(string description, string groupKey)
         {
             Id = Guid.NewGuid().ToString();
             Description = description;

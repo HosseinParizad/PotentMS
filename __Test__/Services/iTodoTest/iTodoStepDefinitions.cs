@@ -48,7 +48,22 @@ namespace SpecFlowDemo.Steps
         [Then("the result should be (.*)")]
         public void ThenTheResultShouldBe(int result)
         {
-            Assert.AreEqual(5, result);
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+            using (var httpClient = new HttpClient(handler))
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("GET"), "https://localhost:5003/ToDoQuery"))
+                {
+                    request.Headers.TryAddWithoutValidation("Accept", "application/json");
+
+                    var response = httpClient.Send(request);
+
+                    //Assert.Null(r.StatusCode);
+                    var responseString = response.Content.ReadAsStringAsync().Result;
+                    Assert.NotNull(responseString);
+                }
+            }
         }
     }
 

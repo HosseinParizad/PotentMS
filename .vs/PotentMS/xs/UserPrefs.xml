@@ -1,0 +1,36 @@
+﻿<Properties StartupConfiguration="{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs">
+    <Files>
+      <File FileName="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" Line="121" Column="2" />
+      <File FileName="__Test__/Services/iTodoTest/iTodoTest.csproj" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="PotentMS" expanded="True">
+            <Node name="GateWay" expanded="True" />
+            <Node name="iTodo" expanded="True" />
+            <Node name="iTodoTest" expanded="True">
+              <Node name="Dependencies" expanded="True">
+                <Node name="PackageDependencies" expanded="True" />
+              </Node>
+              <Node name="iTodoStepDefinitions.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="PotentMS" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.iTodoTest PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

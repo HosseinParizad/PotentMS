@@ -4,3 +4,4 @@ obj/
 *.html
 .DS_Store
 *.feature.cs
+*Debug.json

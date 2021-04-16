@@ -2,4 +2,4 @@
 
 cd /Users/hosseinparizad/Documents/PotentMS/Services/iTodo
  
-sudo dotnet run
+# sudo dotnet run

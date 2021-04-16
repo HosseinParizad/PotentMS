@@ -9,22 +9,19 @@ namespace iTodo.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ToDoQueryController : ControllerBase
+    public class TodoQueryController : ControllerBase
     {
-        private readonly ILogger<ToDoQueryController> _logger;
+        private readonly ILogger<TodoQueryController> _logger;
 
-        public ToDoQueryController(ILogger<ToDoQueryController> logger)
+        public TodoQueryController(ILogger<TodoQueryController> logger)
         {
             _logger = logger;
         }
 
         [HttpGet]
-        public IEnumerable<ToDoItem> Get()
+        public IEnumerable<TodoItem> Get(string groupKey)
         {
-            var rng = new Random();
-            var x = new ToDoItem("no desc", "no group");
-            x.AssignedTo = "asghar";
-            return new[] { x };
+            return Engine.GetTask(groupKey);
         }
     }
 }

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using KafkaHelper;
 
 namespace iTodo
 {
-    public class ToDoItem
+    public class TodoItem
     {
-        public ToDoItem(string description, string groupKey)
+        public TodoItem(string description, string groupKey)
         {
             Id = Guid.NewGuid().ToString();
             Description = description;
@@ -34,11 +35,12 @@ namespace iTodo
          };
     }
 
-    class Engine
+    internal class Engine
     {
-        public static void CreateNewTask(string belongTo, string content)
+        public static void CreateNewTask(string groupKey, string content)
         {
-            Console.WriteLine($"you rech me {belongTo} , {content}");
+            Todos.Add(new TodoItem(content, groupKey));
+            Console.WriteLine($"you rech me {groupKey} , {content}");
             var task = Producer.SendAMessage("taskCreated", "");
             task.GetAwaiter().GetResult();
         }
@@ -46,5 +48,12 @@ namespace iTodo
         {
 
         }
+
+        public static IEnumerable<TodoItem> GetTask(string groupKey)
+        {
+            return Todos.Where(i => i.GroupKey == groupKey);
+        }
+
+        static List<TodoItem> Todos = new List<TodoItem>();
     }
 }

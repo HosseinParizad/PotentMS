@@ -14,7 +14,7 @@ namespace iTodo
                 var msg = (Msg)JsonSerializer.Deserialize(messege, typeof(Msg));
                 if (Helper.TaskAction.TryGetValue(msg.Action, out var a))
                 {
-                    a(msg.BelongTo, msg.Content);
+                    a(msg.GroupKey, msg.Content);
                 }
                 else
                 {

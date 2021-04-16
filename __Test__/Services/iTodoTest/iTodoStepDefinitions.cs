@@ -1,8 +1,11 @@
 using System.Net.Http;
+using System.Linq;
 using System.Text;
+//using Json.Net;
 using System.Text.Json;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
+using System.Threading.Tasks;
 
 namespace SpecFlowDemo.Steps
 {
@@ -18,52 +21,91 @@ namespace SpecFlowDemo.Steps
             _scenarioContext = scenarioContext;
         }
 
-        [When("i send a request to add task (.*) for (.*)")]
-        public void WhenTheTwoNumbersAreAdded(string desc, string belongTo)
+        [When("I send the following task:")]
+        public void WhenTheTwoNumbersAreAdded(TechTalk.SpecFlow.Table table)
+        {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            foreach (var row in table.Rows)
+            {
+                var content = new iTodo() { Description = row["TaskDesc"] };
+                var msg = new Msg() { Action = "newTask", GroupKey = row["GroupKey"], Content = JsonSerializer.Serialize(content) };
+                var dataToSend = JsonSerializer.Serialize(msg);
+                HttpMakeARequest(table, url, httpMethod, dataToSend);
+            }
+
+        }
+
+        private static void HttpMakeARequest(Table table, string url, HttpMethod httpMethod, string dataToSend)
         {
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
             using (var httpClient = new HttpClient(handler))
             {
-                for (var i = 0; i < 1; i++)
+                using (var request = new HttpRequestMessage(httpMethod, url))
                 {
-                    using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://localhost:5001/Gateway/"))
-                    {
-                        request.Headers.TryAddWithoutValidation("Accept", "application/json");
+                    request.Headers.TryAddWithoutValidation("Accept", "application/json");
 
-                        var content = new iTask() { Id = "1234", Description = desc };
-                        var msg = new Msg() { Action = "newTask", BelongTo = belongTo, Content = JsonSerializer.Serialize(content) };
-                        var mmm = JsonSerializer.Serialize(msg);
-                        request.Content = new StringContent(mmm, Encoding.UTF8, "application/json");
+                    request.Content = new StringContent(dataToSend, Encoding.UTF8, "application/json");
 
-                        var r = httpClient.Send(request);
+                    var r = httpClient.Send(request);
 
-                        //Assert.Null(r.StatusCode);
-                    }
+                    //Assert.Null(r.StatusCode);
                 }
             }
         }
 
-        [Then("the result should be (.*)")]
-        public void ThenTheResultShouldBe(int result)
+        [Then("I should see the following todo list:")]
+        public void ThenTheResultShouldBe(TechTalk.SpecFlow.Table table)
         {
+            dynamic todos = table;
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            using (var httpClient = new HttpClient(handler))
+            foreach (var row in table.Rows)
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("GET"), "https://localhost:5003/ToDoQuery"))
+                var r = row["GroupKey"];
+                using (var httpClient = new HttpClient(handler, false))
                 {
-                    request.Headers.TryAddWithoutValidation("Accept", "application/json");
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:5003/TodoQuery?groupKey={r}"))
+                    {
+                        //request.Headers.TryAddWithoutValidation("Accept", "application/json");
 
-                    var response = httpClient.Send(request);
+                        //request.Content = new StringContent("", Encoding.UTF8, "application/json");
+                        try
+                        {
+                            var response = httpClient.Send(request);
+                            var responseString = response.Content.ReadAsStringAsync().Result;
+                            //todos = JsonSerializer.Deserialize<object>(responseString);
+                            todos = JsonSerializer.Deserialize<dynamic[]>(responseString);
+                            //dynamic jsonResponse = JsonConvert.DeserializeObject(responseString);
+                            //var pet = JsonSerializer.Deserialize<Pet>(responseString);
 
-                    //Assert.Null(r.StatusCode);
-                    var responseString = response.Content.ReadAsStringAsync().Result;
-                    Assert.NotNull(responseString);
+                        }
+                        catch
+                        {
+                        }
+
+
+                        //         //Assert.Null(r.StatusCode);
+                        //         var responseString = response.Content.ReadAsStringAsync().Result;
+                        //         todos = JsonSerializer.Deserialize<dynamic[]>(responseString);
+                        //         //Assert.AreEqual(belongTo, d[0].GetProperty("assignedTo").ToString());
+                        //         //Assert.AreEqual(desc, d[0].GetProperty("description").ToString());
+                    }
                 }
             }
+            //foreach (var row in table.Rows)
+            //{
+            //    Assert.AreEqual(true, todos.Single(t=> t.Description == row["TaskDesc"]))
+            //}
+            //Assert.AreEqual(todos[0].description,"");
+            //RestHelper.GetObjects<dynamic>("");
+            //var url = new Uri(r)
+            //var myObject = await RestClient.GetObjects<dynamic>(url);
+
         }
     }
 
@@ -74,17 +116,15 @@ namespace SpecFlowDemo.Steps
         }
 
         public string Action { get; set; }
-        public string BelongTo { get; set; }
+        public string GroupKey { get; set; }
         public string Content { get; set; }
     }
 
-    internal class iTask
+    internal class iTodo
     {
-        public iTask()
+        public iTodo()
         {
         }
-
-        public string Id { get; set; }
         public string Description { get; set; }
     }
 }

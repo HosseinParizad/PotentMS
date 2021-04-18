@@ -8,6 +8,7 @@ using TechTalk.SpecFlow;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
+using System.Diagnostics;
 
 namespace SpecFlowDemo.Steps
 {
@@ -21,6 +22,77 @@ namespace SpecFlowDemo.Steps
         public AdditionStepDefinitions(ScenarioContext scenarioContext)
         {
             _scenarioContext = scenarioContext;
+        }
+
+        [BeforeTestRun]
+        public static void BTR()
+        {
+            //            var i = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
+            //--broker-list localhost:9092 \
+            //--topic my-topic \
+            //--time -1";
+
+            //RunProcess("--alter --add-config retention.ms=100");
+
+            //var startInfo = new ProcessStartInfo()
+            //{
+            //    FileName = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-topics.sh",
+            //    Arguments = string.Format("{0} {1} {2} {3} {4}", "--delete --zookeeper localhost:2181 --topic task", "", "", "", ""),
+            //    UseShellExecute = false,
+            //    RedirectStandardOutput = true,
+            //    CreateNoWindow = true
+            //};
+            //var proc = new Process()
+            //{
+            //    StartInfo = startInfo,
+            //};
+            //proc.Start();
+            //while (!proc.StandardOutput.EndOfStream)
+            //{
+            //    var r = proc.StandardOutput.ReadLine();
+            //    //do something here
+            //}
+            //proc.Start();
+            //while (!proc.StandardOutput.EndOfStream)
+            //{
+            //    var r = proc.StandardOutput.ReadLine();
+            //    //do something here
+            //}
+            var url = "https://localhost:5003/TodoQuery/Reset";
+            MakeAGetRequest(url);
+        }
+
+        static void RunProcess(string secParam)
+        {
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-configs.sh",
+                Arguments = string.Format("{0} {1} {2} {3} {4}", "--zookeeper localhost:2181 --entity-type topics --entity-name task", secParam, "", "", ""),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+            var proc = new Process()
+            {
+                StartInfo = startInfo,
+            };
+            proc.Start();
+            while (!proc.StandardOutput.EndOfStream)
+            {
+                proc.StandardOutput.ReadLine();
+                //do something here
+            }
+        }
+
+        [AfterTestRun]
+        public static void ATR()
+        {
+            //            var i = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
+            //--broker-list localhost:9092 \
+            //--topic my-topic \
+            //--time -1";
+            //RunProcess("--time -1");
+            //RunProcess("--alter --add-config retention.ms=100");
         }
 
         [When("I send the following task:")]
@@ -51,8 +123,21 @@ namespace SpecFlowDemo.Steps
 
             var url = "https://localhost:5003/TodoQuery?groupKey=All";
             todos = MakeAGetRequest(url);
-            Assert.AreEqual(todos.Select(l => l.GetProperty("description").ToString()).ToArray(), table.Rows.Select(r => r["TaskDesc"]).ToArray());
+            AreEqual(todos.Select(l =>
+            {
+                string[] names = { "description", "groupKey" };
+                return string.Join(",", names.Select(n => l.GetProperty(n).ToString()));
+            }).Cast<string>().ToArray(), table.Rows.Select(r =>
+            {
+                string[] expectedNames = { "TaskDesc", "GroupKey" };
+                return string.Join(",", expectedNames.Select(e => r[e]));
+            }).ToArray());
             //Assert.AreEqual(todos, "Do what you want");
+        }
+
+        void AreEqual(string[] expected, string[] values)
+        {
+            Assert.AreEqual(string.Join(",", expected), string.Join(",", values));
         }
 
         static dynamic[] MakeAGetRequest(string url)

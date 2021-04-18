@@ -23,5 +23,12 @@ namespace iTodo.Controllers
         {
             return Engine.GetTask(groupKey);
         }
+
+        [HttpGet]
+        [Route("Reset")]
+        public void Reset()
+        {
+            Engine.Reset();
+        }
     }
 }

@@ -15,9 +15,9 @@ Feature: Add
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey| Index |
 			| Watch cat videos on YouTube all day | @me     | 0     |
+			| Do what ever you want               | @you    | 0     |
 			| Eat what ever you want              | @you    | 1     |
 			| check the reault :)                 | @you    | 2     |
-			| Do what ever you want               | @you    | 0     |
 
 	# Scenario: Should be able to set deadline for a task
 	# 	When I send the following task:

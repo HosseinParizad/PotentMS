@@ -50,7 +50,7 @@ namespace iTodo
             var newItem = new TodoItem(content, groupKey);
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
-            Console.WriteLine($"you rech me {groupKey} , {content}");
+            Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
             var task = Producer.SendAMessage("taskCreated", "");
             task.GetAwaiter().GetResult();
         }
@@ -63,10 +63,15 @@ namespace iTodo
         {
             if (groupKey == "All")
             {
-                return Todos.OrderBy(t => t.Sequence);
+                return Todos;
             }
 
             return Todos.Where(i => i.GroupKey == groupKey).OrderBy(t => t.Sequence);
+        }
+
+        public static void Reset()
+        {
+            Todos = new List<TodoItem>();
         }
 
         static List<TodoItem> Todos = new List<TodoItem>();

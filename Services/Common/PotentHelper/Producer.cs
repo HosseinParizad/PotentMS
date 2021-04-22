@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 
-namespace KafkaHelper
+namespace PotentHelper
 {
-    public class Producer
+    public class ProducerHelper
     {
         public static async Task SendAMessage(string topic, string msg)
         {

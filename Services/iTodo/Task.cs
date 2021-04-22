@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using KafkaHelper;
+using PotentHelper;
 
 namespace iTodo
 {
@@ -51,7 +51,8 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
-            var task = Producer.SendAMessage("taskCreated", "");
+            var task = ProducerHelper.SendAMessage("taskCreated", "");
+
             task.GetAwaiter().GetResult();
         }
         public static void UpdateTask(string belongTo, string content)

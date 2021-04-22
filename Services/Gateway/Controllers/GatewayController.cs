@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using KafkaHelper;
+using PotentHelper;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
@@ -18,7 +18,7 @@ namespace Gateway.Controllers
         public IActionResult Post([FromBody] Msg msg)
         {
             {
-                var task = Producer.SendAMessage("task", JsonSerializer.Serialize(msg));
+                var task = ProducerHelper.SendAMessage("task", JsonSerializer.Serialize(msg));
                 task.GetAwaiter().GetResult();
                 return StatusCode(StatusCodes.Status200OK);
             }

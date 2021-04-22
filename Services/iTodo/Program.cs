@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using KafkaHelper;
+using PotentHelper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +25,7 @@ namespace iTodo
                             var token = source.Token;
 
                             var topics = new List<string>() { "task" };
-                            var iTodoConsumer = new Consumer("localhost:9092", topics, token, MessageProcessor.MessageReceived);
+                            var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, MessageProcessor.MessageReceived);
 
                         }
                         catch (System.Exception)

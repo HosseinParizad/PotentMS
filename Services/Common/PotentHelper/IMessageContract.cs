@@ -1,4 +1,4 @@
-namespace KafkaHelper
+namespace PotentHelper
 {
     public interface IMessageContract
     {

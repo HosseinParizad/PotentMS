@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
-namespace KafkaHelper
+namespace PotentHelper
 {
-    public class Consumer
+    public class ConsumerHelper
     {
-        public Consumer(string brokerList, List<string> topics, CancellationToken cancellationToken, Action<string> onMessageReceived)
+        public ConsumerHelper(string brokerList, List<string> topics, CancellationToken cancellationToken, Action<string> onMessageReceived)
         {
             if (string.IsNullOrEmpty(brokerList))
             {
@@ -27,7 +27,7 @@ namespace KafkaHelper
             {
                 throw new ArgumentNullException(nameof(onMessageReceived));
             }
-            
+
             BrokerList = brokerList;
             Topics = topics;
             CancellationToken = cancellationToken;

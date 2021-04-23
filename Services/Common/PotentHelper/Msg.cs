@@ -19,8 +19,8 @@ namespace PotentHelper
             Action = action;
         }
 
-        public string Action { get; }
-        public string Content { get; }
-        public string GroupKey { get; }
+        public string Action { get; set; }
+        public string Content { get; set; }
+        public string GroupKey { get; set; }
     }
 }

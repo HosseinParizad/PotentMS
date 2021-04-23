@@ -9,94 +9,29 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace SpecFlowDemo.Steps
 {
     [Binding]
-    public sealed class AdditionStepDefinitions
+    public sealed class TodoStepDefinitions
     {
-        private readonly ScenarioContext _scenarioContext;
-        private int num1 { get; set; }
-        private int num2 { get; set; }
+        string selectedId = "";
 
-        public AdditionStepDefinitions(ScenarioContext scenarioContext)
+        public TodoStepDefinitions()
         {
-            _scenarioContext = scenarioContext;
         }
 
-        [BeforeTestRun]
-        public static void BTR()
+        //[BeforeTestRun]
+        //public static void BTR()
+        //{
+        //    RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
+        //}
+
+        [Given("I send the following task:")]
+        public void WhenISendFllowingTasks(Table table)
         {
-            //            var i = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
-            //--broker-list localhost:9092 \
-            //--topic my-topic \
-            //--time -1";
-
-            //RunProcess("--alter --add-config retention.ms=100");
-
-            //var startInfo = new ProcessStartInfo()
-            //{
-            //    FileName = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-topics.sh",
-            //    Arguments = string.Format("{0} {1} {2} {3} {4}", "--delete --zookeeper localhost:2181 --topic task", "", "", "", ""),
-            //    UseShellExecute = false,
-            //    RedirectStandardOutput = true,
-            //    CreateNoWindow = true
-            //};
-            //var proc = new Process()
-            //{
-            //    StartInfo = startInfo,
-            //};
-            //proc.Start();
-            //while (!proc.StandardOutput.EndOfStream)
-            //{
-            //    var r = proc.StandardOutput.ReadLine();
-            //    //do something here
-            //}
-            //proc.Start();
-            //while (!proc.StandardOutput.EndOfStream)
-            //{
-            //    var r = proc.StandardOutput.ReadLine();
-            //    //do something here
-            //}
             RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
-        }
-
-        //static void RunProcess(string secParam)
-        //{
-        //    var startInfo = new ProcessStartInfo()
-        //    {
-        //        FileName = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-configs.sh",
-        //        Arguments = string.Format("{0} {1} {2} {3} {4}", "--zookeeper localhost:2181 --entity-type topics --entity-name task", secParam, "", "", ""),
-        //        UseShellExecute = false,
-        //        RedirectStandardOutput = true,
-        //        CreateNoWindow = true
-        //    };
-        //    var proc = new Process()
-        //    {
-        //        StartInfo = startInfo,
-        //    };
-        //    proc.Start();
-        //    while (!proc.StandardOutput.EndOfStream)
-        //    {
-        //        proc.StandardOutput.ReadLine();
-        //        //do something here
-        //    }
-        //}
-
-        //[AfterTestRun]
-        //public static void ATR()
-        //{
-        //    //            var i = @"/Users/hosseinparizad/kafka_2.13-2.7.0/bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
-        //    //--broker-list localhost:9092 \
-        //    //--topic my-topic \
-        //    //--time -1";
-        //    //RunProcess("--time -1");
-        //    //RunProcess("--alter --add-config retention.ms=100");
-        //}
-
-        [When("I send the following task:")]
-        public void WhenTheTwoNumbersAreAdded(TechTalk.SpecFlow.Table table)
-        {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
@@ -110,8 +45,31 @@ namespace SpecFlowDemo.Steps
 
         }
 
+
+        [When("User select item (.*)")]
+        public void WhenUserSelectItemN(string index)
+        {
+            Thread.Sleep(1000);
+            var url = "https://localhost:5003/TodoQuery?groupKey=All";
+            var todos = RestHelper.MakeAGetRequest(url);
+            Thread.Sleep(1000);
+            selectedId = todos.First().GetProperty("id").ToString();
+        }
+
+        [When("User update description to '(.*)' for '(.*)'")]
+        public void WhenUserUpdateDescription(string newDescription, string groupKey)
+        {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId, Description = newDescription };
+            var msg = new Msg() { Action = "updateTask", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
         [Then("I should see the following todo list:")]
-        public void ThenTheResultShouldBe(TechTalk.SpecFlow.Table table)
+        public void ThenTheResultShouldBe(Table table)
         {
             dynamic[] todos = null;
             //foreach (var row in table.Rows)
@@ -123,7 +81,6 @@ namespace SpecFlowDemo.Steps
             var url = "https://localhost:5003/TodoQuery?groupKey=All";
             todos = RestHelper.MakeAGetRequest(url);
             AreEqual(RestHelper.DynamicToList(todos, new string[] { "description", "groupKey" }), table.ToList(new string[] { "TaskDesc", "GroupKey" }));
-
         }
 
         void AreEqual(string[] expected, string[] values) => Assert.AreEqual(expected.Joine(), values.Joine());

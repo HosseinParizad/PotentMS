@@ -1,27 +1,36 @@
 ﻿<Properties StartupConfiguration="{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Services/iTodo/Program.cs">
     <Files>
-      <File FileName="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" Line="121" Column="2" />
-      <File FileName="__Test__/Services/iTodoTest/iTodoTest.csproj" />
+      <File FileName="Services/iTodo/Program.cs" Line="23" Column="12" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="PotentMS" expanded="True">
-            <Node name="GateWay" expanded="True" />
-            <Node name="iTodo" expanded="True" />
-            <Node name="iTodoTest" expanded="True">
-              <Node name="Dependencies" expanded="True">
-                <Node name="PackageDependencies" expanded="True" />
-              </Node>
-              <Node name="iTodoStepDefinitions.cs" selected="True" />
+            <Node name="GateWay" expanded="True">
+              <Node name="Controllers" expanded="True" />
             </Node>
+            <Node name="iTodo" expanded="True">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Properties" expanded="True" />
+              <Node name="Program.cs" selected="True" />
+            </Node>
+            <Node name="iTodoTest" expanded="True" />
+            <Node name="PotentHelper" expanded="True" />
           </Node>
         </State>
       </Pad>
       <Pad Id="MonoDevelop.UnitTesting.TestPad">
         <State name="__root__">
-          <Node name="PotentMS" expanded="True" selected="True" />
+          <Node name="PotentMS" expanded="True">
+            <Node name="iTodoTest" expanded="True">
+              <Node name="iTodoTest" expanded="True">
+                <Node name="AddFeature" expanded="True">
+                  <Node name="UserShouldBeAbleToUpdateATask" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
         </State>
       </Pad>
     </Pads>
@@ -30,7 +39,16 @@
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="42" column="17" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="55" column="1" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="34" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/httpHelper.cs" relfile="__Test__/Services/iTodoTest/httpHelper.cs" line="36" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/Services/iTodo/Controllers/TodoQueryController.cs" relfile="Services/iTodo/Controllers/TodoQueryController.cs" line="24" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/Services/iTodo/Task.cs" relfile="Services/iTodo/Task.cs" line="71" column="1" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="63" column="1" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="83" column="13" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />
 </Properties>

@@ -11,13 +11,13 @@ namespace iTodo
         public TodoItem(string content, string groupKey)
         {
             Id = Guid.NewGuid().ToString();
-            CastContent(content);
+            Helper.CastContent(this, content);
             GroupKey = groupKey;
         }
 
         #region properties
 
-        string Id { get; }
+        public string Id { get; }
         public string Description { get; set; }
         public string GroupKey { get; set; }
         public string AssignedTo { get; set; }
@@ -27,11 +27,6 @@ namespace iTodo
 
         #endregion
 
-        void CastContent(string content)
-        {
-            var todoItem = JsonSerializer.Deserialize<dynamic>(content);
-            Description = todoItem.GetProperty("Description").ToString();
-        }
     }
 
     public class Helper
@@ -39,8 +34,14 @@ namespace iTodo
         public static Dictionary<string, Action<string, string>> TaskAction =>
         new Dictionary<string, Action<string, string>> {
             { "newTask", Engine.CreateNewTask },
-            { "UpdateTask", Engine.UpdateTask },
+            { "updateTask", Engine.UpdateTask },
          };
+
+        public static void CastContent(TodoItem todoItem, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            todoItem.Description = data.GetProperty("Description").ToString();
+        }
     }
 
     internal class Engine
@@ -50,14 +51,16 @@ namespace iTodo
             var newItem = new TodoItem(content, groupKey);
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
-            Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
+            //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
             var task = ProducerHelper.SendAMessage("taskCreated", "");
 
             task.GetAwaiter().GetResult();
         }
-        public static void UpdateTask(string belongTo, string content)
+        public static void UpdateTask(string groupKey, string content)
         {
-
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            Helper.CastContent(Todos.Single(t => t.GroupKey == groupKey && t.Id == id), content);
         }
 
         public static IEnumerable<TodoItem> GetTask(string groupKey)

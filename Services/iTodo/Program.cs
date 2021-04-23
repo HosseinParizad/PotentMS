@@ -19,19 +19,11 @@ namespace iTodo
                 () => CreateHostBuilder(args).Build().Run(),
                 () =>
                     {
-                        try
-                        {
-                            var source = new CancellationTokenSource();
-                            var token = source.Token;
+                        var source = new CancellationTokenSource();
+                        var token = source.Token;
 
-                            var topics = new List<string>() { "task" };
-                            var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, MessageProcessor.MessageReceived);
-
-                        }
-                        catch (System.Exception)
-                        {
-                        }
-
+                        var topics = new List<string>() { "task" };
+                        var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, MessageProcessor.MessageReceived);
                     }
             );
         }

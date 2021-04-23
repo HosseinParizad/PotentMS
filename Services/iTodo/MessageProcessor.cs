@@ -12,19 +12,19 @@ namespace iTodo
             try
             {
                 var msg = (Msg)JsonSerializer.Deserialize(messege, typeof(Msg));
-                if (Helper.TaskAction.TryGetValue(msg.Action, out var a))
+                if (Helper.TaskAction.TryGetValue(msg.Action, out var action))
                 {
-                    a(msg.GroupKey, msg.Content);
+                    action(msg.GroupKey, msg.Content);
                 }
                 else
                 {
-                    throw new Exception($"action is not specified. {messege}");
+                    Console.WriteLine($"*********************************************************** action is not specified. {messege}");
                 }
-                Console.WriteLine($":| , i can hear you {messege}");
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
-                throw new Exception($"format is wrong. {messege}");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"*********************************************************** format is wrong. {messege}");
             }
         }
     }

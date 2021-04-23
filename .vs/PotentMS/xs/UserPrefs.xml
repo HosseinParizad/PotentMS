@@ -1,7 +1,9 @@
 ﻿<Properties StartupConfiguration="{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Services/iTodo/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="__Test__/Services/iTodoTest/httpHelper.cs">
     <Files>
       <File FileName="Services/iTodo/Program.cs" Line="23" Column="12" />
+      <File FileName="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" Line="79" Column="31" />
+      <File FileName="__Test__/Services/iTodoTest/httpHelper.cs" Line="81" Column="45" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -13,9 +15,10 @@
             <Node name="iTodo" expanded="True">
               <Node name="Controllers" expanded="True" />
               <Node name="Properties" expanded="True" />
-              <Node name="Program.cs" selected="True" />
             </Node>
-            <Node name="iTodoTest" expanded="True" />
+            <Node name="iTodoTest" expanded="True">
+              <Node name="httpHelper.cs" selected="True" />
+            </Node>
             <Node name="PotentHelper" expanded="True" />
           </Node>
         </State>

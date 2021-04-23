@@ -1,12 +1,12 @@
 Feature: Add
 
-	# Scenario: Send a task should add task to list
-	# 	Given  I send the following task:
-	# 		| TaskDesc                            | GroupKey |
-	# 		| Watch cat videos on YouTube all day | @i       |
-	# 	Then I should see the following todo list:
-	# 		| TaskDesc                            | GroupKey |
-	# 		| Watch cat videos on YouTube all day | @i       |
+	Scenario: Send a task should add task to list
+		Given  I send the following task:
+			| TaskDesc                            | GroupKey |
+			| Watch cat videos on YouTube all day | @i       |
+		Then I should see the following todo list:
+			| TaskDesc                            | GroupKey |
+			| Watch cat videos on YouTube all day | @i       |
 
 	Scenario: User should be able to update a task
 		Given  I send the following task:
@@ -21,15 +21,15 @@ Feature: Add
 			| TaskDesc                            | GroupKey |
 			| Watch dog videos on YouTube all day | ALi      |
 
-# Scenario: Each person should have its own list
-# 	Given  I send the following task:
-# 		| TaskDesc                            | GroupKey |
-# 		| Watch cat videos on YouTube all day | @me      |
-# 		| Watch dog videos on YouTube all day | @you     |
-# 	Then I should see the following todo list:
-# 		| TaskDesc                            | GroupKey |
-# 		| Watch cat videos on YouTube all day | @me      |
-# 		| Watch dog videos on YouTube all day | @you     |
+	Scenario: Each person should have its own list
+		Given  I send the following task:
+			| TaskDesc                            | GroupKey |
+			| Watch cat videos on YouTube all day | @me      |
+			| Watch dog videos on YouTube all day | @you     |
+		Then I should see the following todo list:
+			| TaskDesc                            | GroupKey |
+			| Watch dog videos on YouTube all day | @you     |
+			| Watch cat videos on YouTube all day | @me      |
 
 # Scenario: Task should order as enter be default
 # 	Given  I send the following task:

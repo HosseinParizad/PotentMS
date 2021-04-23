@@ -78,6 +78,7 @@ namespace SpecFlowDemo.Steps
         public static string Joine(this IEnumerable<dynamic> s) => string.Join(",", s.Select(i => i.ToString()));
 
         public static string[] ToList(this Table table, string[] columns) => table.Rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();
+        public static string[] ToList(this IEnumerable<TableRow> rows, string[] columns) => rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();
         public static string[] DynamicToList(dynamic[] dynamicArray, string[] columns) => dynamicArray.Select(l => columns.Select(n => l.GetProperty(n)).Joine()).Cast<string>().ToArray();
     }
 }

@@ -72,15 +72,12 @@ namespace SpecFlowDemo.Steps
         public void ThenTheResultShouldBe(Table table)
         {
             dynamic[] todos = null;
-            //foreach (var row in table.Rows)
-            //{
-            //    var url = $"https://localhost:5003/TodoQuery?groupKey={row["GroupKey"]}";
-            //    todos = MakeAGetRequest(url);
-            //}
-
-            var url = "https://localhost:5003/TodoQuery?groupKey=All";
-            todos = RestHelper.MakeAGetRequest(url);
-            AreEqual(RestHelper.DynamicToList(todos, new string[] { "description", "groupKey" }), table.ToList(new string[] { "TaskDesc", "GroupKey" }));
+            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            {
+                var url = $"https://localhost:5003/TodoQuery?groupKey={row.Key}";
+                todos = RestHelper.MakeAGetRequest(url);
+                AreEqual(RestHelper.DynamicToList(todos, new string[] { "description", "groupKey" }), row.ToList(new string[] { "TaskDesc", "GroupKey" }));
+            }
         }
 
         void AreEqual(string[] expected, string[] values) => Assert.AreEqual(expected.Joine(), values.Joine());

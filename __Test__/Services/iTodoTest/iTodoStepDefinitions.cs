@@ -49,10 +49,10 @@ namespace SpecFlowDemo.Steps
         [When("User select item (.*)")]
         public void WhenUserSelectItemN(string index)
         {
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             var url = "https://localhost:5003/TodoQuery?groupKey=All";
             var todos = RestHelper.MakeAGetRequest(url);
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             selectedId = todos.First().GetProperty("id").ToString();
         }
 
@@ -63,7 +63,19 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Description = newDescription };
-            var msg = new Msg() { Action = "updateTask", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg() { Action = "updateDescription", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
+        [When("User set deadline '(.*)' on selected task for '(.*)'")]
+        public void WhenUserSetDeadline(string newDeadline, string groupKey)
+        {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId, Deadline = newDeadline };
+            var msg = new Msg() { Action = "setDeadline", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -72,15 +84,25 @@ namespace SpecFlowDemo.Steps
         public void ThenTheResultShouldBe(Table table)
         {
             dynamic[] todos = null;
+            var tableColumns = table.Header.ToArray();
+            var map = new Dictionary<string, string>
+            {
+                { "TaskDesc", "description" },
+                { "GroupKey", "groupKey" },
+                { "Deadline", "deadline" },
+            };
+            var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
+
+
             foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
             {
                 var url = $"https://localhost:5003/TodoQuery?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);
-                AreEqual(RestHelper.DynamicToList(todos, new string[] { "description", "groupKey" }), row.ToList(new string[] { "TaskDesc", "GroupKey" }));
+                AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns));
             }
         }
 
-        void AreEqual(string[] expected, string[] values) => Assert.AreEqual(expected.Joine(), values.Joine());
+        void AreEqual(string[] expected, string[] values) => Assert.AreEqual(values.Joine(), expected.Joine());
 
     }
 

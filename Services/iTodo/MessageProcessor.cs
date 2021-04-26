@@ -14,7 +14,15 @@ namespace iTodo
                 var msg = (Msg)JsonSerializer.Deserialize(messege, typeof(Msg));
                 if (Helper.TaskAction.TryGetValue(msg.Action, out var action))
                 {
-                    action(msg.GroupKey, msg.Content);
+                    try
+                    {
+                        action(msg.GroupKey, msg.Content);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine($"*********************************************************** cannot run action. {messege}");
+                    }
                 }
                 else
                 {

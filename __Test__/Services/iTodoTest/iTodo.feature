@@ -36,14 +36,25 @@ Feature: Add
 		Given  I send the following task:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | ALi      |
-		Then I should see the following todo list:
-			| TaskDesc                            | GroupKey | Deadline |
-			| Watch cat videos on YouTube all day | ALi      |          |
 		When User select item 1
 		When User set deadline '2021-01-07T00:00:00Z' on selected task for 'ALi'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Deadline                  |
 			| Watch cat videos on YouTube all day | ALi      | 2021-01-07T00:00:00+00:00 |
+
+	Scenario: Should be able to set tag
+		Given  I send the following task:
+			| TaskDesc                            | GroupKey |
+			| Watch cat videos on YouTube all day | ALi      |
+		When User select item 1
+		When User set tag 'Home' on selected task for 'ALi'
+		Then I should see the following todo list:
+			| TaskDesc                            | GroupKey | Tags     |
+			| Watch cat videos on YouTube all day | ALi      | ["Home"] |
+		When User set tag 'Garden' on selected task for 'ALi'
+		Then I should see the following todo list:
+			| TaskDesc                            | GroupKey | Tags              |
+			| Watch cat videos on YouTube all day | ALi      | ["Home","Garden"] |
 
 # Scenario: Task should order as enter be default
 # 	Given  I send the following task:

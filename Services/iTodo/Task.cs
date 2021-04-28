@@ -24,6 +24,7 @@ namespace iTodo
         public List<string> Category { get; set; }
         public DateTimeOffset? Deadline { get; set; }
         public int Sequence { get; set; }
+        public List<string> Tags { get; set; } = new List<string>();
 
         #endregion
 
@@ -36,6 +37,7 @@ namespace iTodo
             { "newTask", Engine.CreateNewTask },
             { "updateDescription", Engine.UpdateDescription },
             { "setDeadline", Engine.SetDeadline },
+            { "setTag", Engine.SetTag },
          };
 
         public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
@@ -54,9 +56,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
-            var task = ProducerHelper.SendAMessage("taskCreated", "");
-
-            task.GetAwaiter().GetResult();
+            SendDoneMessage("taskCreated", "");
         }
 
         public static void UpdateDescription(string groupKey, string content)
@@ -64,7 +64,8 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
             var description = data.GetProperty("Description").ToString();
-            Todos.Single(t => t.GroupKey == groupKey && t.Id == id).Description = description;
+            FindById(groupKey, id).Description = description;
+            SendDoneMessage("taskDescriptionUpdated", "");
         }
 
         public static void SetDeadline(string groupKey, string content)
@@ -72,7 +73,17 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-            Todos.Single(t => t.GroupKey == groupKey && t.Id == id).Deadline = deadline;
+            FindById(groupKey, id).Deadline = deadline;
+            SendDoneMessage("taskDeadlineHasBeenSet", "");
+        }
+
+        public static void SetTag(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            var tag = data.GetProperty("Tag").ToString();
+            FindById(groupKey, id).Tags.AddRange(tag.Split(","));
+            SendDoneMessage("taskTagHasBeenSet", "");
         }
 
         public static IEnumerable<TodoItem> GetTask(string groupKey)
@@ -89,6 +100,9 @@ namespace iTodo
         {
             Todos = new List<TodoItem>();
         }
+
+        static void SendDoneMessage(string sendMessageTopic, string msg) => ProducerHelper.SendAMessage(sendMessageTopic, msg).GetAwaiter().GetResult();
+        static TodoItem FindById(string groupKey, dynamic id) => Todos.Single(t => t.GroupKey == groupKey && t.Id == id);
 
         static List<TodoItem> Todos = new List<TodoItem>();
     }

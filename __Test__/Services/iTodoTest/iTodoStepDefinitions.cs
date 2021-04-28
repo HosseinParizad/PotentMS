@@ -80,6 +80,18 @@ namespace SpecFlowDemo.Steps
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
+        [When("User set tag '(.*)' on selected task for '(.*)'")]
+        public void WhenUserSetTag(string newTag, string groupKey)
+        {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId, Tag = newTag };
+            var msg = new Msg() { Action = "setTag", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
         [Then("I should see the following todo list:")]
         public void ThenTheResultShouldBe(Table table)
         {
@@ -90,6 +102,7 @@ namespace SpecFlowDemo.Steps
                 { "TaskDesc", "description" },
                 { "GroupKey", "groupKey" },
                 { "Deadline", "deadline" },
+                { "Tags", "tags" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 

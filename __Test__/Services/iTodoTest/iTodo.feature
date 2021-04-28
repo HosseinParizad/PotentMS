@@ -15,7 +15,7 @@ Feature: Add
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | ALi      |
-		When User select item 1
+		When User select item 1 from tasks of 'ALi'
 		When User update description to 'Watch dog videos on YouTube all day' for 'ALi'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey |
@@ -36,7 +36,7 @@ Feature: Add
 		Given  I send the following task:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | ALi      |
-		When User select item 1
+		When User select item 1 from tasks of 'ALi'
 		When User set deadline '2021-01-07T00:00:00Z' on selected task for 'ALi'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Deadline                  |
@@ -46,7 +46,7 @@ Feature: Add
 		Given  I send the following task:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | ALi      |
-		When User select item 1
+		When User select item 1 from tasks of 'ALi'
 		When User set tag 'Home' on selected task for 'ALi'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Tags     |

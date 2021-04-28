@@ -46,13 +46,11 @@ namespace SpecFlowDemo.Steps
         }
 
 
-        [When("User select item (.*)")]
-        public void WhenUserSelectItemN(string index)
+        [When("User select item (.*) from tasks of '(.*)'")]
+        public void WhenUserSelectItemN(string index, string groupKey)
         {
-            //Thread.Sleep(1000);
-            var url = "https://localhost:5003/TodoQuery?groupKey=All";
+            var url = $"https://localhost:5003/TodoQuery?groupKey={groupKey}";
             var todos = RestHelper.MakeAGetRequest(url);
-            //Thread.Sleep(1000);
             selectedId = todos.First().GetProperty("id").ToString();
         }
 

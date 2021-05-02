@@ -50,8 +50,12 @@ namespace SpecFlowDemo.Steps
         public void WhenUserSelectItemN(string index, string groupKey)
         {
             var url = $"https://localhost:5003/TodoQuery?groupKey={groupKey}";
+            var i = int.Parse(index);
             var todos = RestHelper.MakeAGetRequest(url);
-            selectedId = todos.First().GetProperty("id").ToString();
+            if (todos.Count() >= i)
+            {
+                selectedId = todos.Take(i).Last().GetProperty("id").ToString();
+            }
         }
 
         [When("User update description to '(.*)' for '(.*)'")]
@@ -111,6 +115,16 @@ namespace SpecFlowDemo.Steps
                 todos = RestHelper.MakeAGetRequest(url);
                 AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns));
             }
+        }
+
+        [Then(@"I should see feedback error '(.*)'")]
+        public void ThenIShouldSeeValidationError(string errorMsg)
+        {
+            const string url = "https://localhost:5001/Gateway/Feedback";
+
+            var result = RestHelper.MakeAGetRequest(url);
+
+            Assert.NotNull(result);
         }
 
         void AreEqual(string[] expected, string[] values) => Assert.AreEqual(values.Joine(), expected.Joine());

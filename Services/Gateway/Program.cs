@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Gateway.Controllers;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using PotentHelper;
 
 namespace Gateway
 {
@@ -13,8 +12,19 @@ namespace Gateway
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            Parallel.Invoke(
+                () => CreateHostBuilder(args).Build().Run(),
+                () =>
+                {
+                    var source = new CancellationTokenSource();
+                    var token = source.Token;
+
+                    var topics = new List<string>() { "taskFeedback" };
+                    var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, GatewayController.MessageReceived);
+                }
+            );
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

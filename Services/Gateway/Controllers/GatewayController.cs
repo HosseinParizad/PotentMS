@@ -14,14 +14,35 @@ namespace Gateway.Controllers
     [Route("[controller]")]
     public class GatewayController : ControllerBase
     {
+        public static List<string> FeedbackQueue { get; private set; } = new List<string>();
+
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
         {
             {
+                if (msg.Action == "Reset")
+                {
+                    FeedbackQueue = new List<string>();
+                }
                 var task = ProducerHelper.SendAMessage("task", JsonSerializer.Serialize(msg));
                 task.GetAwaiter().GetResult();
                 return StatusCode(StatusCodes.Status200OK);
             }
         }
+
+        [HttpGet]
+        [Route("Feedback")]
+        public IEnumerable<string> Get()
+        {
+            {
+                return FeedbackQueue;
+            }
+        }
+
+        internal static void MessageReceived(string msg)
+        {
+            FeedbackQueue.Add(msg);
+        }
+
     }
 }

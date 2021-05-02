@@ -56,7 +56,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
-            SendDoneMessage("taskCreated", "");
+            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: null, originalRequest: "CreateNewTask");
         }
 
         public static void UpdateDescription(string groupKey, string content)
@@ -65,7 +65,7 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var description = data.GetProperty("Description").ToString();
             FindById(groupKey, id).Description = description;
-            SendDoneMessage("taskDescriptionUpdated", "");
+            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "UpdateDescription");
         }
 
         public static void SetDeadline(string groupKey, string content)
@@ -74,7 +74,7 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
             FindById(groupKey, id).Deadline = deadline;
-            SendDoneMessage("taskDeadlineHasBeenSet", "");
+            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetDeadline");
         }
 
         public static void SetTag(string groupKey, string content)
@@ -82,8 +82,18 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
             var tag = data.GetProperty("Tag").ToString();
-            FindById(groupKey, id).Tags.AddRange(tag.Split(","));
-            SendDoneMessage("taskTagHasBeenSet", "");
+            var todo = FindById(groupKey, id);
+            if (todo == null)
+            {
+                //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
+                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find!", originalRequest: "SetTag");
+            }
+            else
+            {
+                todo.Tags.AddRange(tag.Split(","));
+                //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
+                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
+            }
         }
 
         public static IEnumerable<TodoItem> GetTask(string groupKey)
@@ -101,8 +111,8 @@ namespace iTodo
             Todos = new List<TodoItem>();
         }
 
-        static void SendDoneMessage(string sendMessageTopic, string msg) => ProducerHelper.SendAMessage(sendMessageTopic, msg).GetAwaiter().GetResult();
-        static TodoItem FindById(string groupKey, dynamic id) => Todos.Single(t => t.GroupKey == groupKey && t.Id == id);
+        static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest) => ProducerHelper.SendAMessage("taskFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, message: message, originalRequest: originalRequest))).GetAwaiter().GetResult();
+        static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
 
         static List<TodoItem> Todos = new List<TodoItem>();
     }

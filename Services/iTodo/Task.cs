@@ -38,6 +38,7 @@ namespace iTodo
             { "updateDescription", Engine.UpdateDescription },
             { "setDeadline", Engine.SetDeadline },
             { "setTag", Engine.SetTag },
+            { "setCurrentLocation", Engine.SetCurrentLocation },
          };
 
         public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
@@ -56,7 +57,8 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: null, originalRequest: "CreateNewTask");
+            SendFeedbackMessege(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, messege: null, originalRequest: "CreateNewTask");
+            //Console.WriteLine($"you rech me {groupKey} , {content}  -__***************..........{Todos.Count()}.......****************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
         }
 
         public static void UpdateDescription(string groupKey, string content)
@@ -65,7 +67,7 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var description = data.GetProperty("Description").ToString();
             FindById(groupKey, id).Description = description;
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "UpdateDescription");
+            SendFeedbackMessege(type: FeedbackType.Success, groupKey: groupKey, id: id, messege: null, originalRequest: "UpdateDescription");
         }
 
         public static void SetDeadline(string groupKey, string content)
@@ -74,7 +76,15 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
             FindById(groupKey, id).Deadline = deadline;
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetDeadline");
+            SendFeedbackMessege(type: FeedbackType.Success, groupKey: groupKey, id: id, messege: null, originalRequest: "SetDeadline");
+        }
+
+        public static void SetCurrentLocation(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            Sort = data.GetProperty("Location").ToString();
+            //Console.WriteLine($"you rech me {groupKey} , {content}  -__***************&&&&{Sort}&&&{Todos.Count()}****************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
+            SendFeedbackMessege(type: FeedbackType.Success, groupKey: groupKey, id: null, messege: null, originalRequest: "SetCurrentLocation");
         }
 
         public static void SetTag(string groupKey, string content)
@@ -86,13 +96,13 @@ namespace iTodo
             if (todo == null)
             {
                 //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
-                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find!", originalRequest: "SetTag");
+                SendFeedbackMessege(type: FeedbackType.Error, groupKey: groupKey, id: id, messege: "Cannot find!", originalRequest: "SetTag");
             }
             else
             {
                 todo.Tags.AddRange(tag.Split(","));
                 //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
-                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
+                SendFeedbackMessege(type: FeedbackType.Success, groupKey: groupKey, id: id, messege: null, originalRequest: "SetTag");
             }
         }
 
@@ -103,7 +113,7 @@ namespace iTodo
                 return Todos;
             }
 
-            return Todos.Where(i => i.GroupKey == groupKey).OrderBy(t => t.Sequence);
+            return Todos.Where(i => i.GroupKey == groupKey).OrderBy(t => t.Tags.Contains(Sort) ? 0 : 1).ThenBy(t => t.Sequence);
         }
 
         public static void Reset()
@@ -111,9 +121,10 @@ namespace iTodo
             Todos = new List<TodoItem>();
         }
 
-        static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest) => ProducerHelper.SendAMessage("taskFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, message: message, originalRequest: originalRequest))).GetAwaiter().GetResult();
+        static void SendFeedbackMessege(FeedbackType type, string groupKey, string id, string messege, string originalRequest) => ProducerHelper.SendAMessege("taskFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, messege: messege, originalRequest: originalRequest))).GetAwaiter().GetResult();
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
 
         static List<TodoItem> Todos = new List<TodoItem>();
+        static string Sort = "";
     }
 }

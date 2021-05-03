@@ -19,15 +19,19 @@ namespace Gateway.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
         {
-            {
-                if (msg.Action == "Reset")
-                {
-                    FeedbackQueue = new List<string>();
-                }
-                var task = ProducerHelper.SendAMessage("task", JsonSerializer.Serialize(msg));
-                task.GetAwaiter().GetResult();
-                return StatusCode(StatusCodes.Status200OK);
-            }
+            var task = ProducerHelper.SendAMessege("task", JsonSerializer.Serialize(msg));
+            task.GetAwaiter().GetResult();
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+
+        [HttpPost]
+        [Route("Location")]
+        public IActionResult PostLocation([FromBody] Msg msg)
+        {
+            var task = ProducerHelper.SendAMessege("location", JsonSerializer.Serialize(msg));
+            task.GetAwaiter().GetResult();
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         [HttpGet]

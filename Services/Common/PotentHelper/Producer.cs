@@ -6,7 +6,7 @@ namespace PotentHelper
 {
     public class ProducerHelper
     {
-        public static async Task SendAMessage(string topic, string msg)
+        public static async Task SendAMessege(string topic, string msg)
         {
             var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 

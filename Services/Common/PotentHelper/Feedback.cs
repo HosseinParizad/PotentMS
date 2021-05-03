@@ -8,19 +8,19 @@ namespace PotentHelper
 
         }
 
-        public Feedback(FeedbackType type = default, string groupKey = null, string id = null, string message = null, string originalRequest = null)
+        public Feedback(FeedbackType type = default, string groupKey = null, string id = null, string messege = null, string originalRequest = null)
         {
             Type = type;
             GroupKey = groupKey;
             Id = id;
-            Message = message;
+            Messege = messege;
             OriginalRequest = originalRequest;
         }
 
         public FeedbackType Type { get; set; }
         public string GroupKey { get; set; }
         public string Id { get; set; }
-        public string Message { get; set; }
+        public string Messege { get; set; }
         public string OriginalRequest { get; set; }
     }
 

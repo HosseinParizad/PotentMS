@@ -22,8 +22,8 @@ namespace iTodo
                         var source = new CancellationTokenSource();
                         var token = source.Token;
 
-                        var topics = new List<string>() { "task" };
-                        var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, MessageProcessor.MessageReceived);
+                        //var topics = new List<string>() { "task", "location" };
+                        _ = new ConsumerHelper("localhost:9092", new List<string>() { "task", "location" }, token, MessageProcessor.MessageReceived);
                     }
             );
         }

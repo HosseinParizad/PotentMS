@@ -17,4 +17,9 @@
 		</PackageReference>
 		<PackageReference Include="SpecFlow" Version="3.7.38" />
 	</ItemGroup>
+	<ItemGroup>
+	  <SpecFlowFeatureFiles Update="iTodo.sort.feature">
+	    <Visible>False</Visible>
+	  </SpecFlowFeatureFiles>
+	</ItemGroup>
 </Project>

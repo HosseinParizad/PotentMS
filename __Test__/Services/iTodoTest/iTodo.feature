@@ -64,22 +64,6 @@ Feature: Add
 		When User set tag 'Home' on selected task for 'Askhar'
 		Then I should see feedback error 'what are you doing!'
 
-# Scenario: Task should order as enter be default
-# 	Given  I send the following task:
-# 		| TaskDesc                            | GroupKey |
-# 		| Watch cat videos on YouTube all day | @me      |
-# 		| Do what ever you want               | @you     |
-# 		| Eat what ever you want              | @you     |
-# 		| check the reault :)                 | @you     |
-# 	Then I should see the following todo list:
-# 		| TaskDesc                            | GroupKey | Index |
-# 		| Watch cat videos on YouTube all day | @me      | 0     |
-# 		| Do what ever you want               | @you     | 0     |
-# 		| Eat what ever you want              | @you     | 1     |
-# 		| check the reault :)                 | @you     | 2     |
-
-
-
 
 
 

@@ -54,7 +54,7 @@ namespace SpecFlowDemo.Steps
             var todos = RestHelper.MakeAGetRequest(url);
             if (todos.Count() >= i)
             {
-                selectedId = todos.Take(i).Last().GetProperty("id").ToString();
+                selectedId = todos.Skip(i - 1).Take(1).Single().GetProperty("id").ToString();
             }
         }
 
@@ -92,6 +92,27 @@ namespace SpecFlowDemo.Steps
             var msg = new Msg() { Action = "setTag", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
+        [When("User '(.*)' get event current location is '(.*)'")]
+        public void WhenUserGetLocationEvent(string groupKey, string currentLocation)
+        {
+            const string url = "https://localhost:5001/Gateway/Location";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Location = currentLocation };
+            var msg = new Msg() { Action = "setCurrentLocation", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+
+
+            //const string url = "https://localhost:5001/Gateway/";
+            //var httpMethod = HttpMethod.Post;
+
+            //var content = new { Id = selectedId, Tag = newTag };
+            //var msg = new Msg() { Action = "setTag", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            //var dataToSend = JsonSerializer.Serialize(msg);
+            //RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
         [Then("I should see the following todo list:")]

@@ -19,7 +19,7 @@ namespace Gateway.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
         {
-            var task = ProducerHelper.SendAMessege("task", JsonSerializer.Serialize(msg));
+            var task = ProducerHelper.SendAMessage("task", JsonSerializer.Serialize(msg));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -29,7 +29,8 @@ namespace Gateway.Controllers
         [Route("Location")]
         public IActionResult PostLocation([FromBody] Msg msg)
         {
-            var task = ProducerHelper.SendAMessege("location", JsonSerializer.Serialize(msg));
+            Console.WriteLine("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+            var task = ProducerHelper.SendAMessage("location", JsonSerializer.Serialize(msg));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }

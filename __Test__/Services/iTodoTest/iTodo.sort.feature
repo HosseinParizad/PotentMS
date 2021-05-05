@@ -37,5 +37,3 @@ Feature: Sort
 			| TaskDesc                            | GroupKey | Tags     |
 			| Watch cat videos on YouTube all day | Ali      | ["Home"] |
 			| Watch dog videos on YouTube all day | Ali      | ["Work"] |
-
-

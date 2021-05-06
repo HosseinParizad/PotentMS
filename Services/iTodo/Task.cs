@@ -34,9 +34,7 @@ namespace iTodo
             newItem.GroupKey = groupKey;
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
-            //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
-            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: null, originalRequest: "CreateNewTask");
-            //Console.WriteLine($"you rech me {groupKey} , {content}  -__***************..........{Todos.Count()}.......****************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
+            CreateGroupIfNotExists(groupKey);
         }
 
         public static void UpdateDescription(string groupKey, string content)
@@ -95,14 +93,18 @@ namespace iTodo
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var newMember = data.GetProperty("NewMember").ToString();
-            if (!Groups.Any(g => g.Group == newMember))
-            {
-                Groups.Add(new GroupItem { Group = newMember, Member = newMember });
-            }
+            CreateGroupIfNotExists(newMember);
             Groups.Add(new GroupItem { Group = groupKey, Member = newMember });
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "NewMember");
         }
 
+        static void CreateGroupIfNotExists(dynamic groupKey)
+        {
+            if (!Groups.Any(g => g.Group == groupKey))
+            {
+                Groups.Add(new GroupItem { Group = groupKey, Member = groupKey });
+            }
+        }
 
         public static IEnumerable<TodoItem> GetTask(string groupKey)
         {
@@ -140,7 +142,7 @@ namespace iTodo
         static List<TodoItem> Todos = new List<TodoItem>();
         static string Sort = "";
 
-        static List<GroupItem> Groups = new List<GroupItem>();
+        static List<GroupItem> Groups { get; set; } = new List<GroupItem>();
 
         #endregion
     }

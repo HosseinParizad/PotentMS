@@ -19,10 +19,16 @@ namespace SpecFlowDemo.Steps
         public GroupStepDefinitions(ScenarioContext scenarioContext)
         {
         }
+
+        [BeforeScenario]
+        public virtual void BeforeScenario()
+        {
+            RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
+        }
+
         [Given(@"Send an email '(.*)' to create group")]
         public void GivenSendAnEmailToCreateGroup(string groupKey)
         {
-            RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
@@ -59,7 +65,13 @@ namespace SpecFlowDemo.Steps
 
             foreach (var row in table.Rows)
             {
-                Assert.IsTrue(RestHelper.DynamicToList(groups, expectedColums).All(table.ToList(tableColumns).Contains));
+                var expect = table.ToList(tableColumns);
+                var result = RestHelper.DynamicToList(groups, expectedColums);
+                Assert.Multiple(() =>
+                {
+                    Assert.IsTrue(expect.All(result.Contains));
+                    Assert.IsTrue(result.All(expect.Contains));
+                });
             }
         }
     }

@@ -57,10 +57,8 @@ namespace SpecFlowDemo.Steps
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
-
             foreach (var row in table.Rows)
             {
-                //Assert.AreEqual(RestHelper.DynamicToList(groups, expectedColums).Joine(), table.ToList(tableColumns).Joine());
                 Assert.IsTrue(RestHelper.DynamicToList(groups, expectedColums).All(table.ToList(tableColumns).Contains));
             }
         }

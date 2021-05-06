@@ -18,8 +18,11 @@
 		<PackageReference Include="SpecFlow" Version="3.7.38" />
 	</ItemGroup>
 	<ItemGroup>
-	  <SpecFlowFeatureFiles Update="iTodo.sort.feature">
-	    <Visible>False</Visible>
-	  </SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="iTodo.sort.feature">
+			<Visible>True</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="iTodo.group.feature">
+			<Visible>True</Visible>
+		</SpecFlowFeatureFiles>
 	</ItemGroup>
 </Project>

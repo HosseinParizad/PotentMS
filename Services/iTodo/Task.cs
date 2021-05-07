@@ -17,6 +17,7 @@ namespace iTodo
             { "setCurrentLocation", Engine.SetCurrentLocation },
             { "newGroup", Engine.NewGroup },
             { "newMember", Engine.NewMember },
+            { "setLocation", Engine.SetLocation },
          };
 
         public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
@@ -58,8 +59,20 @@ namespace iTodo
         public static void SetCurrentLocation(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
-            Sort = data.GetProperty("Location").ToString();
-            //Console.WriteLine($"you rech me {groupKey} , {content}  -__***************&&&&{Sort}&&&{Todos.Count()}****************__{string.Join(", -> ", Todos.Select(t => t.Description))}");
+            var member = data.GetProperty("Member").ToString();
+            string location = data.GetProperty("Location").ToString();
+            Console.WriteLine($"you rech me {groupKey} , {content}  -__***************&&&&{location}&&&{member}****************__{string.Join(", -> ", Todos.Select(t => t.Locations))}");
+            //var locations = string.Empty;
+            if (MemeberCurrentLocation.TryGetValue(member, out string locations))
+            {
+                MemeberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
+            }
+            else
+            {
+                MemeberCurrentLocation.Add(member, location);
+            }
+            Console.WriteLine($"you rech me {MemeberCurrentLocation[member]} =============================");
+
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "SetCurrentLocation");
         }
 
@@ -79,6 +92,23 @@ namespace iTodo
                 todo.Tags.AddRange(tag.Split(","));
                 //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
                 SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
+            }
+        }
+
+        public static void SetLocation(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            var location = data.GetProperty("Location").ToString();
+            var todo = FindById(groupKey, id);
+            if (todo == null)
+            {
+                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find!", originalRequest: "SetLocation");
+            }
+            else
+            {
+                todo.Locations.AddRange(location.Split(","));
+                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetLocation");
             }
         }
 
@@ -106,14 +136,14 @@ namespace iTodo
             }
         }
 
-        public static IEnumerable<TodoItem> GetTask(string groupKey)
+        public static IEnumerable<TodoItem> GetTask(string member)
         {
-            if (groupKey == "All")
+            if (member == "All")
             {
                 return Todos;
             }
 
-            return Todos.Where(i => i.GroupKey == groupKey).OrderBy(t => (t.Tags?.Contains(Sort) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
+            return Todos.Where(i => (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemeberCurrentLocation.ContainsKey(member) && MemeberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
         }
 
         public static IEnumerable<GroupItem> GetGroup(string groupKey)
@@ -132,6 +162,7 @@ namespace iTodo
         {
             Todos = new List<TodoItem>();
             Groups = new List<GroupItem>();
+            MemeberCurrentLocation = new Dictionary<string, string>();
         }
 
         #region Implement
@@ -143,6 +174,8 @@ namespace iTodo
         static string Sort = "";
 
         static List<GroupItem> Groups { get; set; } = new List<GroupItem>();
+
+        static Dictionary<string, string> MemeberCurrentLocation { get; set; } = new Dictionary<string, string>();
 
         #endregion
     }
@@ -158,6 +191,7 @@ namespace iTodo
         public List<string> Category { get; set; }
         public DateTimeOffset? Deadline { get; set; }
         public int Sequence { get; set; }
+        public List<string> Locations { get; set; } = new List<string>();
         public List<string> Tags { get; set; } = new List<string>();
     }
 

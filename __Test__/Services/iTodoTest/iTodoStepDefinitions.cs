@@ -94,14 +94,26 @@ namespace SpecFlowDemo.Steps
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
+        [When("User set location '(.*)' on selected task for '(.*)'")]
+        public void WhenUserSetLocation(string location, string groupKey)
+        {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId, Location = location };
+            var msg = new Msg() { Action = "setLocation", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
         [When("User '(.*)' get event current location is '(.*)'")]
-        public void WhenUserGetLocationEvent(string groupKey, string currentLocation)
+        public void WhenUserGetLocationEvent(string member, string currentLocation)
         {
             const string url = "https://localhost:5001/Gateway/Location";
             var httpMethod = HttpMethod.Post;
 
-            var content = new { Location = currentLocation };
-            var msg = new Msg() { Action = "setCurrentLocation", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var content = new { Member = member, Location = currentLocation };
+            var msg = new Msg() { Action = "setCurrentLocation", GroupKey = member, Content = JsonSerializer.Serialize(content) };
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
 
@@ -126,6 +138,7 @@ namespace SpecFlowDemo.Steps
                 { "GroupKey", "groupKey" },
                 { "Deadline", "deadline" },
                 { "Tags", "tags" },
+                { "Locations", "locations" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 

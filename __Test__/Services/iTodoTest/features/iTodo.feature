@@ -42,21 +42,7 @@ Feature: Add
 			| TaskDesc                            | GroupKey | Deadline                  |
 			| Watch cat videos on YouTube all day | Ali      | 2021-01-07T00:00:00+00:00 |
 
-	Scenario: Should be able to set tag
-		Given  I send the following task:
-			| TaskDesc                            | GroupKey |
-			| Watch cat videos on YouTube all day | Ali      |
-		When User select item 1 from tasks of 'Ali'
-		When User set tag 'Home' on selected task for 'Ali'
-		Then I should see the following todo list:
-			| TaskDesc                            | GroupKey | Tags     |
-			| Watch cat videos on YouTube all day | Ali      | ["Home"] |
-		When User set tag 'Garden' on selected task for 'Ali'
-		Then I should see the following todo list:
-			| TaskDesc                            | GroupKey | Tags              |
-			| Watch cat videos on YouTube all day | Ali      | ["Home","Garden"] |
-
-	Scenario: Should be able to send vAlidation error
+	Scenario: Should be able to send validation error
 		Given  I send the following task:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | Ali      |

@@ -82,6 +82,18 @@ namespace SpecFlowDemo.Steps
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
+        [When(@"User close selected task for '(.*)'")]
+         public void WhenUseCloseSelectedTask(string groupKey)
+         {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId };
+            var msg = new Msg() { Action = "closeTask", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+         }
+
         [When("User add '(.*)' to tag (.*) on selected task for '(.*)'")]
         public void WhenUserSetTag(string newTag, string tagKey, string groupKey)
         {

@@ -18,6 +18,7 @@ namespace iTodo
             { "newGroup", Engine.NewGroup },
             { "newMember", Engine.NewMember },
             { "setLocation", Engine.SetLocation },
+            { "closeTask", Engine.CloseTask },
          };
 
         public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
@@ -119,6 +120,14 @@ namespace iTodo
             }
         }
 
+        public static void CloseTask(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            FindById(groupKey, id).Status = TodoStatus.Close;
+            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "CloseTask");
+        }
+
         public static void SetLocation(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
@@ -167,7 +176,7 @@ namespace iTodo
             {
                 return Todos;
             }
-            return Todos.Where(i => (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemeberCurrentLocation.ContainsKey(member) && MemeberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
+            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemeberCurrentLocation.ContainsKey(member) && MemeberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
         }
 
         public static IEnumerable<GroupItem> GetGroup(string groupKey)
@@ -217,6 +226,7 @@ namespace iTodo
         public int Sequence { get; set; }
         public List<string> Locations { get; set; } = new List<string>();
         public List<TagItem> Tags { get; set; } = new List<TagItem>();
+        public TodoStatus Status { get; set; }
     }
 
     public class GroupItem
@@ -239,6 +249,12 @@ namespace iTodo
         public string Value { get; set; }
     }
 
+    public enum TodoStatus
+    {
+        Active,
+        Close
+    }
     #endregion
 
 }
+

@@ -47,6 +47,6 @@ Feature: Add
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | Ali      |
 		When User select item 1 from tasks of 'Ali'
-		When User set tag 'Home' on selected task for 'Askhar'
+		When User add 'Home' to tag 0 on selected task for 'Askhar'
 		Then I should see feedback error 'what are you doing!'
 

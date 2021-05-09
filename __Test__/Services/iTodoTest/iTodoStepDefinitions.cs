@@ -82,13 +82,13 @@ namespace SpecFlowDemo.Steps
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When("User set tag '(.*)' on selected task for '(.*)'")]
-        public void WhenUserSetTag(string newTag, string groupKey)
+        [When("User add '(.*)' to tag (.*) on selected task for '(.*)'")]
+        public void WhenUserSetTag(string newTag, string tagKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
-            var content = new { Id = selectedId, Tag = newTag };
+            var content = new { Id = selectedId, TagKey = tagKey, Tag = newTag };
             var msg = new Msg() { Action = "setTag", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);

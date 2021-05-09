@@ -81,6 +81,7 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
             var tag = data.GetProperty("Tag").ToString();
+            var tagKey = data.GetProperty("TagKey").ToString();
             var todo = FindById(groupKey, id);
             if (todo == null)
             {
@@ -89,9 +90,32 @@ namespace iTodo
             }
             else
             {
-                todo.Tags.AddRange(tag.Split(","));
-                //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
+                UpdateTags(todo, tag, tagKey);
                 SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
+            }
+        }
+
+        static void UpdateTags(TodoItem todo, string allTag, string tagKey)
+        {
+            foreach (var tag in allTag.Split(",").Distinct())
+            {
+                var found = false;
+                foreach (var tagItem in todo.Tags)
+                {
+                    if (tagItem.TagParentKey == tagKey)
+                    {
+                        if (("," + tagItem.Value).IndexOf("," + tag) > 0)
+                        {
+                            tagItem.Value += "," + tag;
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    todo.Tags.Add(new TagItem { TagParentKey = tagKey, Value = tag });
+                }
             }
         }
 
@@ -114,17 +138,18 @@ namespace iTodo
 
         public static void NewGroup(string groupKey, string content)
         {
-            Groups.Add(new GroupItem { Group = groupKey, Member = groupKey });
+            Groups.Add(CreateNewGroup(groupKey, groupKey));
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "NewGroup");
         }
 
+        static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
 
         public static void NewMember(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var newMember = data.GetProperty("NewMember").ToString();
             CreateGroupIfNotExists(newMember);
-            Groups.Add(new GroupItem { Group = groupKey, Member = newMember });
+            Groups.Add(CreateNewGroup(groupKey, newMember));
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "NewMember");
         }
 
@@ -132,7 +157,7 @@ namespace iTodo
         {
             if (!Groups.Any(g => g.Group == groupKey))
             {
-                Groups.Add(new GroupItem { Group = groupKey, Member = groupKey });
+                Groups.Add(CreateNewGroup(groupKey, groupKey));
             }
         }
 
@@ -142,7 +167,6 @@ namespace iTodo
             {
                 return Todos;
             }
-
             return Todos.Where(i => (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemeberCurrentLocation.ContainsKey(member) && MemeberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
         }
 
@@ -192,13 +216,27 @@ namespace iTodo
         public DateTimeOffset? Deadline { get; set; }
         public int Sequence { get; set; }
         public List<string> Locations { get; set; } = new List<string>();
-        public List<string> Tags { get; set; } = new List<string>();
+        public List<TagItem> Tags { get; set; } = new List<TagItem>();
     }
 
     public class GroupItem
     {
         public string Group { get; set; }
         public string Member { get; set; }
+        public List<TagSetting> Tags { get; set; } = new List<TagSetting>();
+    }
+
+    public class TagSetting
+    {
+        public string Key { get; set; }
+        public string Caption { get; set; }
+        public string Values { get; set; }
+    }
+
+    public class TagItem
+    {
+        public string TagParentKey { get; set; }
+        public string Value { get; set; }
     }
 
     #endregion

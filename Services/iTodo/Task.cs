@@ -104,7 +104,7 @@ namespace iTodo
                 {
                     if (tagItem.TagParentKey == tagKey)
                     {
-                        if (("," + tagItem.Value).IndexOf("," + tag) > 0)
+                        if (("," + tagItem.Value).IndexOf("," + tag) < 0)
                         {
                             tagItem.Value += "," + tag;
                         }

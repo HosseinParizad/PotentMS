@@ -83,8 +83,8 @@ namespace SpecFlowDemo.Steps
         }
 
         [When(@"User close selected task for '(.*)'")]
-         public void WhenUseCloseSelectedTask(string groupKey)
-         {
+        public void WhenUseCloseSelectedTask(string groupKey)
+        {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
@@ -92,7 +92,7 @@ namespace SpecFlowDemo.Steps
             var msg = new Msg() { Action = "closeTask", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
-         }
+        }
 
         [When("User add '(.*)' to tag (.*) on selected task for '(.*)'")]
         public void WhenUserSetTag(string newTag, string tagKey, string groupKey)
@@ -168,9 +168,10 @@ namespace SpecFlowDemo.Steps
         {
             const string url = "https://localhost:5001/Gateway/Feedback";
 
-            var result = RestHelper.MakeAGetRequest(url);
+            var resultStr = RestHelper.MakeAGetRequest(url).Last().ToString();
+            var result = JsonSerializer.Deserialize<dynamic>(resultStr);
 
-            Assert.NotNull(result);
+            Assert.AreEqual(result.GetProperty("Message").ToString(), errorMsg);
         }
 
         void AreEqual(string[] expected, string[] values) => Assert.AreEqual(values.Joine(), expected.Joine());

@@ -29,7 +29,7 @@ namespace Gateway.Controllers
         [Route("Location")]
         public IActionResult PostLocation([FromBody] Msg msg)
         {
-            Console.WriteLine("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+            Console.WriteLine("||||||||||||||||||||||||||||||||||||||2|3|4|5|6|7|8|9|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
             var task = ProducerHelper.SendAMessage("location", JsonSerializer.Serialize(msg));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);

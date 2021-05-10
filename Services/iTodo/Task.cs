@@ -6,6 +6,8 @@ using PotentHelper;
 
 namespace iTodo
 {
+    #region Mapping 
+
     public class Helper
     {
         public static Dictionary<string, Action<string, string>> TaskAction =>
@@ -21,12 +23,17 @@ namespace iTodo
             { "closeTask", Engine.CloseTask },
          };
 
-        public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
-        public static bool PropertyExists(dynamic obj, string name) => ((IDictionary<string, object>)obj).ContainsKey(name);
+        //public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
+        //public static bool PropertyExists(dynamic obj, string name) => ((IDictionary<string, object>)obj).ContainsKey(name);
     }
+
+    #endregion
 
     internal class Engine
     {
+        #region CreateNewTask 
+
+
         public static void CreateNewTask(string groupKey, string content)
         {
             var newItem = new TodoItem();
@@ -39,6 +46,10 @@ namespace iTodo
             CreateGroupIfNotExists(groupKey);
         }
 
+        #endregion
+
+        #region UpdateDescription 
+
         public static void UpdateDescription(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
@@ -48,6 +59,11 @@ namespace iTodo
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "UpdateDescription");
         }
 
+        #endregion
+
+        #region SetDeadline 
+
+
         public static void SetDeadline(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
@@ -56,6 +72,11 @@ namespace iTodo
             FindById(groupKey, id).Deadline = deadline;
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetDeadline");
         }
+
+
+        #endregion
+
+        #region SetCurrentLocation 
 
         public static void SetCurrentLocation(string groupKey, string content)
         {
@@ -77,6 +98,12 @@ namespace iTodo
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "SetCurrentLocation");
         }
 
+
+
+        #endregion
+
+        #region SetTag 
+
         public static void SetTag(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
@@ -95,6 +122,11 @@ namespace iTodo
                 SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
             }
         }
+
+
+        #endregion
+
+        #region UpdateTags 
 
         static void UpdateTags(TodoItem todo, string allTag, string tagKey)
         {
@@ -120,13 +152,30 @@ namespace iTodo
             }
         }
 
+
+        #endregion
+
+        #region CloseTask 
+
         public static void CloseTask(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
-            FindById(groupKey, id).Status = TodoStatus.Close;
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "CloseTask");
+            var task = FindById(groupKey, id);
+            if (task != null)
+            {
+                task.Status = TodoStatus.Close;
+                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "CloseTask");
+            }
+            else
+            {
+                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find task!", originalRequest: "CloseTask");
+            }
         }
+
+        #endregion
+
+        #region SetLocation 
 
         public static void SetLocation(string groupKey, string content)
         {
@@ -145,6 +194,10 @@ namespace iTodo
             }
         }
 
+        #endregion
+
+        #region NewGroup 
+
         public static void NewGroup(string groupKey, string content)
         {
             Groups.Add(CreateNewGroup(groupKey, groupKey));
@@ -152,6 +205,11 @@ namespace iTodo
         }
 
         static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
+
+
+        #endregion
+
+        #region NewMember 
 
         public static void NewMember(string groupKey, string content)
         {
@@ -170,6 +228,11 @@ namespace iTodo
             }
         }
 
+
+        #endregion
+
+        #region GetTask 
+
         public static IEnumerable<TodoItem> GetTask(string member)
         {
             if (member == "All")
@@ -178,6 +241,11 @@ namespace iTodo
             }
             return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemeberCurrentLocation.ContainsKey(member) && MemeberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
         }
+
+
+        #endregion
+
+        #region GetTask 
 
         public static IEnumerable<GroupItem> GetGroup(string groupKey)
         {
@@ -189,7 +257,10 @@ namespace iTodo
             return Groups.Where(i => i.Group == groupKey);
         }
 
-        public static string GetSort => Sort;
+
+        #endregion
+
+        #region Reset 
 
         public static void Reset()
         {
@@ -198,17 +269,23 @@ namespace iTodo
             MemeberCurrentLocation = new Dictionary<string, string>();
         }
 
+        #endregion
+
         #region Implement
 
-        static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest) => ProducerHelper.SendAMessage("taskFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, message: message, originalRequest: originalRequest))).GetAwaiter().GetResult();
+        static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest)
+            => ProducerHelper.SendAMessage("taskFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, message: message, originalRequest: originalRequest))).GetAwaiter().GetResult();
+
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
 
         static List<TodoItem> Todos = new List<TodoItem>();
-        static string Sort = "";
 
         static List<GroupItem> Groups { get; set; } = new List<GroupItem>();
 
         static Dictionary<string, string> MemeberCurrentLocation { get; set; } = new Dictionary<string, string>();
+
+        public static string GetSort => Sort;
+        static string Sort = "";
 
         #endregion
     }
@@ -254,7 +331,7 @@ namespace iTodo
         Active,
         Close
     }
-    #endregion
 
+    #endregion
 }
 

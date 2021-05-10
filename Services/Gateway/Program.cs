@@ -19,8 +19,9 @@ namespace Gateway
                     var source = new CancellationTokenSource();
                     var token = source.Token;
 
-                    var topics = new List<string>() { "taskFeedback" };
-                    var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, GatewayController.MessageReceived);
+                    //var topics = new List<string>() { "taskFeedback" };
+                    //var iTodoConsumer = new ConsumerHelper("localhost:9092", topics, token, GatewayController.MessageReceived);
+                    _ = new ConsumerHelper("localhost:9092", new List<string>() { "taskFeedback" }, token, GatewayController.MessageReceived);
                 }
             );
         }

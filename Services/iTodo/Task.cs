@@ -40,6 +40,11 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             newItem.Id = Guid.NewGuid().ToString();
             newItem.Description = data.GetProperty("Description").ToString();
+            var parentId = data.GetProperty("ParentId").ToString();
+            if (!string.IsNullOrEmpty(parentId))
+            {
+                newItem.ParentId = parentId;
+            }
             newItem.GroupKey = groupKey;
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
@@ -304,6 +309,7 @@ namespace iTodo
         public List<string> Locations { get; set; } = new List<string>();
         public List<TagItem> Tags { get; set; } = new List<TagItem>();
         public TodoStatus Status { get; set; }
+        public string ParentId { get; set; }
     }
 
     public class GroupItem

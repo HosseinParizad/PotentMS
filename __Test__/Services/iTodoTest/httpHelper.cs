@@ -75,10 +75,20 @@ namespace SpecFlowDemo.Steps
 
         public static string Joine(this string[] s) => string.Join(",", s);
         public static string Joine(this IEnumerable<string> s) => string.Join(",", s);
+        public static string Joine(this IEnumerable<string> s, Dictionary<string, string> replaceValues)
+        {
+            var result = string.Join(",", s);
+            foreach (var rv in replaceValues)
+            {
+                result = result.Replace(rv.Key, rv.Value);
+            }
+            return result;
+        }
         public static string Joine(this IEnumerable<dynamic> s) => string.Join(",", s.Select(i => i.ToString()));
 
         public static string[] ToList(this Table table, string[] columns) => table.Rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();
         public static string[] ToList(this IEnumerable<TableRow> rows, string[] columns) => rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();
+        public static string[] ToList(this IEnumerable<TableRow> rows, string[] columns, Dictionary<string, string> replaceValues) => rows.Select(r => columns.Select(e => r[e]).Joine(replaceValues)).ToArray();
         public static string[] DynamicToList(dynamic[] dynamicArray, string[] columns) => dynamicArray.Select(l => columns.Select(n => l.GetProperty(n)).Joine()).Cast<string>().ToArray();
     }
 }

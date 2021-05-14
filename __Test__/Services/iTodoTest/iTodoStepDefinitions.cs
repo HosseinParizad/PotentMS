@@ -22,22 +22,16 @@ namespace SpecFlowDemo.Steps
         {
         }
 
-        //[BeforeTestRun]
-        //public static void BTR()
-        //{
-        //    RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
-        //}
-
         [Given("I send the following task:")]
         public void WhenISendFllowingTasks(Table table)
         {
-            RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
+            // RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             foreach (var row in table.Rows)
             {
-                var content = new iTodo() { Description = row["TaskDesc"] };
+                var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
                 var msg = new Msg() { Action = "newTask", GroupKey = row["GroupKey"], Content = JsonSerializer.Serialize(content) };
                 var dataToSend = JsonSerializer.Serialize(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -151,6 +145,7 @@ namespace SpecFlowDemo.Steps
                 { "Deadline", "deadline" },
                 { "Tags", "tags" },
                 { "Locations", "locations" },
+                { "ParentId", "parentId" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
@@ -159,7 +154,7 @@ namespace SpecFlowDemo.Steps
             {
                 var url = $"https://localhost:5003/TodoQuery?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);
-                AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns));
+                AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", selectedId } }));
             }
         }
 
@@ -187,10 +182,8 @@ namespace SpecFlowDemo.Steps
 
     internal class iTodo
     {
-        public iTodo()
-        {
-        }
         public string Description { get; set; }
+        public string ParentId { get; set; }
     }
 
     class expectedResultItem

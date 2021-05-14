@@ -7,9 +7,9 @@ Feature: Group
 			| @me   | @me    |
 
 	Scenario: User can be member of a group
-		Given  Send an email '@me' to create group
-		Given  Send an email '@family' to create group
-		Given  Add '@me' as member of '@family'
+		Given Send an email '@me' to create group
+		Given Send an email '@family' to create group
+		Given Add '@me' as member of '@family'
 		Then I should see the following groups:
 			| Group   | Member  |
 			| @me     | @me     |
@@ -17,9 +17,9 @@ Feature: Group
 			| @family | @me     |
 
 	Scenario: Group can have more than one member
-		Given  Send an email '@family' to create group
-		Given  Add '@me' as member of '@family'
-		Given  Add '@you' as member of '@family'
+		Given Send an email '@family' to create group
+		Given Add '@me' as member of '@family'
+		Given Add '@you' as member of '@family'
 		Then I should see the following groups:
 			| Group   | Member  |
 			| @family | @family |
@@ -35,7 +35,7 @@ Feature: Group
 		Then I should see the following groups:
 			| Group | Member |
 			| @me   | @me    |
-		Given  I send the following task:
+		Given I send the following task:
 			| TaskDesc            | GroupKey |
 			| Watch somthing else | @me      |
 		Then I should see the following groups:

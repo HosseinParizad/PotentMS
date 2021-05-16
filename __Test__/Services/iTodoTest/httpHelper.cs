@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using NUnit.Framework;
 using TechTalk.SpecFlow;
 
 namespace SpecFlowDemo.Steps
@@ -85,6 +86,7 @@ namespace SpecFlowDemo.Steps
             return result;
         }
         public static string Joine(this IEnumerable<dynamic> s) => string.Join(",", s.Select(i => i.ToString()));
+        public static void AreEqual(string[] expected, string[] values) => Assert.AreEqual(values.Joine(), expected.Joine());
 
         public static string[] ToList(this Table table, string[] columns) => table.Rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();
         public static string[] ToList(this IEnumerable<TableRow> rows, string[] columns) => rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();

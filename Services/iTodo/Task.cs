@@ -8,25 +8,6 @@ namespace iTodo
 {
     #region Mapping 
 
-    public class Helper
-    {
-        public static Dictionary<string, Action<string, string>> TaskAction =>
-        new Dictionary<string, Action<string, string>> {
-            { "newTask", Engine.CreateNewTask },
-            { "updateDescription", Engine.UpdateDescription },
-            { "setDeadline", Engine.SetDeadline },
-            { "setTag", Engine.SetTag },
-            { "setCurrentLocation", Engine.SetCurrentLocation },
-            { "newGroup", Engine.NewGroup },
-            { "newMember", Engine.NewMember },
-            { "setLocation", Engine.SetLocation },
-            { "closeTask", Engine.CloseTask },
-         };
-
-        //public static string PropertyString(dynamic obj, string name) => (PropertyExists(obj, name) ? obj.GetProperty(name).ToString() : "");
-        //public static bool PropertyExists(dynamic obj, string name) => ((IDictionary<string, object>)obj).ContainsKey(name);
-    }
-
     #endregion
 
     internal class Engine
@@ -49,6 +30,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
+            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: "TaskCreated", originalRequest: "newTask");
         }
 
         #endregion
@@ -90,15 +72,15 @@ namespace iTodo
             string location = data.GetProperty("Location").ToString();
             Console.WriteLine($"you rech me {groupKey} , {content}  -__***************&&&&{location}&&&{member}****************__{string.Join(", -> ", Todos.Select(t => t.Locations))}");
             //var locations = string.Empty;
-            if (MemeberCurrentLocation.TryGetValue(member, out string locations))
+            if (MemberCurrentLocation.TryGetValue(member, out string locations))
             {
-                MemeberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
+                MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
             }
             else
             {
-                MemeberCurrentLocation.Add(member, location);
+                MemberCurrentLocation.Add(member, location);
             }
-            Console.WriteLine($"you rech me {MemeberCurrentLocation[member]} =============================");
+            Console.WriteLine($"you rech me {MemberCurrentLocation[member]} =============================");
 
             SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "SetCurrentLocation");
         }
@@ -127,7 +109,6 @@ namespace iTodo
                 SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
             }
         }
-
 
         #endregion
 
@@ -194,8 +175,8 @@ namespace iTodo
             }
             else
             {
-                todo.Locations.AddRange(location.Split(","));
-                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetLocation");
+                todo.Locations.Add(location);
+                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: content, originalRequest: "SetLocation");
             }
         }
 
@@ -244,7 +225,7 @@ namespace iTodo
             {
                 return Todos;
             }
-            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemeberCurrentLocation.ContainsKey(member) && MemeberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
+            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemberCurrentLocation.ContainsKey(member) && MemberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
         }
 
 
@@ -271,7 +252,7 @@ namespace iTodo
         {
             Todos = new List<TodoItem>();
             Groups = new List<GroupItem>();
-            MemeberCurrentLocation = new Dictionary<string, string>();
+            MemberCurrentLocation = new Dictionary<string, string>();
         }
 
         #endregion
@@ -287,7 +268,7 @@ namespace iTodo
 
         static List<GroupItem> Groups { get; set; } = new List<GroupItem>();
 
-        static Dictionary<string, string> MemeberCurrentLocation { get; set; } = new Dictionary<string, string>();
+        static Dictionary<string, string> MemberCurrentLocation { get; set; } = new Dictionary<string, string>();
 
         public static string GetSort => Sort;
         static string Sort = "";

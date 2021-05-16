@@ -39,6 +39,27 @@
 		<SpecFlowFeatureFiles Update="features\iTodo.location.feature">
 		  <Visible>False</Visible>
 		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.location.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.sort.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.tag.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.close.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.group.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
+		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.tree.feature">
+		  <Visible>False</Visible>
+		</SpecFlowFeatureFiles>
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="features\" />

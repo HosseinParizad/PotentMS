@@ -36,7 +36,6 @@ namespace SpecFlowDemo.Steps
                 var dataToSend = JsonSerializer.Serialize(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }
-
         }
 
 

@@ -11,6 +11,17 @@ namespace PotentHelper
 {
     public class ConsumerHelper
     {
+        public static Action MapTopicToMethod(string topic, Action<string> onMessageReceived)
+        {
+            return () =>
+            {
+                var source = new CancellationTokenSource();
+                var token = source.Token;
+
+                _ = new ConsumerHelper("localhost:9092", new List<string>() { topic }, token, onMessageReceived);
+            };
+        }
+
         public ConsumerHelper(string brokerList, List<string> topics, CancellationToken cancellationToken, Action<string> onMessageReceived)
         {
             if (string.IsNullOrEmpty(brokerList))
@@ -51,7 +62,7 @@ namespace PotentHelper
                 PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
             };
 
-            const int commitPeriod = 5;
+            const int commitPeriod = 1;
 
             // Note: If a key or value deserializer is not set (as is the case below), the 
             // deserializer corresponding to the appropriate type from Confluent.Kafka.Deserializers

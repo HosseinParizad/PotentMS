@@ -30,7 +30,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
-            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: "TaskCreated", originalRequest: "newTask");
+            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: "TaskCreated", originalRequest: "newTask");
         }
 
         #endregion
@@ -167,15 +167,15 @@ namespace iTodo
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
-            var location = data.GetProperty("Location").ToString();
-            var todo = FindById(groupKey, id);
+            string location = data.GetProperty("Location").ToString();
+            TodoItem todo = FindById(groupKey, id);
             if (todo == null)
             {
                 SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find!", originalRequest: "SetLocation");
             }
             else
             {
-                todo.Locations.Add(location);
+                todo.Locations.AddRange(location.Split(","));
                 SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: content, originalRequest: "SetLocation");
             }
         }

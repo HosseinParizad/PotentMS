@@ -15,16 +15,12 @@ namespace iTodo
     {
         public static void Main(string[] args)
         {
+            var source = new CancellationTokenSource();
+            var token = source.Token;
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                () =>
-                    {
-                        var source = new CancellationTokenSource();
-                        var token = source.Token;
-
-                        //var topics = new List<string>() { "task", "location" };
-                        _ = new ConsumerHelper("localhost:9092", new List<string>() { "task", "location" }, token, MessageProcessor.MessageReceived);
-                    }
+                ConsumerHelper.MapTopicToMethod("task", MessageProcessor.MessageReceived),
+                ConsumerHelper.MapTopicToMethod("location", MessageProcessor.MessageReceived)
             );
         }
 

@@ -17,13 +17,9 @@ namespace PersonalAssistant
         {
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                () =>
-                    {
-                        var source = new CancellationTokenSource();
-                        var token = source.Token;
-
-                        _ = new ConsumerHelper("localhost:9092", new List<string>() { "task", "location" }, token, MessageProcessor.MessageReceived);
-                    }
+                ConsumerHelper.MapTopicToMethod("task", MessageProcessor.MessageReceived),
+                ConsumerHelper.MapTopicToMethod("location", MessageProcessor.MessageReceived),
+                ConsumerHelper.MapTopicToMethod("taskFeedback", MessageProcessor.MessageReceived)
             );
         }
 

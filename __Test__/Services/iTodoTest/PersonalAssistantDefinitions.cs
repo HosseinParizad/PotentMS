@@ -29,6 +29,7 @@ namespace SpecFlowDemo.Steps
             {
                 { "AssistantKey", "assistantKey" },
                 { "Text", "text" },
+                { "Badges", "badges" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 

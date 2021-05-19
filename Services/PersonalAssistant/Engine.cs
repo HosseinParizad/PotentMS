@@ -11,7 +11,14 @@ namespace PersonalAssistant
     {
         internal static void OnTaskFeedback(string groupKey, string content)
         {
-            //Dashboards.
+            Console.WriteLine(",,,0,,,,", JsonSerializer.Serialize(content));
+            // var data = JsonSerializer.Deserialize<Feedback>(content);
+            // Console.WriteLine(",,,,,,,", JsonSerializer.Serialize(data));
+            // if (data.OriginalRequest == "SetTag")
+            // {
+            //     var dashbord = GetDashboard(data.GroupKey);
+            //     dashbord.Single(d => d.Text == "Tag").Badges.Add(data.Message);
+            // }
         }
 
         #region GetDashboard

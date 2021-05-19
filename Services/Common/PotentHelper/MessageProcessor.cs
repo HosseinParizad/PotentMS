@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using PotentHelper;
 
-namespace PersonalAssistant
+namespace PotentHelper
 {
-    internal class MessageProcessor
+    public class MessageProcessor
     {
-        public static void MessageReceived(string message)
+        public static void MapMessageToAction(string message, Dictionary<string, Action<string, string>> actions)
         {
-            var actions = new Dictionary<string, Action<string, string>> {
-                { "taskFeedback", Engine.OnTaskFeedback },
-            };
-
             try
             {
                 var msg = (Msg)JsonSerializer.Deserialize(message, typeof(Msg));
@@ -30,7 +25,7 @@ namespace PersonalAssistant
                 }
                 else
                 {
-                    //Console.WriteLine($"**********************pa************************************* action is not specified. {message}");
+                    Console.WriteLine($"**********************pa************************************* action is not specified. {message}");
                 }
             }
             catch (Exception ex)

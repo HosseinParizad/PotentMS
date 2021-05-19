@@ -18,7 +18,7 @@ namespace PotentHelper
                 try
                 {
                     var dr = await p.ProduceAsync(topic, new Message<Null, string> { Value = msg });
-                    Console.WriteLine($"{topic} -> Delivered '{dr.Value}' to '{dr.TopicPartitionOffset}'");
+                    //Console.WriteLine($"{topic} -> Delivered '{dr.Value}' to '{dr.TopicPartitionOffset}'");
                 }
                 catch (ProduceException<Null, string> e)
                 {

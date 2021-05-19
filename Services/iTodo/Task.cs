@@ -106,7 +106,7 @@ namespace iTodo
             else
             {
                 UpdateTags(todo, tag, tagKey);
-                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetTag");
+                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: tag, originalRequest: "SetTag");
             }
         }
 

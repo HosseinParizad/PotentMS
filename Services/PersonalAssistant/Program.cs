@@ -17,9 +17,9 @@ namespace PersonalAssistant
         {
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod("task", MessageProcessor.MessageReceived),
-                ConsumerHelper.MapTopicToMethod("location", MessageProcessor.MessageReceived),
-                ConsumerHelper.MapTopicToMethod("taskFeedback", MessageProcessor.MessageReceived)
+                //ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions)),
+                //ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions)),
+                ConsumerHelper.MapTopicToMethod("taskFeedback", (m) => MessageProcessor.MapMessageToAction(m, actions))
             );
         }
 
@@ -29,5 +29,11 @@ namespace PersonalAssistant
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        static Dictionary<string, Action<string, string>> actions =
+            new Dictionary<string, Action<string, string>> {
+                { "taskFeedback", Engine.OnTaskFeedback },
+            };
+
     }
 }

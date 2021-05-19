@@ -19,8 +19,8 @@ namespace iTodo
             var token = source.Token;
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod("task", MessageProcessor.MessageReceived),
-                ConsumerHelper.MapTopicToMethod("location", MessageProcessor.MessageReceived)
+                ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions)),
+                ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions))
             );
         }
 
@@ -30,5 +30,20 @@ namespace iTodo
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        static Dictionary<string, Action<string, string>> actions =
+                new Dictionary<string, Action<string, string>> {
+                    { "newTask", Engine.CreateNewTask },
+                    { "updateDescription", Engine.UpdateDescription },
+                    { "setDeadline", Engine.SetDeadline },
+                    { "setTag", Engine.SetTag },
+                    { "setCurrentLocation", Engine.SetCurrentLocation },
+                    { "newGroup", Engine.NewGroup },
+                    { "newMember", Engine.NewMember },
+                    { "setLocation", Engine.SetLocation },
+                    { "closeTask", Engine.CloseTask },
+                };
+
+
     }
 }

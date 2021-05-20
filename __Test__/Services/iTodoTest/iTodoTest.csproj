@@ -64,4 +64,7 @@
 	<ItemGroup>
 	  <Folder Include="features\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Services\Common\PotentHelper\PotentHelper.csproj" />
+	</ItemGroup>
 </Project>

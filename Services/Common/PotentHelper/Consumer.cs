@@ -11,18 +11,18 @@ namespace PotentHelper
 {
     public class ConsumerHelper
     {
-        public static Action MapTopicToMethod(string topic, Action<string> onMessageReceived)
+        public static Action MapTopicToMethod(string topic, Action<string> onMessageReceived, string groupId)
         {
             return () =>
             {
                 var source = new CancellationTokenSource();
                 var token = source.Token;
 
-                _ = new ConsumerHelper("localhost:9092", new List<string>() { topic }, token, onMessageReceived);
+                _ = new ConsumerHelper("localhost:9092", new List<string>() { topic }, token, onMessageReceived, groupId);
             };
         }
 
-        public ConsumerHelper(string brokerList, List<string> topics, CancellationToken cancellationToken, Action<string> onMessageReceived)
+        public ConsumerHelper(string brokerList, List<string> topics, CancellationToken cancellationToken, Action<string> onMessageReceived, string groupId)
         {
             if (string.IsNullOrEmpty(brokerList))
             {
@@ -39,8 +39,14 @@ namespace PotentHelper
                 throw new ArgumentNullException(nameof(onMessageReceived));
             }
 
+            if (string.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentException($"'{nameof(groupId)}' cannot be null or empty.", nameof(groupId));
+            }
+
             BrokerList = brokerList;
             Topics = topics;
+            GroupId = groupId;
             CancellationToken = cancellationToken;
             OnMessageReceived = onMessageReceived;
             Listen();
@@ -51,7 +57,7 @@ namespace PotentHelper
             var config = new ConsumerConfig
             {
                 BootstrapServers = BrokerList,
-                GroupId = "csharp-consumer",
+                GroupId = GroupId, //"csharp-consumer",
                 EnableAutoCommit = false,
                 StatisticsIntervalMs = 5000,
                 SessionTimeoutMs = 6000,
@@ -156,6 +162,7 @@ namespace PotentHelper
         List<string> Topics { get; }
         CancellationToken CancellationToken { get; }
         Action<string> OnMessageReceived { get; }
+        string GroupId { get; }
 
         #endregion
     }

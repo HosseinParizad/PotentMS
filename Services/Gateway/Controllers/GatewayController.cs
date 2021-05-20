@@ -44,9 +44,9 @@ namespace Gateway.Controllers
             }
         }
 
-        internal static void MessageReceived(string msg)
+        internal static void MessageReceived(Feedback feedback)
         {
-            FeedbackQueue.Add(msg);
+            FeedbackQueue.Add(feedback.Content);
         }
 
     }

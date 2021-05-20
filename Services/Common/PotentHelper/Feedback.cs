@@ -1,27 +1,23 @@
-﻿using System;
+﻿using System.Diagnostics;
+
 namespace PotentHelper
 {
-    public class Feedback
+    public class Feedback : IMessageContract
     {
-        public Feedback()
-        {
-
-        }
-
-        public Feedback(FeedbackType type = default, string groupKey = null, string id = null, string message = null, string originalRequest = null)
+        public Feedback(FeedbackType type, string name, string action, string key, string content)
         {
             Type = type;
-            GroupKey = groupKey;
-            Id = id;
-            Message = message;
-            OriginalRequest = originalRequest;
+            Action = action;
+            Key = key;
+            Content = content;
+            Name = name;
         }
 
         public FeedbackType Type { get; set; }
-        public string GroupKey { get; set; }
-        public string Id { get; set; }
-        public string Message { get; set; }
-        public string OriginalRequest { get; set; }
+        public string Key { get; set; }
+        public string Content { get; set; }
+        public string Action { get; set; }
+        public string Name { get; set; }
     }
 
     public enum FeedbackType
@@ -29,5 +25,14 @@ namespace PotentHelper
         Success,
         Info,
         Error
+    }
+
+    public class FeedbackActions
+    {
+        public const string NewTaskAdded = "New task has been added";
+        public const string NewTagAdded = "New tag has been added";
+
+
+        public const string CannotSetTag = "Error: cannot set tag";
     }
 }

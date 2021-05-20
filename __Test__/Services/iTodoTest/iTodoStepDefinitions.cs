@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using PotentHelper;
 
 namespace SpecFlowDemo.Steps
 {
@@ -32,7 +33,7 @@ namespace SpecFlowDemo.Steps
             foreach (var row in table.Rows)
             {
                 var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
-                var msg = new Msg() { Action = "newTask", GroupKey = row["GroupKey"], Content = JsonSerializer.Serialize(content) };
+                var msg = new Msg(action: "newTask", key: row["GroupKey"], content: JsonSerializer.Serialize(content));
                 var dataToSend = JsonSerializer.Serialize(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }
@@ -58,7 +59,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Description = newDescription };
-            var msg = new Msg() { Action = "updateDescription", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "updateDescription", key: groupKey, content: JsonSerializer.Serialize(content));
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -70,7 +71,8 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Deadline = newDeadline };
-            var msg = new Msg() { Action = "setDeadline", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "setDeadline", key: groupKey, content: JsonSerializer.Serialize(content));
+
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -82,7 +84,8 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId };
-            var msg = new Msg() { Action = "closeTask", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "closeTask", key: groupKey, content: JsonSerializer.Serialize(content));
+
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -94,7 +97,8 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, TagKey = tagKey, Tag = newTag };
-            var msg = new Msg() { Action = "setTag", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "setTag", key: groupKey, content: JsonSerializer.Serialize(content));
+
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -106,7 +110,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Location = location };
-            var msg = new Msg() { Action = "setLocation", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "setLocation", key: groupKey, content: JsonSerializer.Serialize(content));
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -118,7 +122,8 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Member = member, Location = currentLocation };
-            var msg = new Msg() { Action = "setCurrentLocation", GroupKey = member, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "setCurrentLocation", key: member, content: JsonSerializer.Serialize(content));
+
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -154,20 +159,12 @@ namespace SpecFlowDemo.Steps
             const string url = "https://localhost:5001/Gateway/Feedback";
 
             var resultStr = RestHelper.MakeAGetRequest(url).Last().ToString();
-            var result = JsonSerializer.Deserialize<dynamic>(resultStr);
 
-            Assert.AreEqual(result.GetProperty("Message").ToString(), errorMsg);
+            Assert.AreEqual(resultStr, errorMsg);
         }
 
         void AreEqual(string[] expected, string[] values) => Assert.AreEqual(values.Joine(), expected.Joine());
 
-    }
-
-    internal class Msg
-    {
-        public string Action { get; set; }
-        public string GroupKey { get; set; }
-        public string Content { get; set; }
     }
 
     internal class iTodo

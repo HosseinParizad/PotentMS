@@ -13,14 +13,16 @@ namespace iTodo
 {
     public class Program
     {
+        const string AppGroupId = "iTodo";
+
         public static void Main(string[] args)
         {
             var source = new CancellationTokenSource();
             var token = source.Token;
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions)),
-                ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions))
+                ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId),
+                ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId)
             );
         }
 

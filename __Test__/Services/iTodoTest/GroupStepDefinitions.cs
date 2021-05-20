@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using PotentHelper;
 
 namespace SpecFlowDemo.Steps
 {
@@ -33,7 +34,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { GroupKey = groupKey };
-            var msg = new Msg() { Action = "newGroup", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "newGroup", key: groupKey, content: JsonSerializer.Serialize(content));
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -45,7 +46,8 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { NewMember = member };
-            var msg = new Msg() { Action = "newMember", GroupKey = groupKey, Content = JsonSerializer.Serialize(content) };
+            var msg = new Msg(action: "newMember", key: groupKey, content: JsonSerializer.Serialize(content));
+
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }

@@ -2,25 +2,25 @@ namespace PotentHelper
 {
     public class Msg : IMessageContract
     {
-        public Msg(string action, string groupKey, string content)
+        public Msg(string action, string key, string content)
         {
             if (string.IsNullOrEmpty(action))
             {
                 throw new System.ArgumentException($"'{nameof(action)}' cannot be null or empty.", nameof(action));
             }
 
-            if (string.IsNullOrEmpty(groupKey))
+            if (string.IsNullOrEmpty(key))
             {
-                throw new System.ArgumentException($"'{nameof(groupKey)}' cannot be null or empty.", nameof(groupKey));
+                throw new System.ArgumentException($"'{nameof(key)}' cannot be null or empty.", nameof(key));
             }
 
-            GroupKey = groupKey;
+            Key = key;
             Content = content;
             Action = action;
         }
 
         public string Action { get; set; }
         public string Content { get; set; }
-        public string GroupKey { get; set; }
+        public string Key { get; set; }
     }
 }

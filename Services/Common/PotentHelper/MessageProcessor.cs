@@ -10,12 +10,12 @@ namespace PotentHelper
         {
             try
             {
-                var msg = (Msg)JsonSerializer.Deserialize(message, typeof(Msg));
+                var msg = (IMessageContract)JsonSerializer.Deserialize(message, typeof(Msg));
                 if (actions.TryGetValue(msg.Action, out var action))
                 {
                     try
                     {
-                        action(msg.GroupKey, msg.Content);
+                        action(msg.Key, msg.Content);
                     }
                     catch (Exception ex)
                     {
@@ -32,6 +32,35 @@ namespace PotentHelper
             {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine($"*************************pa********************************** format is wrong. {message}");
+            }
+        }
+
+        public static void MapFeedbackToAction(string message, Dictionary<string, Action<Feedback>> actions)
+        {
+            try
+            {
+                var msg = (Feedback)JsonSerializer.Deserialize(message, typeof(Feedback));
+                if (actions.TryGetValue(msg.Name, out var action))
+                {
+                    try
+                    {
+                        action(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine($"************************ Feedback ******************************* cannot run action. {message}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"************************ Feedback ******************************* action is not specified. {message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"************************ Feedback ******************************* format is wrong. {message}");
             }
         }
     }

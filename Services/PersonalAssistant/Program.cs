@@ -13,13 +13,15 @@ namespace PersonalAssistant
 {
     public class Program
     {
+        const string AppGroupId = "PersonalAssistant";
+
         public static void Main(string[] args)
         {
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                //ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions)),
-                //ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions)),
-                ConsumerHelper.MapTopicToMethod("taskFeedback", (m) => MessageProcessor.MapMessageToAction(m, actions))
+                //ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId),
+                //ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId),
+                ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, actions), AppGroupId)
             );
         }
 
@@ -30,9 +32,10 @@ namespace PersonalAssistant
                     webBuilder.UseStartup<Startup>();
                 });
 
-        static Dictionary<string, Action<string, string>> actions =
-            new Dictionary<string, Action<string, string>> {
-                { "taskFeedback", Engine.OnTaskFeedback },
+        static Dictionary<string, Action<Feedback>> actions =
+            new Dictionary<string, Action<Feedback>>
+            {
+                { FeedbackGroupNames.Task, Engine.OnTaskFeedback },
             };
 
     }

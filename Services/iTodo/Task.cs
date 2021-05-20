@@ -30,7 +30,6 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: newItem.Id, message: "TaskCreated", originalRequest: "newTask");
         }
 
         #endregion
@@ -43,7 +42,6 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var description = data.GetProperty("Description").ToString();
             FindById(groupKey, id).Description = description;
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "UpdateDescription");
         }
 
         #endregion
@@ -57,7 +55,6 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
             FindById(groupKey, id).Deadline = deadline;
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "SetDeadline");
         }
 
 
@@ -70,8 +67,6 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var member = data.GetProperty("Member").ToString();
             string location = data.GetProperty("Location").ToString();
-            Console.WriteLine($"you rech me {groupKey} , {content}  -__***************&&&&{location}&&&{member}****************__{string.Join(", -> ", Todos.Select(t => t.Locations))}");
-            //var locations = string.Empty;
             if (MemberCurrentLocation.TryGetValue(member, out string locations))
             {
                 MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
@@ -80,9 +75,6 @@ namespace iTodo
             {
                 MemberCurrentLocation.Add(member, location);
             }
-            Console.WriteLine($"you rech me {MemberCurrentLocation[member]} =============================");
-
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "SetCurrentLocation");
         }
 
 
@@ -101,12 +93,13 @@ namespace iTodo
             if (todo == null)
             {
                 //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
-                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find!", originalRequest: "SetTag");
+                //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find!", originalRequest: "SetTag");
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, key: groupKey, content: "Cannot find Todo item to assgin tag!");
             }
             else
             {
                 UpdateTags(todo, tag, tagKey);
-                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: tag, originalRequest: "SetTag");
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTagAdded, key: groupKey, content: tag);
             }
         }
 
@@ -151,11 +144,11 @@ namespace iTodo
             if (task != null)
             {
                 task.Status = TodoStatus.Close;
-                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: null, originalRequest: "CloseTask");
+                //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, content: null, originalRequest: "CloseTask");
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find task!", originalRequest: "CloseTask");
+                //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find task!", originalRequest: "CloseTask");
             }
         }
 
@@ -171,12 +164,12 @@ namespace iTodo
             TodoItem todo = FindById(groupKey, id);
             if (todo == null)
             {
-                SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, message: "Cannot find!", originalRequest: "SetLocation");
+                //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find!", originalRequest: "SetLocation");
             }
             else
             {
                 todo.Locations.AddRange(location.Split(","));
-                SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, message: content, originalRequest: "SetLocation");
+                //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, content: content, originalRequest: "SetLocation");
             }
         }
 
@@ -187,7 +180,7 @@ namespace iTodo
         public static void NewGroup(string groupKey, string content)
         {
             Groups.Add(CreateNewGroup(groupKey, groupKey));
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "NewGroup");
+            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, content: null, originalRequest: "NewGroup");
         }
 
         static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
@@ -203,7 +196,7 @@ namespace iTodo
             var newMember = data.GetProperty("NewMember").ToString();
             CreateGroupIfNotExists(newMember);
             Groups.Add(CreateNewGroup(groupKey, newMember));
-            SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, message: null, originalRequest: "NewMember");
+            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, content: null, originalRequest: "NewMember");
         }
 
         static void CreateGroupIfNotExists(dynamic groupKey)
@@ -259,8 +252,8 @@ namespace iTodo
 
         #region Implement
 
-        static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest)
-            => ProducerHelper.SendAMessage("taskFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, message: message, originalRequest: originalRequest))).GetAwaiter().GetResult();
+        static void SendFeedbackMessage(FeedbackType type, string action, string key, object content)
+            => ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, key: key, content: JsonSerializer.Serialize(content)))).GetAwaiter().GetResult();
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
 

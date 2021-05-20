@@ -11,11 +11,13 @@ namespace Gateway
 {
     public class Program
     {
+        const string AppGroupId = "Gateway";
+
         public static void Main(string[] args)
         {
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod("taskFeedback", GatewayController.MessageReceived)
+                ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, actions), AppGroupId)
             );
         }
 
@@ -25,5 +27,11 @@ namespace Gateway
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        static Dictionary<string, Action<Feedback>> actions =
+            new Dictionary<string, Action<Feedback>> {
+                { FeedbackGroupNames.Task, GatewayController.MessageReceived },
+    };
+
     }
 }

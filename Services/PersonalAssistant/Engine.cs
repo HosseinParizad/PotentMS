@@ -9,16 +9,13 @@ namespace PersonalAssistant
 
     internal class Engine
     {
-        internal static void OnTaskFeedback(string groupKey, string content)
+        internal static void OnTaskFeedback(Feedback feedback)
         {
-            Console.WriteLine(",,,0,,,,", JsonSerializer.Serialize(content));
-            // var data = JsonSerializer.Deserialize<Feedback>(content);
-            // Console.WriteLine(",,,,,,,", JsonSerializer.Serialize(data));
-            // if (data.OriginalRequest == "SetTag")
-            // {
-            //     var dashbord = GetDashboard(data.GroupKey);
-            //     dashbord.Single(d => d.Text == "Tag").Badges.Add(data.Message);
-            // }
+            if (feedback.Action == FeedbackActions.NewTagAdded)
+            {
+                IEnumerable<DashboardItem> dashbord = GetDashboard(feedback.Key);
+                dashbord.Single(d => d.Text == "Tag").Badges.Add(feedback.Content);
+            }
         }
 
         #region GetDashboard
@@ -46,8 +43,8 @@ namespace PersonalAssistant
 
         #region Implement
 
-        static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest)
-            => ProducerHelper.SendAMessage("PersonalAssistantFeedback", JsonSerializer.Serialize(new Feedback(type: type, groupKey: groupKey, id: id, message: message, originalRequest: originalRequest))).GetAwaiter().GetResult();
+        //static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest)
+        //    => ProducerHelper.SendAMessage("PersonalAssistantFeedback", JsonSerializer.Serialize(new Feedback(type: type, action: "PersonalAssistantFeedback", groupKey: groupKey, content: message))).GetAwaiter().GetResult();
 
         static List<DashboardItem> Dashboards = new List<DashboardItem>();
 

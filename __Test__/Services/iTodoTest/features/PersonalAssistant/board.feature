@@ -22,5 +22,5 @@ Feature: PersonalAssistant
 		When User add 'Home' to tag 0 on selected task for 'Ali'
 		Then I should see the following board:
 			| AssistantKey | Text | Badges   |
-			| Ali          | Goal |          |
+			| Ali          | Goal | []       |
 			| Ali          | Tag  | ["Home"] |

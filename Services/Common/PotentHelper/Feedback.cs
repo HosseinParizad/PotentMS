@@ -34,5 +34,6 @@ namespace PotentHelper
 
 
         public const string CannotSetTag = "Error: cannot set tag";
+        public const string CannotCloseTask = "Error: cannot close tag";
     }
 }

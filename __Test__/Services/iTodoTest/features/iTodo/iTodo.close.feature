@@ -26,4 +26,4 @@ Feature: Close task
 			| Watch cat videos on YouTube all day | Ali      |
 		When User select item 1 from tasks of 'Ali'
 		When User close selected task for 'Akbar'
-		Then I should see feedback error 'Cannot find task!'
+		Then I should see feedback error 'Cannot find Todo item to close task!'

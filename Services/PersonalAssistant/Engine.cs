@@ -14,7 +14,11 @@ namespace PersonalAssistant
             if (feedback.Action == FeedbackActions.NewTagAdded)
             {
                 IEnumerable<DashboardItem> dashbord = GetDashboard(feedback.Key);
-                dashbord.Single(d => d.Text == "Tag").Badges.Add(feedback.Content);
+                var badges = dashbord.Single(d => d.Text == "Tag").Badges;
+                if (!badges.Contains(feedback.Content))
+                {
+                    badges.Add(feedback.Content);
+                }
             }
         }
 

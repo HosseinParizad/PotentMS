@@ -92,8 +92,6 @@ namespace iTodo
             var todo = FindById(groupKey, id);
             if (todo == null)
             {
-                //Console.WriteLine($"you rech me {groupKey} , {content}  -__*******************************__{string.Join(", -> ", Todos.Select(t => t.Tags.First()))}");
-                //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find!", originalRequest: "SetTag");
                 SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, key: groupKey, content: "Cannot find Todo item to assgin tag!");
             }
             else
@@ -145,6 +143,8 @@ namespace iTodo
             {
                 task.Status = TodoStatus.Close;
                 //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, content: null, originalRequest: "CloseTask");
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, key: groupKey, content: "Cannot find Todo item to close task!");
+
             }
             else
             {
@@ -252,8 +252,8 @@ namespace iTodo
 
         #region Implement
 
-        static void SendFeedbackMessage(FeedbackType type, string action, string key, object content)
-            => ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, key: key, content: JsonSerializer.Serialize(content)))).GetAwaiter().GetResult();
+        static void SendFeedbackMessage(FeedbackType type, string action, string key, string content)
+            => ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, key: key, content: content))).GetAwaiter().GetResult();
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
 

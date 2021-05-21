@@ -1,16 +1,11 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-//using Json.Net;
+using System.Net.Http;
 using System.Text.Json;
 using NUnit.Framework;
-using TechTalk.SpecFlow;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
-using System.Diagnostics;
-using System.Threading;
 using PotentHelper;
+using TechTalk.SpecFlow;
 
 namespace SpecFlowDemo.Steps
 {
@@ -27,8 +22,7 @@ namespace SpecFlowDemo.Steps
             const string url = "https://localhost:5001/Gateway/Common";
             var httpMethod = HttpMethod.Post;
 
-            var content = new { };
-            var msg = new Msg(action: "reset", key: "do not care", content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "reset", key: "Do not care", content: null);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);

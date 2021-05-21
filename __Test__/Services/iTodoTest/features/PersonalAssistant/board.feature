@@ -24,3 +24,18 @@ Feature: PersonalAssistant
 			| AssistantKey | Text | Badges   |
 			| Ali          | Goal | []       |
 			| Ali          | Tag  | ["Home"] |
+		When User add 'Home' to tag 0 on selected task for 'Ali'
+		Then I should see the following board:
+			| AssistantKey | Text | Badges   |
+			| Ali          | Goal | []       |
+			| Ali          | Tag  | ["Home"] |
+		When User add 'Work' to tag 0 on selected task for 'Ali'
+		Then I should see the following board:
+			| AssistantKey | Text | Badges          |
+			| Ali          | Goal | []              |
+			| Ali          | Tag  | ["Home","Work"] |
+		When User add 'One,One' to tag 0 on selected task for 'Ali'
+		Then I should see the following board:
+			| AssistantKey | Text | Badges          |
+			| Ali          | Goal | []              |
+			| Ali          | Tag  | ["Home","Work","One"] |

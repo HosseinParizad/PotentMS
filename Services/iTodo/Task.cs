@@ -75,35 +75,29 @@ namespace iTodo
             }
             else
             {
-                UpdateTags(todo, tag, tagKey);
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTagAdded, key: groupKey, content: tag);
+                Console.WriteLine(tag);
+                UpdateTags(todo, groupKey, tag, tagKey);
             }
         }
 
         #endregion
 
-        #region UpdateTags 
+        #region UpdateTags
 
-        static void UpdateTags(TodoItem todo, string allTag, string tagKey)
+        static void UpdateTags(TodoItem todo, string groupKey, string allTag, string tagKey)
         {
+            var parent = todo.Tags.SingleOrDefault(t => t.TagParentKey == tagKey);
+            if (parent == null)
+            {
+                parent = new TagItem { TagParentKey = tagKey, Value = new List<string>() };
+                todo.Tags.Add(parent);
+            }
             foreach (var tag in allTag.Split(",").Distinct())
             {
-                var found = false;
-                foreach (var tagItem in todo.Tags)
+                if (!parent.Value.Contains(tag))
                 {
-                    if (tagItem.TagParentKey == tagKey)
-                    {
-                        if (("," + tagItem.Value).IndexOf("," + tag) < 0)
-                        {
-                            tagItem.Value += "," + tag;
-                        }
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    todo.Tags.Add(new TagItem { TagParentKey = tagKey, Value = tag });
+                    parent.Value.Add(tag);
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTagAdded, key: groupKey, content: tag);
                 }
             }
         }
@@ -123,7 +117,6 @@ namespace iTodo
                 task.Status = TodoStatus.Close;
                 //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, content: null, originalRequest: "CloseTask");
                 SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, key: groupKey, content: "Cannot find Todo item to close task!");
-
             }
             else
             {
@@ -307,7 +300,7 @@ namespace iTodo
     public class TagItem
     {
         public string TagParentKey { get; set; }
-        public string Value { get; set; }
+        public List<string> Value { get; set; }
     }
 
     public enum TodoStatus

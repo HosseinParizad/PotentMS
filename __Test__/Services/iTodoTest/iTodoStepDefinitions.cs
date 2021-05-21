@@ -1,16 +1,11 @@
-using System.Net.Http;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-//using Json.Net;
+using System.Net.Http;
 using System.Text.Json;
 using NUnit.Framework;
-using TechTalk.SpecFlow;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
-using System.Diagnostics;
-using System.Threading;
 using PotentHelper;
+using TechTalk.SpecFlow;
 
 namespace SpecFlowDemo.Steps
 {

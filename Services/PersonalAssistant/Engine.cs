@@ -44,6 +44,15 @@ namespace PersonalAssistant
 
         #endregion
 
+        #region Common Action
+
+        internal static void Reset(string arg1, string arg2)
+        {
+            Dashboards = new List<DashboardItem>();
+        }
+
+        #endregion
+
 
         #region Implement
 

@@ -24,7 +24,14 @@ namespace SpecFlowDemo.Steps
         [BeforeScenario]
         public virtual void BeforeScenario()
         {
-            RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
+            const string url = "https://localhost:5001/Gateway/Common";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { };
+            var msg = new Msg(action: "reset", key: "do not care", content: JsonSerializer.Serialize(content));
+
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
         [Given(@"Send an email '(.*)' to create group")]

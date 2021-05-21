@@ -37,12 +37,5 @@ namespace iTodo.Controllers
         {
             return Engine.GetSort;
         }
-
-        [HttpGet]
-        [Route("Reset")]
-        public void Reset()
-        {
-            Engine.Reset();
-        }
     }
 }

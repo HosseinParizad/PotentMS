@@ -24,8 +24,6 @@ namespace PersonalAssistant.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<DashboardItem>> List(string assistantKey)
         {
-            //if (item == null)
-            //    return NotFound();
             Console.WriteLine(assistantKey);
             return Engine.GetDashboard(assistantKey).ToList();
         }

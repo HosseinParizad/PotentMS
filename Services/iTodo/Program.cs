@@ -17,23 +17,19 @@ namespace iTodo
 
         public static void Main(string[] args)
         {
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-            Parallel.Invoke(
-                () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId),
-                ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId)
-            );
-        }
+            var taskActions =
+                new Dictionary<string, Action<string, string>> {
+                    { "newTask", Engine.CreateNewTask },
+                    { "updateDescription", Engine.UpdateDescription },
+                    { "setDeadline", Engine.SetDeadline },
+                    { "setTag", Engine.SetTag },
+                    { "newGroup", Engine.NewGroup },
+                    { "newMember", Engine.NewMember },
+                    { "setLocation", Engine.SetLocation },
+                    { "closeTask", Engine.CloseTask },
+                };
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-
-        static Dictionary<string, Action<string, string>> actions =
+            var locationActions =
                 new Dictionary<string, Action<string, string>> {
                     { "newTask", Engine.CreateNewTask },
                     { "updateDescription", Engine.UpdateDescription },
@@ -46,6 +42,26 @@ namespace iTodo
                     { "closeTask", Engine.CloseTask },
                 };
 
+            var commonActions =
+                new Dictionary<string, Action<string, string>> {
+                    { "reset", Engine.Reset },
+                };
 
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+            Parallel.Invoke(
+                    () => CreateHostBuilder(args).Build().Run(),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(m, taskActions), AppGroupId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(m, locationActions), AppGroupId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppGroupId)
+                );
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

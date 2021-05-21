@@ -60,27 +60,6 @@ namespace iTodo
 
         #endregion
 
-        #region SetCurrentLocation 
-
-        public static void SetCurrentLocation(string groupKey, string content)
-        {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var member = data.GetProperty("Member").ToString();
-            string location = data.GetProperty("Location").ToString();
-            if (MemberCurrentLocation.TryGetValue(member, out string locations))
-            {
-                MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
-            }
-            else
-            {
-                MemberCurrentLocation.Add(member, location);
-            }
-        }
-
-
-
-        #endregion
-
         #region SetTag 
 
         public static void SetTag(string groupKey, string content)
@@ -239,16 +218,6 @@ namespace iTodo
 
         #endregion
 
-        #region Reset 
-
-        public static void Reset()
-        {
-            Todos = new List<TodoItem>();
-            Groups = new List<GroupItem>();
-            MemberCurrentLocation = new Dictionary<string, string>();
-        }
-
-        #endregion
 
         #region Implement
 
@@ -267,6 +236,41 @@ namespace iTodo
         static string Sort = "";
 
         #endregion
+
+        #region Location actions 
+
+        public static void SetCurrentLocation(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var member = data.GetProperty("Member").ToString();
+            string location = data.GetProperty("Location").ToString();
+            if (MemberCurrentLocation.TryGetValue(member, out string locations))
+            {
+                MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
+            }
+            else
+            {
+                MemberCurrentLocation.Add(member, location);
+            }
+        }
+
+
+
+        #endregion
+
+        #region Common actions
+
+        public static void Reset(string groupKey, string content)
+        {
+            Todos = new List<TodoItem>();
+            Groups = new List<GroupItem>();
+            MemberCurrentLocation = new Dictionary<string, string>();
+        }
+
+
+        #endregion
+
+
     }
 
     #region Classes

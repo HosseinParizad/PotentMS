@@ -17,12 +17,22 @@ namespace PersonalAssistant
 
         public static void Main(string[] args)
         {
+            var taskFeedbackActions =
+                new Dictionary<string, Action<Feedback>>
+                {
+                   { FeedbackGroupNames.Task, Engine.OnTaskFeedback },
+                };
+
+            var commonActions =
+                new Dictionary<string, Action<string, string>> {
+                    { "reset", Engine.Reset },
+                };
+
             Parallel.Invoke(
-                () => CreateHostBuilder(args).Build().Run(),
-                //ConsumerHelper.MapTopicToMethod("task", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId),
-                //ConsumerHelper.MapTopicToMethod("location", (m) => MessageProcessor.MapMessageToAction(m, actions), AppGroupId),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, actions), AppGroupId)
-            );
+                    () => CreateHostBuilder(args).Build().Run(),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, taskFeedbackActions), AppGroupId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppGroupId)
+                );
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -31,12 +41,6 @@ namespace PersonalAssistant
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-        static Dictionary<string, Action<Feedback>> actions =
-            new Dictionary<string, Action<Feedback>>
-            {
-                { FeedbackGroupNames.Task, Engine.OnTaskFeedback },
-            };
 
     }
 }

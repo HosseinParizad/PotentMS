@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PersonalAssistant
 {
@@ -14,6 +15,14 @@ namespace PersonalAssistant
         public List<string> Badges { get; set; }
         public string AssistantKey { get; set; }
         public object Sequence { get; set; }
+    }
+
+
+    public class DeadlineItem
+    {
+        public string Id { get; set; }
+        public string Text { get; set; }
+        public DateTimeOffset Deadline { get; set; }
     }
 }
 

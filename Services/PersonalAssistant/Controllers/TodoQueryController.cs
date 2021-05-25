@@ -28,5 +28,14 @@ namespace PersonalAssistant.Controllers
             return Engine.GetDashboard(assistantKey).ToList();
         }
 
+        [HttpGet("/Deadlines/{groupKey}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<DeadlineItem>> Deadlines(string groupKey)
+        {
+            return Engine.GetDeadlines(groupKey).ToList();
+        }
+
+
     }
 }

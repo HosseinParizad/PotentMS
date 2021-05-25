@@ -54,7 +54,10 @@ namespace iTodo
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-            FindById(groupKey, id).Deadline = deadline;
+            TodoItem todo = FindById(groupKey, id);
+            todo.Deadline = deadline;
+            var dataToSend = JsonSerializer.Serialize(new { Id = id, Text = todo.Description, Deadline = deadline });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, key: groupKey, content: dataToSend);
         }
 
 

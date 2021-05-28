@@ -36,6 +36,5 @@ namespace PersonalAssistant.Controllers
             return Engine.GetDeadlines(groupKey).ToList();
         }
 
-
     }
 }

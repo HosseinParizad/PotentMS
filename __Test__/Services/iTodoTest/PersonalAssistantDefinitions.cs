@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using TechTalk.SpecFlow;
 
 namespace SpecFlowDemo.Steps
@@ -56,5 +57,43 @@ namespace SpecFlowDemo.Steps
             }
 
         }
+
+        #region tag
+
+        [Then(@"I should see the following tasks for selected tag '(.*)' for '(.*)':")]
+        public void ThenIShouldSeeTheFollowingListForSelecedTag(string tag, string groupKey, Table table)
+        {
+            dynamic[] tasks = null;
+            var tableColumns = table.Header.ToArray();
+            var map = new Dictionary<string, string>
+             {
+                 { "Text", "description" },
+             };
+
+            var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
+
+            var url = $"https://localhost:5003/GetTaskByGroupTag/{groupKey}/{tag}";
+            tasks = RestHelper.MakeAGetRequest(url);
+            RestHelper.AreEqual(RestHelper.DynamicToList(tasks, expectedColums), table.ToList(tableColumns));
+        }
+
+        [Then(@"I should see the following tasks when '(.*)' go to '(.*)':")]
+        public void ThenIShouldSeeTheFollowingListWhenMove(string groupKey, string tag, Table table)
+        {
+            dynamic[] tasks = null;
+            var tableColumns = table.Header.ToArray();
+            var map = new Dictionary<string, string>
+             {
+                 { "Text", "description" },
+             };
+
+            var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
+
+            var url = $"https://localhost:5003/GetTaskWhenMoveToLocation/{groupKey}/{tag}";
+            tasks = RestHelper.MakeAGetRequest(url);
+            RestHelper.AreEqual(RestHelper.DynamicToList(tasks, expectedColums), table.ToList(tableColumns));
+        }
+
+        #endregion
     }
 }

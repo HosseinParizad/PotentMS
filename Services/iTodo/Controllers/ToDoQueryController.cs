@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -36,6 +37,22 @@ namespace iTodo.Controllers
         public string GetSort()
         {
             return Engine.GetSort;
+        }
+
+        [HttpGet("/GetTaskByGroupTag/{groupKey}/{Tag}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<TodoItem>> GetTaskByGroupTag(string groupKey, string tag)
+        {
+            return Engine.GetTaskByGroupTag(groupKey, tag).ToList();
+        }
+
+        [HttpGet("/GetTaskWhenMoveToLocation/{groupKey}/{Tag}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<TodoItem>> GetTaskWhenMoveToLocation(string groupKey, string tag)
+        {
+            return Engine.GetTaskWhenMoveToLocation(groupKey, tag).ToList();
         }
     }
 }

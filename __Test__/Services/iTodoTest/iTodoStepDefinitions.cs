@@ -110,7 +110,7 @@ namespace SpecFlowDemo.Steps
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When("User '(.*)' get event current location is '(.*)'")]
+        [When("User '(.*)' go to '(.*)'")]
         public void WhenUserGetLocationEvent(string member, string currentLocation)
         {
             const string url = "https://localhost:5001/Gateway/Location";

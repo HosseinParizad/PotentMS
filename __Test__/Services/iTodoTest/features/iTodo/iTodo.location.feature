@@ -44,12 +44,12 @@ Feature: Location
 			| TaskDesc                            | GroupKey | Locations |
 			| Watch cat videos on YouTube all day | Ali      | ["Home"]  |
 			| Watch dog videos on YouTube all day | Ali      | ["Work"]  |
-		When User 'Ali' get event current location is 'Work'
+		When User 'Ali' go to 'Work'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Locations |
 			| Watch dog videos on YouTube all day | Ali      | ["Work"]  |
 			| Watch cat videos on YouTube all day | Ali      | ["Home"]  |
-		When User 'Ali' get event current location is 'Home'
+		When User 'Ali' go to 'Home'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Locations |
 			| Watch cat videos on YouTube all day | Ali      | ["Home"]  |

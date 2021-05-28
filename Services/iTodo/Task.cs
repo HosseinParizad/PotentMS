@@ -199,7 +199,7 @@ namespace iTodo
 
         #endregion
 
-        #region GetTask 
+        #region GetGroup
 
         public static IEnumerable<GroupItem> GetGroup(string groupKey)
         {
@@ -214,6 +214,23 @@ namespace iTodo
 
         #endregion
 
+        #region GetTaskByGroupTag
+
+        internal static IEnumerable<TodoItem> GetTaskByGroupTag(string groupKey, string tag)
+        {
+            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.Tags.Any(t => t.Value.Contains(tag)));
+        }
+
+        #endregion
+
+        #region GetTaskWhenMoveToLocation
+
+        internal static IEnumerable<TodoItem> GetTaskWhenMoveToLocation(string groupKey, string tag)
+        {
+            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.Locations.Any(l => l.IndexOf(tag) > -1));
+        }
+
+        #endregion
 
         #region Implement
 

@@ -34,7 +34,6 @@ namespace PersonalAssistant
                 var id = data.GetProperty("Id").ToString();
                 var text = data.GetProperty("Text").ToString();
                 var date = data.GetProperty("Deadline").GetDateTimeOffset();
-
                 var deadline = deadlines.Where(d => d.Id == id);
                 if (!deadline.Any())
                 {

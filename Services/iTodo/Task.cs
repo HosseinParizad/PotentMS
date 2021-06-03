@@ -6,14 +6,9 @@ using PotentHelper;
 
 namespace iTodo
 {
-    #region Mapping 
-
-    #endregion
-
     internal class Engine
     {
         #region CreateNewTask 
-
 
         public static void CreateNewTask(string groupKey, string content)
         {
@@ -48,7 +43,6 @@ namespace iTodo
 
         #region SetDeadline 
 
-
         public static void SetDeadline(string groupKey, string content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
@@ -59,7 +53,6 @@ namespace iTodo
             var dataToSend = JsonSerializer.Serialize(new { Id = id, Text = todo.Description, Deadline = deadline });
             SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, key: groupKey, content: dataToSend);
         }
-
 
         #endregion
 
@@ -160,7 +153,6 @@ namespace iTodo
 
         static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
 
-
         #endregion
 
         #region NewMember 
@@ -182,7 +174,6 @@ namespace iTodo
             }
         }
 
-
         #endregion
 
         #region GetTask 
@@ -195,7 +186,6 @@ namespace iTodo
             }
             return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemberCurrentLocation.ContainsKey(member) && MemberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
         }
-
 
         #endregion
 
@@ -210,7 +200,6 @@ namespace iTodo
 
             return Groups.Where(i => i.Group == groupKey);
         }
-
 
         #endregion
 
@@ -267,8 +256,6 @@ namespace iTodo
             }
         }
 
-
-
         #endregion
 
         #region Common actions
@@ -280,10 +267,7 @@ namespace iTodo
             MemberCurrentLocation = new Dictionary<string, string>();
         }
 
-
         #endregion
-
-
     }
 
     #region Classes

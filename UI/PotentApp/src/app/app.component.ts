@@ -11,10 +11,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Injectable()
 export class AppComponent implements OnInit {
   title = 'PotentApp';
+  cats:any[] = []
   totalAngularPackages: string = '';
-  headers = new HttpHeaders()
-    .set('content-type', 'application/json')
-    .set('Access-Control-Allow-Origin', '*');
+  hidden = false;
 
   constructor(private http: HttpClient) { }
 
@@ -25,22 +24,21 @@ export class AppComponent implements OnInit {
     //     'Content-Type': 'application/json',
     //     'Access-Control-Allow-Origin': '*',
     //     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-    //     'Access-Control-Allow-Credentials': 'true'
     //   })
-    //   , withCredentials: true
     // };
 
-    this.http.get<any>('https://localhost:5007/PersonalAssistant/All')
+    this.http.get<any>('https://localhost:5007/PersonalAssistant/Me')
       .subscribe(data => {
         //this.totalAngularPackages = data;
-        console.log('horaaaaaa');
-        console.log(data);
+        //console.log(data);
+        data.forEach((row: any) => {
+          console.log(row);
+          this.cats.push(row)
+        });
       })
-    // headers:
-    // {
-    //   'Content-Type': 'application/json',
-    //   'Access-Control-Allow-Origin': '*',
-    //   'Access-Control-Allow-Methods': 'GET'
-    // }
+  }
+
+  toggleBadgeVisibility() {
+    this.hidden = !this.hidden;
   }
 }

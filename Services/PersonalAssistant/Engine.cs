@@ -47,7 +47,7 @@ namespace PersonalAssistant
         }
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
-            => GetDashboardSections(key).Single(d => d.Text == sectionText).Badges;
+            => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;
 
         #region GetDashboard
 
@@ -103,11 +103,11 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var key = data.GetProperty("Member").ToString();
             string location = data.GetProperty("Location").ToString();
-            IEnumerable<TodosItem> dashbord = GetDashboardSections(key);
-            var locations = dashbord.Single(d => d.Text == "UsedLocations").UsedLocations;
-            if (!locations.Contains(location))
+            IEnumerable<DashboardPart> dashbord = GetDashboardSections(groupKey);
+            var locations = dashbord.Single(d => d.Text == "UsedLocations").BadgesInternal;
+            if (!locations.Any(l => l.Text == location))
             {
-                locations.Add(location);
+                locations.Add(new BadgeItem { Text = location });
             }
         }
 
@@ -115,17 +115,7 @@ namespace PersonalAssistant
 
         #region Implement
 
-        //static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest)
-        //    => ProducerHelper.SendAMessage("PersonalAssistantFeedback", JsonSerializer.Serialize(new Feedback(type: type, action: "PersonalAssistantFeedback", groupKey: groupKey, content: message))).GetAwaiter().GetResult();
-
         static List<Dashboard> Dashboards = new List<Dashboard>();
-        //static Dictionary<string, List<DeadlineItem>> Deadlines = new Dictionary<string, List<DeadlineItem>>();
-        static Dictionary<string, List<string>> Locations = new Dictionary<string, List<string>>();
-
-        //internal static IEnumerable<DeadlineItem> GetDeadlines(string assistantKey)
-        //{
-        //    return Deadlines[assistantKey].OrderBy(l => l.Deadline);
-        //}
 
         #endregion
     }

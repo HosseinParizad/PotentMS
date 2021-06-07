@@ -3,27 +3,12 @@ using System.Collections.Generic;
 
 namespace PersonalAssistant
 {
-    public class TodosItem
-    {
-        public TodosItem()
-        {
-            Badges = new List<string>();
-        }
-        public string Id { get; set; }
-        public string AssistantKey { get; set; }
-        public string Text { get; set; }
-        public string Description { get; set; }
-        public List<string> Badges { get; set; }
-        public List<string> UsedLocations { get; set; }
-        public object Sequence { get; set; }
-        public string CurrentLocation { set; get; }
-    }
-
     public class DashboardPart
     {
         public string Text { get; set; }
         public string Description { get; set; }
-        public List<BadgeItem> Badges { set; get; } = new List<BadgeItem>();
+        public List<BadgeItem> Badges { get { return BadgesInternal; } }
+        internal List<BadgeItem> BadgesInternal { set; get; } = new List<BadgeItem>();
         public int Sequence;
     }
 
@@ -45,7 +30,7 @@ namespace PersonalAssistant
         public List<DashboardPart> Parts;
 
         static DashboardPart DashboardItemGoal()
-            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, Badges = new List<BadgeItem> { new BadgeItem { Text = "Deadlines" } } };
+            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = new List<BadgeItem> { new BadgeItem { Text = "Deadlines" } } };
 
         static DashboardPart DashboardItemTag()
             => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g i am in shop now!", Sequence = 1 };

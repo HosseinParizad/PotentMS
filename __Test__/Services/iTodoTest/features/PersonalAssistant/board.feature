@@ -87,15 +87,17 @@ Feature: PersonalAssistant
 			| Buy coca                  | Me       |
 			| Buy drink                 | Me       |
 		When User select item 1 from tasks of 'Me'
-		When User add 'Home -> My room' to tag 0 on selected task for 'Me'
+		When User set location 'Home -> My room' on selected task for 'Me'
+		When User add 'Very special tag' to tag 0 on selected task for 'Me'
 		When User select item 2 from tasks of 'Me'
-		When User add 'Work -> Office' to tag 0 on selected task for 'Me'
+		When User set location 'Work -> Office' on selected task for 'Me'
 		When User select item 3 from tasks of 'Me'
-		When User add 'Shop -> Woolies' to tag 0 on selected task for 'Me'
+		When User set location 'Shop -> Woolies' on selected task for 'Me'
 		When User select item 4 from tasks of 'Me'
-		When User add 'Shop -> Liquor' to tag 0 on selected task for 'Me'
+		When User set location 'Shop -> Liquor' on selected task for 'Me'
+
 		Then I should see the following board for 'Me':
 			| Text          | Badges                                                                  |
 			| Goal          | ["Deadlines"]                                                           |
-			| Tag           | ["Home -> My room","Work -> Office","Shop -> Woolies","Shop -> Liquor"] |
-			| UsedLocations | []                                                                      |
+			| Tag           | ["Very special tag"]                                                    |
+			| UsedLocations | ["Home -> My room","Work -> Office","Shop -> Woolies","Shop -> Liquor"] |

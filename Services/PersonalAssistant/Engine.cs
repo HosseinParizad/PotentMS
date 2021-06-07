@@ -11,38 +11,54 @@ namespace PersonalAssistant
     {
         internal static void OnTaskFeedback(Feedback feedback)
         {
-            if (feedback.Action == FeedbackActions.NewTagAdded)
+            switch (feedback.Action)
             {
-                var newTag = feedback.Content;
-                List<BadgeItem> badges = GetDashboardSectionBadges(feedback.Key, "Tag");
-                if (!badges.Any(b => b.Text == newTag))
-                {
-                    badges.Add(new BadgeItem { Text = newTag });
-                }
-            }
+                case FeedbackActions.NewTagAdded:
+                    ApplyNewTagAdded(feedback);
+                    break;
 
-            if (feedback.Action == FeedbackActions.NewLocationAdded)
-            {
-                var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-                var key = feedback.Key;
-                var location = data.GetProperty("Location").ToString();
-                List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
-                if (!badges.Any(b => b.Text == location))
-                {
-                    badges.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
-                }
+                case FeedbackActions.NewLocationAdded:
+                    ApplyLocationAdded(feedback);
+                    break;
+                case FeedbackActions.DeadlineUpdated:
+                    ApplyDeadlineUpdated(feedback);
+                    break;
+                default:
+                    break;
             }
+        }
 
-            if (feedback.Action == FeedbackActions.DeadlineUpdated)
+        static void ApplyNewTagAdded(Feedback feedback)
+        {
+            var newTag = feedback.Content;
+            List<BadgeItem> badges = GetDashboardSectionBadges(feedback.Key, "Tag");
+            if (!badges.Any(b => b.Text == newTag))
             {
-                var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-                var key = data.GetProperty("Id").ToString();
-                var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-                List<BadgeItem> badges = GetDashboardSectionBadges(key, ":("); // Todo: desgin this part
-                if (!badges.Any(b => b.Text == deadline))
-                {
-                    badges.Add(new BadgeItem { Text = deadline });
-                }
+                badges.Add(new BadgeItem { Text = newTag });
+            }
+        }
+
+        static void ApplyLocationAdded(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var key = feedback.Key;
+            var location = data.GetProperty("Location").ToString();
+            List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
+            if (!badges.Any(b => b.Text == location))
+            {
+                badges.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
+            }
+        }
+
+        static void ApplyDeadlineUpdated(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var key = data.GetProperty("Id").ToString();
+            var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
+            List<BadgeItem> badges = GetDashboardSectionBadges(key, ":("); // Todo: desgin this part
+            if (!badges.Any(b => b.Text == deadline))
+            {
+                badges.Add(new BadgeItem { Text = deadline });
             }
         }
 
@@ -86,12 +102,8 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var key = data.GetProperty("Member").ToString();
             string location = data.GetProperty("Location").ToString();
-            Console.WriteLine("<><><><><>>3<<>");
-            Console.WriteLine(key);
-            Console.WriteLine(location);
             Dashboard dashbord = GetDashboard(key);
             dashbord.CurrentLocation = location;
-            Console.WriteLine("<><><><><>>4<<>", data);
         }
 
         #endregion

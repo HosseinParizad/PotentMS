@@ -9,10 +9,11 @@ Feature: PersonalAssistant.tag
 		When User add 'Home' to tag 0 on selected task for 'Me'
 		When User select item 2 from tasks of 'Me'
 		When User add 'Work' to tag 0 on selected task for 'Me'
-		Then I should see the following board:
-			| AssistantKey | Text | Badges          |
-			| Me           | Goal | ["Deadlines"]   |
-			| Me           | Tag  | ["Home","Work"] |
+		Then I should see the following board for 'Me':
+			| Text          | Badges          |
+			| Goal          | ["Deadlines"]   |
+			| Tag           | ["Home","Work"] |
+			| UsedLocations | []              |
 		Then I should see the following tasks for selected tag 'Home' for 'Me':
 			| Text                   |
 			| Somthing doing at home |
@@ -30,7 +31,6 @@ Feature: PersonalAssistant.tag
 		Then I should see the following tasks for selected tag 'Work' for 'Me':
 			| Text                   |
 			| Somthing to do at work |
-
 
 	Scenario: Should be able see tag by location
 		Given  I send the following task:

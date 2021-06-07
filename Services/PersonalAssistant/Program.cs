@@ -28,10 +28,16 @@ namespace PersonalAssistant
                     { "reset", Engine.Reset },
                 };
 
+            var locationActions =
+                new Dictionary<string, Action<string, string>> {
+                    { "setCurrentLocation", Engine.SetCurrentLocation },
+                };
+
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, taskFeedbackActions), AppGroupId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppGroupId)
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppGroupId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(m, locationActions), AppGroupId)
                 );
         }
 

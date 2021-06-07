@@ -137,7 +137,9 @@ namespace iTodo
             else
             {
                 todo.Locations.AddRange(location.Split(","));
-                //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, content: content, originalRequest: "SetLocation");
+                var dataToSend = JsonSerializer.Serialize(new { Id = id, Location = location });
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, key: groupKey, content: dataToSend);
+
             }
         }
 

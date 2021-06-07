@@ -1,50 +1,57 @@
 Feature: PersonalAssistant
 
 	Scenario: Default Borad
-		Then I should see the following board:
-			| AssistantKey | Text |
-			| Ali          | Goal |
-			| Ali          | Tag  |
-
+		Then I should see the following board for 'Anyone':
+			| Text          |
+			| Goal          |
+			| Tag           |
+			| UsedLocations |
 	Scenario: When we addd task Borad should catch the event
-		Then I should see the following board:
-			| AssistantKey | Text |
-			| Ali          | Goal |
-			| Ali          | Tag  |
+		Then I should see the following board for 'Ali':
+			| Text          |
+			| Goal          |
+			| Tag           |
+			| UsedLocations |
 		Given I send the following task:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | Ali      |
-		Then I should see the following board:
-			| AssistantKey | Text |
-			| Ali          | Goal |
-			| Ali          | Tag  |
+		Then I should see the following board for 'Ali':
+			| Text          |
+			| Goal          |
+			| Tag           |
+			| UsedLocations |
 		When User select item 1 from tasks of 'Ali'
 		When User add 'Home' to tag 0 on selected task for 'Ali'
-		Then I should see the following board:
-			| AssistantKey | Text | Badges        |
-			| Ali          | Goal | ["Deadlines"] |
-			| Ali          | Tag  | ["Home"]      |
+		Then I should see the following board for 'Ali':
+			| Text          | Badges        |
+			| Goal          | ["Deadlines"] |
+			| Tag           | ["Home"]      |
+			| UsedLocations | []            |
 		When User add 'Home' to tag 0 on selected task for 'Ali'
-		Then I should see the following board:
-			| AssistantKey | Text | Badges        |
-			| Ali          | Goal | ["Deadlines"] |
-			| Ali          | Tag  | ["Home"]      |
+		Then I should see the following board for 'Ali':
+			| Text          | Badges        |
+			| Goal          | ["Deadlines"] |
+			| Tag           | ["Home"]      |
+			| UsedLocations | []            |
 		When User add 'Work' to tag 0 on selected task for 'Ali'
-		Then I should see the following board:
-			| AssistantKey | Text | Badges          |
-			| Ali          | Goal | ["Deadlines"]   |
-			| Ali          | Tag  | ["Home","Work"] |
+		Then I should see the following board for 'Ali':
+			| Text          | Badges          |
+			| Goal          | ["Deadlines"]   |
+			| Tag           | ["Home","Work"] |
+			| UsedLocations | []              |
 		When User add 'One,One' to tag 0 on selected task for 'Ali'
-		Then I should see the following board:
-			| AssistantKey | Text | Badges                |
-			| Ali          | Goal | ["Deadlines"]         |
-			| Ali          | Tag  | ["Home","Work","One"] |
+		Then I should see the following board for 'Ali':
+			| Text          | Badges                |
+			| Goal          | ["Deadlines"]         |
+			| Tag           | ["Home","Work","One"] |
+			| UsedLocations | []                    |
 
 	Scenario: When use see deadline show see task be deadline order
-		Then I should see the following board:
-			| AssistantKey | Text | Badges        |
-			| Ali          | Goal | ["Deadlines"] |
-			| Ali          | Tag  | []            |
+		Then I should see the following board for 'Ali':
+			| Text          | Badges        |
+			| Goal          | ["Deadlines"] |
+			| Tag           | []            |
+			| UsedLocations | []            |
 		Given I send the following task:
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | Ali      |
@@ -72,3 +79,23 @@ Feature: PersonalAssistant
 			| Ali      | Watch dog videos on YouTube all day    | 2021-10-06T00:00:00+00:00 |
 			| Ali      | Watch cat videos on YouTube all day    | 2021-10-07T00:00:00+00:00 |
 
+	Scenario: User should be able to see tidy board
+		Given I send the following task:
+			| TaskDesc                  | GroupKey |
+			| Do Project A              | Me       |
+			| Finish task on Pave board | Me       |
+			| Buy coca                  | Me       |
+			| Buy drink                 | Me       |
+		When User select item 1 from tasks of 'Me'
+		When User add 'Home -> My room' to tag 0 on selected task for 'Me'
+		When User select item 2 from tasks of 'Me'
+		When User add 'Work -> Office' to tag 0 on selected task for 'Me'
+		When User select item 3 from tasks of 'Me'
+		When User add 'Shop -> Woolies' to tag 0 on selected task for 'Me'
+		When User select item 4 from tasks of 'Me'
+		When User add 'Shop -> Liquor' to tag 0 on selected task for 'Me'
+		Then I should see the following board for 'Me':
+			| Text          | Badges                                                                  |
+			| Goal          | ["Deadlines"]                                                           |
+			| Tag           | ["Home -> My room","Work -> Office","Shop -> Woolies","Shop -> Liquor"] |
+			| UsedLocations | []                                                                      |

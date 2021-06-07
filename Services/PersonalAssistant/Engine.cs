@@ -13,59 +13,59 @@ namespace PersonalAssistant
         {
             if (feedback.Action == FeedbackActions.NewTagAdded)
             {
-                IEnumerable<DashboardItem> dashbord = GetDashboard(feedback.Key);
-                var badges = dashbord.Single(d => d.Text == "Tag").Badges;
-                if (!badges.Contains(feedback.Content))
+                var newTag = feedback.Content;
+                List<BadgeItem> badges = GetDashboardSectionBadges(feedback.Key, "Tag");
+                if (!badges.Any(b => b.Text == newTag))
                 {
-                    badges.Add(feedback.Content);
+                    badges.Add(new BadgeItem { Text = newTag });
+                }
+            }
+
+            if (feedback.Action == FeedbackActions.NewLocationAdded)
+            {
+                var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+                var key = data.GetProperty("Member").ToString();
+                var location = data.GetProperty("Location").ToString();
+                List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
+                if (!badges.Any(b => b.Text == location))
+                {
+                    badges.Add(new BadgeItem { Text = location });
                 }
             }
 
             if (feedback.Action == FeedbackActions.DeadlineUpdated)
             {
-                List<DeadlineItem> deadlines;
-                if (!Deadlines.TryGetValue(feedback.Key, out deadlines))
-                {
-                    deadlines = new List<DeadlineItem>();
-                    Deadlines.Add(feedback.Key, deadlines);
-                }
-
                 var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-                var id = data.GetProperty("Id").ToString();
-                var text = data.GetProperty("Text").ToString();
-                var date = data.GetProperty("Deadline").GetDateTimeOffset();
-                var deadline = deadlines.Where(d => d.Id == id);
-                if (!deadline.Any())
+                var key = data.GetProperty("Id").ToString();
+                var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
+                List<BadgeItem> badges = GetDashboardSectionBadges(key, ":("); // Todo: desgin this part
+                if (!badges.Any(b => b.Text == deadline))
                 {
-                    deadlines.Add(new DeadlineItem { Id = id, Text = text, Deadline = date });
-                }
-                else
-                {
-                    deadline.Single().Text = text;
-                    deadline.Single().Deadline = date;
+                    badges.Add(new BadgeItem { Text = deadline });
                 }
             }
         }
+
+        static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
+            => GetDashboardSections(key).Single(d => d.Text == sectionText).Badges;
 
         #region GetDashboard
 
-        public static IEnumerable<DashboardItem> GetDashboard(string assistantKey)
-        {
-            var result = Dashboards.Where(i => i.AssistantKey == assistantKey);
-            if (!result.Any())
-            {
-                Dashboards.Add(DashboardItemGoal(assistantKey));
-                Dashboards.Add(DashboardItemTag(assistantKey));
-            }
-            return result.OrderBy(i => i.Sequence);
+        internal static IEnumerable<DashboardPart> GetDashboardSections(string assistantKey)
+            => GetDashboard(assistantKey).Parts.OrderBy(p => p.Sequence);
 
+        static Dashboard GetDashboard(string assistantKey)
+        {
+            var dashboard = Dashboards.SingleOrDefault(i => i.AssistantKey == assistantKey);
+            if (dashboard == null)
+            {
+                dashboard = new Dashboard(assistantKey);
+                Dashboards.Add(dashboard);
+            }
+
+            return dashboard;
         }
 
-        static DashboardItem DashboardItemGoal(string assistantKey)
-            => new DashboardItem { AssistantKey = assistantKey, Text = "Goal", Description = "Aim to do short or long term!", Id = assistantKey, Sequence = 0, Badges = new List<string> { "Deadlines" } };
-
-        static DashboardItem DashboardItemTag(string assistantKey)
-            => new DashboardItem { AssistantKey = assistantKey, Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g i am in shop now!", Id = assistantKey, Sequence = 1 };
 
         #endregion
 
@@ -73,25 +73,59 @@ namespace PersonalAssistant
 
         internal static void Reset(string arg1, string arg2)
         {
-            Dashboards = new List<DashboardItem>();
-            Deadlines = new Dictionary<string, List<DeadlineItem>>();
+            Dashboards = new List<Dashboard>();
+            //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
 
         #endregion
 
+        #region Location actions 
+
+        public static void SetCurrentLocation(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var key = data.GetProperty("Member").ToString();
+            string location = data.GetProperty("Location").ToString();
+            Console.WriteLine("<><><><><>>3<<>");
+            Console.WriteLine(key);
+            Console.WriteLine(location);
+            Dashboard dashbord = GetDashboard(key);
+            dashbord.CurrentLocation = location;
+            Console.WriteLine("<><><><><>>4<<>", data);
+        }
+
+        #endregion
+
+        #region Location actions 
+
+        public static void SetUsedLocation(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var key = data.GetProperty("Member").ToString();
+            string location = data.GetProperty("Location").ToString();
+            IEnumerable<TodosItem> dashbord = GetDashboardSections(key);
+            var locations = dashbord.Single(d => d.Text == "UsedLocations").UsedLocations;
+            if (!locations.Contains(location))
+            {
+                locations.Add(location);
+            }
+        }
+
+        #endregion
 
         #region Implement
 
         //static void SendFeedbackMessage(FeedbackType type, string groupKey, string id, string message, string originalRequest)
         //    => ProducerHelper.SendAMessage("PersonalAssistantFeedback", JsonSerializer.Serialize(new Feedback(type: type, action: "PersonalAssistantFeedback", groupKey: groupKey, content: message))).GetAwaiter().GetResult();
 
-        static List<DashboardItem> Dashboards = new List<DashboardItem>();
-        static Dictionary<string, List<DeadlineItem>> Deadlines = new Dictionary<string, List<DeadlineItem>>();
+        static List<Dashboard> Dashboards = new List<Dashboard>();
+        //static Dictionary<string, List<DeadlineItem>> Deadlines = new Dictionary<string, List<DeadlineItem>>();
+        static Dictionary<string, List<string>> Locations = new Dictionary<string, List<string>>();
 
-        internal static IEnumerable<DeadlineItem> GetDeadlines(string assistantKey)
-        {
-            return Deadlines[assistantKey].OrderBy(l => l.Deadline);
-        }
+        //internal static IEnumerable<DeadlineItem> GetDeadlines(string assistantKey)
+        //{
+        //    return Deadlines[assistantKey].OrderBy(l => l.Deadline);
+        //}
 
         #endregion
     }

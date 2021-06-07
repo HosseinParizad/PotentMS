@@ -23,19 +23,18 @@ namespace PersonalAssistant.Controllers
         [HttpGet("{assistantKey}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<DashboardItem>> List(string assistantKey)
+        public ActionResult<IEnumerable<DashboardPart>> Dashboard(string assistantKey)
         {
-            Console.WriteLine(assistantKey);
-            return Engine.GetDashboard(assistantKey).ToList();
+            return Engine.GetDashboardSections(assistantKey).ToList();
         }
 
-        [HttpGet("/Deadlines/{groupKey}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<DeadlineItem>> Deadlines(string groupKey)
-        {
-            return Engine.GetDeadlines(groupKey).ToList();
-        }
+        //[HttpGet("/Deadlines/{groupKey}")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult<IEnumerable<DeadlineItem>> Deadlines(string groupKey)
+        //{
+        //    return Engine.GetDeadlines(groupKey).ToList();
+        //}
 
     }
 }

@@ -24,7 +24,7 @@ namespace PersonalAssistant
             if (feedback.Action == FeedbackActions.NewLocationAdded)
             {
                 var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-                var key = data.GetProperty("Member").ToString();
+                var key = feedback.Key;
                 var location = data.GetProperty("Location").ToString();
                 List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
                 if (!badges.Any(b => b.Text == location))

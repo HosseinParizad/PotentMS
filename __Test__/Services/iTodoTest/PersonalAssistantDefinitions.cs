@@ -35,9 +35,10 @@ namespace SpecFlowDemo.Steps
                 foreach (var row in table.Rows)
                 {
                     var badges = JsonSerializer.Deserialize<List<string>>(row["Badges"]);
+                    int isLocation = row["Text"] == "UsedLocations" ? 1 : 0;
                     foreach (var item in badges)
                     {
-                        replaceValues.Add($"\"{item}\"", DefaultBadgeItem(item));
+                        replaceValues.Add($"\"{item}\"", DefaultBadgeItem(item, isLocation));
                     }
 
                 }
@@ -45,8 +46,8 @@ namespace SpecFlowDemo.Steps
             RestHelper.AreEqual(RestHelper.DynamicToList(dashboard, expectedColums), table.ToList(tableColumns, replaceValues));
         }
 
-        static string DefaultBadgeItem(string item)
-            => "{" + $"\"text\":\"{item.Replace("\"", "")}\",\"link\":null,\"type\":0" + "}";
+        static string DefaultBadgeItem(string item, int isLocation)
+            => "{" + $"\"text\":\"{item.Replace("\"", "")}\",\"link\":null,\"type\":{isLocation}" + "}";
 
 
         [Then(@"I should see the following board deallines:")]

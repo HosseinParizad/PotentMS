@@ -1,12 +1,14 @@
 ﻿<Properties StartupConfiguration="{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="__Test__/Services/iTodoTest/features/PersonalAssistant/board.locarion.feature">
     <Files>
-      <File FileName="Services/iTodo/Task.cs" Line="114" Column="207" />
-      <File FileName="__Test__/Services/iTodoTest/iTodo.feature.cs" Line="373" Column="28" />
-      <File FileName="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" Line="83" Column="10" />
-      <File FileName="__Test__/Services/iTodoTest/iTodo.feature" Line="65" Column="1" />
-      <File FileName="Services/iTodo/Controllers/TodoQueryController.cs" Line="24" Column="1" />
-      <File FileName="Services/Common/PotentHelper/Feedback.cs" Line="4" Column="26" />
+      <File FileName="__Test__/Services/iTodoTest/PersonalAssistantDefinitions.cs" Line="50" Column="96" />
+      <File FileName="Services/PersonalAssistant/Controllers/TodoQueryController.cs" Line="1" Column="1" />
+      <File FileName="Services/PersonalAssistant/Engine.cs" Line="29" Column="87" />
+      <File FileName="Services/PersonalAssistant/Program.cs" Line="1" Column="1" />
+      <File FileName="Services/PersonalAssistant/DashboardItem.cs" Line="39" Column="57" />
+      <File FileName="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" Line="110" Column="1" />
+      <File FileName="__Test__/Services/iTodoTest/httpHelper.cs" Line="89" Column="1" />
+      <File FileName="__Test__/Services/iTodoTest/features/PersonalAssistant/board.locarion.feature" Line="34" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -19,9 +21,12 @@
               <Node name="iTodo" expanded="True">
                 <Node name="Controllers" expanded="True" />
               </Node>
+              <Node name="PersonalAssistant" expanded="True">
+                <Node name="Controllers" expanded="True" />
+              </Node>
             </Node>
             <Node name="iTodoTest" expanded="True">
-              <Node name="iTodoStepDefinitions.cs" selected="True" />
+              <Node name="httpHelper.cs" selected="True" />
             </Node>
             <Node name="PotentHelper" expanded="True" />
           </Node>
@@ -29,20 +34,25 @@
       </Pad>
       <Pad Id="MonoDevelop.Debugger.WatchPad">
         <State>
-          <Value>result</Value>
-          <Value>selectedId</Value>
-          <Value>(Feedback)x</Value>
-          <Value>x["Id"]</Value>
+          <Value>dashboard</Value>
+          <Value>table.ToList(tableColumns, replaceValues)</Value>
+          <Value>RestHelper.DynamicToList(dashboard, expectedColums)</Value>
+          <Value>row["Text"]</Value>
         </State>
       </Pad>
       <Pad Id="MonoDevelop.UnitTesting.TestPad">
         <State name="__root__">
           <Node name="PotentMS" expanded="True">
             <Node name="iTodoTest" expanded="True">
-              <Node name="iTodoTest" expanded="True">
-                <Node name="AddFeature" expanded="True">
-                  <Node name="ShouldBeAbleToSendVAlidationError" selected="True" />
+              <Node name="iTodoTest.Features.ITodo" expanded="True">
+                <Node name="AddFeature" expanded="True" />
+              </Node>
+              <Node name="iTodoTest.Features.PersonalAssistant" expanded="True">
+                <Node name="PersonalAssistant_LocationFeature" expanded="True">
+                  <Node name="ShouldBeAbleSeeUsedLocations" selected="True" />
                 </Node>
+                <Node name="PersonalAssistant_TagFeature" expanded="True" />
+                <Node name="PersonalAssistantFeature" expanded="True" />
               </Node>
             </Node>
           </Node>
@@ -55,8 +65,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/Services/iTodo/Controllers/TodoQueryController.cs" relfile="Services/iTodo/Controllers/TodoQueryController.cs" line="24" column="13" />
-      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="125" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/Services/iTodo/Controllers/TodoQueryController.cs" relfile="Services/iTodo/Controllers/TodoQueryController.cs" line="25" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/PersonalAssistantDefinitions.cs" relfile="__Test__/Services/iTodoTest/PersonalAssistantDefinitions.cs" line="89" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" relfile="__Test__/Services/iTodoTest/iTodoStepDefinitions.cs" line="110" column="13" />
+      <Breakpoint file="/Users/hosseinparizad/Documents/PotentMS/__Test__/Services/iTodoTest/PersonalAssistantDefinitions.cs" relfile="__Test__/Services/iTodoTest/PersonalAssistantDefinitions.cs" line="38" column="21" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

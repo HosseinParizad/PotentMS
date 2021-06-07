@@ -29,7 +29,7 @@ namespace PersonalAssistant
                 List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
                 if (!badges.Any(b => b.Text == location))
                 {
-                    badges.Add(new BadgeItem { Text = location });
+                    badges.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
                 }
             }
 
@@ -107,7 +107,7 @@ namespace PersonalAssistant
             var locations = dashbord.Single(d => d.Text == "UsedLocations").BadgesInternal;
             if (!locations.Any(l => l.Text == location))
             {
-                locations.Add(new BadgeItem { Text = location });
+                locations.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
             }
         }
 

@@ -37,13 +37,16 @@ namespace SpecFlowDemo.Steps
                     var badges = JsonSerializer.Deserialize<List<string>>(row["Badges"]);
                     foreach (var item in badges)
                     {
-                        replaceValues.Add($"\"{item}\"", "{" + $"\"text\":\"{item.Replace("\"", "")}\",\"link\":null" + "}");
+                        replaceValues.Add($"\"{item}\"", DefaultBadgeItem(item));
                     }
 
                 }
             }
             RestHelper.AreEqual(RestHelper.DynamicToList(dashboard, expectedColums), table.ToList(tableColumns, replaceValues));
         }
+
+        static string DefaultBadgeItem(string item)
+            => "{" + $"\"text\":\"{item.Replace("\"", "")}\",\"link\":null,\"type\":0" + "}";
 
 
         [Then(@"I should see the following board deallines:")]

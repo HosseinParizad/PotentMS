@@ -153,9 +153,10 @@ namespace SpecFlowDemo.Steps
         {
             const string url = "https://localhost:5001/Gateway/Feedback";
 
-            var resultStr = RestHelper.MakeAGetRequest(url).Last().ToString();
+            System.Threading.Thread.Sleep(1000);
+            var hasExpectedError = RestHelper.MakeAGetRequest(url)?.Any(m => m.ToString() == errorMsg) ?? false;
 
-            Assert.AreEqual(resultStr, errorMsg);
+            Assert.True(hasExpectedError);
         }
 
         void AreEqual(string[] expected, string[] values) => Assert.AreEqual(values.Joine(), expected.Joine());

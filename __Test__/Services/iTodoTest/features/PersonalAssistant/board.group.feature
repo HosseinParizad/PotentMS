@@ -12,8 +12,8 @@ Feature: PersonalAssistant.Group
 			| @me     | @me     |
 			| @you    | @you    |
 
-		# Then I should see the following board for '@family':
-		# 	| Text    | Badges |
-		# 	| @family | []     |
-		# 	| @you    | []     |
-		# 	| @me     | []     |
+		Then I should see the following board for '@family':
+			| Text    | Badges |
+			| @family | []     |
+			| @me     | []     |
+			| @you    | []     |

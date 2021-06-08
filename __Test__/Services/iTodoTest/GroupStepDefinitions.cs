@@ -56,6 +56,7 @@ namespace SpecFlowDemo.Steps
         [Then(@"I should see the following groups:")]
         public void ThenIShouldSeeTheFollowingGroups(Table table)
         {
+            System.Threading.Thread.Sleep(1000);
             var url = $"https://localhost:5003/TodoQuery/GroupQuery?groupKey=All";
             var groups = RestHelper.MakeAGetRequest(url);
             var tableColumns = table.Header.ToArray();

@@ -152,22 +152,22 @@ namespace iTodo
             Groups.Add(CreateNewGroup(groupKey, groupKey));
         }
 
-        static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
+        //static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
 
-        // static GroupItem CreateNewGroup(string groupKey, string member)
-        // {
-        //     if (groupKey == member)
-        //     {
-        //         var dataToSend = JsonSerializer.Serialize(new { Id = groupKey });
-        //         SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, key: groupKey, content: dataToSend);
-        //     }
-        //     else
-        //     {
-        //         var dataToSend = JsonSerializer.Serialize(new { Id = groupKey, Member = member });
-        //         SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewMemberAdded, key: groupKey, content: dataToSend);
-        //     }
-        //     return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
-        // }
+        static GroupItem CreateNewGroup(string groupKey, string member)
+        {
+            if (groupKey == member)
+            {
+                var dataToSend = JsonSerializer.Serialize(new { Id = groupKey });
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, key: groupKey, content: dataToSend);
+            }
+            else
+            {
+                var dataToSend = JsonSerializer.Serialize(new { Id = groupKey, Member = member });
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewMemberAdded, key: groupKey, content: dataToSend);
+            }
+            return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
+        }
 
         #endregion
 

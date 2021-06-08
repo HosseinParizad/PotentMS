@@ -52,10 +52,10 @@ namespace PotentHelper
                         Console.WriteLine($"************************ Feedback ******************************* cannot run action. {message}");
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"************************ Feedback ******************************* action is not specified. {message}");
-                }
+                //else
+                //{
+                //    Console.WriteLine($"************************ Feedback ******************************* action is not specified. {message}");
+                //}
             }
             catch (Exception ex)
             {

@@ -20,7 +20,8 @@ namespace PersonalAssistant
             Id = assistantKey;
             AssistantKey = assistantKey;
             Parts = new List<DashboardPart>();
-            if (!groups.Any() || groups.Max(g => g.Value.Count(v => v == assistantKey)) < 2)
+
+            if (!groups.Any() || !groups.TryGetValue(assistantKey, out var value) || value.Count < 2)
             {
                 AddMemberSection();
             }

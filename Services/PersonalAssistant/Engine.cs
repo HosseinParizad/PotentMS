@@ -46,7 +46,6 @@ namespace PersonalAssistant
             {
                 Groups.Add(key, new List<string> { key });
             }
-            Console.WriteLine("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
         }
 
         static void ApplyNewMemberAdded(Feedback feedback)
@@ -54,9 +53,9 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var key = feedback.Key;
             var member = data.GetProperty("Member").ToString();
-            if (!Groups.Any(b => b.Key == key && b.Value.Any(v => v == member)))
+            if (Groups.TryGetValue(key, out var value) && !value.Contains(member))
             {
-                Groups.Add(key, new List<string> { member });
+                value.Add(member);
             }
         }
 

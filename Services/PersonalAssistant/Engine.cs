@@ -20,13 +20,47 @@ namespace PersonalAssistant
                 case FeedbackActions.NewLocationAdded:
                     ApplyLocationAdded(feedback);
                     break;
+
                 case FeedbackActions.DeadlineUpdated:
                     ApplyDeadlineUpdated(feedback);
                     break;
+
+                case FeedbackActions.NewGroupAdded:
+                    ApplyNewGroupAdded(feedback);
+                    break;
+
+                case FeedbackActions.NewMemberAdded:
+                    ApplyNewMemberAdded(feedback);
+                    break;
+
                 default:
                     break;
             }
         }
+
+        static void ApplyNewGroupAdded(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var key = feedback.Key;
+            if (!Groups.Any(b => b.Key == key && b.Value.Any(v => v == key)))
+            {
+                Groups.Add(key, new List<string> { key });
+            }
+            Console.WriteLine("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+        }
+
+        static void ApplyNewMemberAdded(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var key = feedback.Key;
+            var member = data.GetProperty("Member").ToString();
+            if (!Groups.Any(b => b.Key == key && b.Value.Any(v => v == member)))
+            {
+                Groups.Add(key, new List<string> { member });
+            }
+        }
+
+        public static Dictionary<string, List<string>> Groups = new Dictionary<string, List<string>>();
 
         static void ApplyNewTagAdded(Feedback feedback)
         {
@@ -75,7 +109,7 @@ namespace PersonalAssistant
             var dashboard = Dashboards.SingleOrDefault(i => i.AssistantKey == assistantKey);
             if (dashboard == null)
             {
-                dashboard = new Dashboard(assistantKey);
+                dashboard = new Dashboard(assistantKey, Groups);
                 Dashboards.Add(dashboard);
             }
 

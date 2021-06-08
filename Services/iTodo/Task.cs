@@ -150,10 +150,24 @@ namespace iTodo
         public static void NewGroup(string groupKey, string content)
         {
             Groups.Add(CreateNewGroup(groupKey, groupKey));
-            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, content: null, originalRequest: "NewGroup");
         }
 
         static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
+
+        // static GroupItem CreateNewGroup(string groupKey, string member)
+        // {
+        //     if (groupKey == member)
+        //     {
+        //         var dataToSend = JsonSerializer.Serialize(new { Id = groupKey });
+        //         SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, key: groupKey, content: dataToSend);
+        //     }
+        //     else
+        //     {
+        //         var dataToSend = JsonSerializer.Serialize(new { Id = groupKey, Member = member });
+        //         SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewMemberAdded, key: groupKey, content: dataToSend);
+        //     }
+        //     return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
+        // }
 
         #endregion
 
@@ -165,7 +179,6 @@ namespace iTodo
             var newMember = data.GetProperty("NewMember").ToString();
             CreateGroupIfNotExists(newMember);
             Groups.Add(CreateNewGroup(groupKey, newMember));
-            //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: null, content: null, originalRequest: "NewMember");
         }
 
         static void CreateGroupIfNotExists(dynamic groupKey)

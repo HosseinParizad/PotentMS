@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PersonalAssistant
@@ -14,14 +15,34 @@ namespace PersonalAssistant
 
     public class Dashboard
     {
-        public Dashboard(string assistantKey)
+        public Dashboard(string assistantKey, Dictionary<string, List<string>> groups)
         {
             Id = assistantKey;
             AssistantKey = assistantKey;
             Parts = new List<DashboardPart>();
+            if (!groups.Any() || groups.Max(g => g.Value.Count(v => v == assistantKey)) < 2)
+            {
+                AddMemberSection();
+            }
+            else
+            {
+                AddMemberSectionForGroup(groups[Id]);
+            }
+        }
+
+        void AddMemberSection()
+        {
             Parts.Add(DashboardItemGoal());
             Parts.Add(DashboardItemTag());
             Parts.Add(DashboardItemLocation());
+        }
+
+        void AddMemberSectionForGroup(IEnumerable<string> members)
+        {
+            foreach (var key in members)
+            {
+                Parts.Add(DashboardItemGroup(key));
+            }
         }
 
         public string Id { get; set; }
@@ -37,6 +58,9 @@ namespace PersonalAssistant
 
         static DashboardPart DashboardItemLocation()
             => new DashboardPart { Text = "UsedLocations", Description = "For now we manually select location until ...", Sequence = 2 };
+
+        static DashboardPart DashboardItemGroup(string key)
+            => new DashboardPart { Text = key, Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = new List<BadgeItem>() };
     }
 
     public class BadgeItem

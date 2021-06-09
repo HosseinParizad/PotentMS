@@ -29,10 +29,6 @@ namespace PersonalAssistant
                     ApplyNewGroupAdded(feedback);
                     break;
 
-                case FeedbackActions.NewMemberAdded:
-                    ApplyNewMemberAdded(feedback);
-                    break;
-
                 default:
                     break;
             }
@@ -41,25 +37,21 @@ namespace PersonalAssistant
         static void ApplyNewGroupAdded(Feedback feedback)
         {
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-            var key = feedback.Key;
-            if (!Groups.Any(b => b.Key == key && b.Value.Any(v => v == key)))
+            var memberKey = data.GetProperty("MemberKey").ToString();
+            var groupKey = data.GetProperty("GroupKey").ToString();
+
+            var members = new HashSet<string>();
+            if (Groups.TryGetValue(groupKey, out members))
             {
-                Groups.Add(key, new List<string> { key });
+                Groups[groupKey].Add(memberKey);
+            }
+            else
+            {
+                Groups.Add(groupKey, new HashSet<string> { memberKey });
             }
         }
 
-        static void ApplyNewMemberAdded(Feedback feedback)
-        {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-            var key = feedback.Key;
-            var member = data.GetProperty("Member").ToString();
-            if (Groups.TryGetValue(key, out var value) && !value.Contains(member))
-            {
-                value.Add(member);
-            }
-        }
-
-        public static Dictionary<string, List<string>> Groups = new Dictionary<string, List<string>>();
+        public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
 
         static void ApplyNewTagAdded(Feedback feedback)
         {
@@ -161,6 +153,7 @@ namespace PersonalAssistant
         #region Implement
 
         static List<Dashboard> Dashboards = new List<Dashboard>();
+        static List<TodoItem> ActiveTasks = new List<TodoItem>();
 
         #endregion
     }

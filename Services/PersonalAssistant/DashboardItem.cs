@@ -15,7 +15,7 @@ namespace PersonalAssistant
 
     public class Dashboard
     {
-        public Dashboard(string assistantKey, Dictionary<string, List<string>> groups)
+        public Dashboard(string assistantKey, Dictionary<string, HashSet<string>> groups)
         {
             Id = assistantKey;
             AssistantKey = assistantKey;
@@ -69,11 +69,19 @@ namespace PersonalAssistant
         public string Text { get; set; }
         public string Link { get; set; }
         public BadgeType Type { get; set; }
+        public int Count { get; set; }
     }
 
     public enum BadgeType
     {
         Tag,
         Location
+    }
+
+    public class TodoItem
+    {
+        public string Id { get; set; }
+        public string Text { get; set; }
+        public string Deadline { get; set; }
     }
 }

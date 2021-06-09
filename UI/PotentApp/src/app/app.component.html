@@ -1,0 +1,27 @@
+<div *ngFor="let category of cats" class="groupcard">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>{{category.text}}</mat-card-title>
+      <mat-card-subtitle>{{category.description}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <!-- <button *ngFor="let badge of category.badges" mat-raised-button matBadge="7" [matBadgeHidden]="hidden"
+       (click)="toggleBadgeVisibility()">
+       
+     </button> -->
+        <mat-chip-list aria-label="????" class="tagtag">
+          <mat-chip mat-raised-button matBadge="{{i*10+2}}" *ngFor="let badge of category.badges; let i = index">
+            {{badge.text}}
+          </mat-chip>
+          <!-- <mat-chip color="primary" selected>Primary fish</mat-chip>
+      
+        <mat-chip color="accent" selected>Accent fish</mat-chip> -->
+        </mat-chip-list>
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -1,7 +1,6 @@
 Bin/
 obj/
 *.txt
-*.html
 .DS_Store
 *.feature.cs
 *Debug.json

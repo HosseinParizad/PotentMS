@@ -23,33 +23,33 @@ Feature: PersonalAssistant
 		When User select item 1 from tasks of 'Ali'
 		When User add 'Home' to tag 0 on selected task for 'Ali'
 		Then I should see the following board for 'Ali':
-			| Text          | Badges        |
-			| Goal          | ["Deadlines"] |
-			| Tag           | ["Home"]      |
-			| UsedLocations | []            |
+			| Text          | Badges   |
+			| Goal          | []       |
+			| Tag           | ["Home"] |
+			| UsedLocations | []       |
 		When User add 'Home' to tag 0 on selected task for 'Ali'
 		Then I should see the following board for 'Ali':
-			| Text          | Badges        |
-			| Goal          | ["Deadlines"] |
-			| Tag           | ["Home"]      |
-			| UsedLocations | []            |
+			| Text          | Badges   |
+			| Goal          | []       |
+			| Tag           | ["Home"] |
+			| UsedLocations | []       |
 		When User add 'Work' to tag 0 on selected task for 'Ali'
 		Then I should see the following board for 'Ali':
 			| Text          | Badges          |
-			| Goal          | ["Deadlines"]   |
+			| Goal          | []              |
 			| Tag           | ["Home","Work"] |
 			| UsedLocations | []              |
 		When User add 'One,One' to tag 0 on selected task for 'Ali'
 		Then I should see the following board for 'Ali':
 			| Text          | Badges                |
-			| Goal          | ["Deadlines"]         |
+			| Goal          | []                    |
 			| Tag           | ["Home","Work","One"] |
 			| UsedLocations | []                    |
 
 	# Scenario: When use see deadline show see task be deadline order
 	# Then I should see the following board for 'Ali':
 	# 	| Text          | Badges        |
-	# 	| Goal          | ["Deadlines"] |
+	# 	| Goal          | [] |
 	# 	| Tag           | []            |
 	# 	| UsedLocations | []            |
 	# Given I send the following task:
@@ -98,6 +98,6 @@ Feature: PersonalAssistant
 
 		Then I should see the following board for 'Me':
 			| Text          | Badges                                                                  |
-			| Goal          | ["Deadlines"]                                                           |
+			| Goal          | []                                                                      |
 			| Tag           | ["Very special tag"]                                                    |
 			| UsedLocations | ["Home -> My room","Work -> Office","Shop -> Woolies","Shop -> Liquor"] |

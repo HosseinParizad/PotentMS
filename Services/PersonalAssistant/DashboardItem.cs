@@ -52,7 +52,7 @@ namespace PersonalAssistant
         public List<DashboardPart> Parts;
 
         static DashboardPart DashboardItemGoal()
-            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = new List<BadgeItem> { new BadgeItem { Text = "Deadlines" } } };
+            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0 };
 
         static DashboardPart DashboardItemTag()
             => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g i am in shop now!", Sequence = 1 };
@@ -61,7 +61,7 @@ namespace PersonalAssistant
             => new DashboardPart { Text = "UsedLocations", Description = "For now we manually select location until ...", Sequence = 2 };
 
         static DashboardPart DashboardItemGroup(string key)
-            => new DashboardPart { Text = key, Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = new List<BadgeItem>() };
+            => new DashboardPart { Text = key, Description = "...!", Sequence = 0 };
     }
 
     public class BadgeItem

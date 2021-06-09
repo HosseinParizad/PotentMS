@@ -11,7 +11,7 @@ Feature: PersonalAssistant.tag
 		When User add 'Work' to tag 0 on selected task for 'Me'
 		Then I should see the following board for 'Me':
 			| Text          | Badges          |
-			| Goal          | ["Deadlines"]   |
+			| Goal          | []              |
 			| Tag           | ["Home","Work"] |
 			| UsedLocations | []              |
 		Then I should see the following tasks for selected tag 'Home' for 'Me':

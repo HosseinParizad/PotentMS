@@ -2,10 +2,10 @@ Feature: PersonalAssistant.Location
 
 	Scenario: Should see the location section
 		Then I should see the following board for 'Me':
-			| Text          | Badges        |
-			| Goal          | ["Deadlines"] |
-			| Tag           | []            |
-			| UsedLocations | []            |
+			| Text          | Badges |
+			| Goal          | []     |
+			| Tag           | []     |
+			| UsedLocations | []     |
 
 	# TODO: need to find where is best please to order task by location (todo, dashboard, ...)
 	# Scenario: Should get location event
@@ -32,7 +32,7 @@ Feature: PersonalAssistant.Location
 			| Buy carot | Me       | ["Shop -> Woolies"]              |
 			| Eat carot | Me       | ["Home -> dining room -> table"] |
 		Then I should see the following board for 'Me':
-			| Text          | Badges                                              |
-			| Goal          | ["Deadlines"]                                       |
-			| Tag           | []                                                  |
+			| Text          | Badges                                             |
+			| Goal          | []                                                 |
+			| Tag           | []                                                 |
 			| UsedLocations | ["Shop -> Woolies","Home -> dining room -> table"] |

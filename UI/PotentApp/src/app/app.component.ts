@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.http.get<any>('https://localhost:5007/PersonalAssistant/Me')
+    this.http.get<any>('https://localhost:5007/PersonalAssistant/@family')
       .subscribe(data => {
         data.forEach((row: any) => {
           console.log(row);

@@ -85,14 +85,14 @@ namespace PersonalAssistant
 
         static void ApplyDeadlineUpdated(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-            var key = data.GetProperty("Id").ToString();
-            var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-            List<BadgeItem> badges = GetDashboardSectionBadges(key, ":("); // Todo: desgin this part
-            if (!badges.Any(b => b.Text == deadline))
-            {
-                badges.Add(new BadgeItem { Text = deadline });
-            }
+            //    var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            //    var key = data.GetProperty("Id").ToString();
+            //    var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
+            //    List<BadgeItem> badges = GetDashboardSectionBadges(key, ":("); // Todo: desgin this part
+            //    if (!badges.Any(b => b.Text == deadline))
+            //    {
+            //        badges.Add(new BadgeItem { Text = deadline });
+            //    }
         }
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)

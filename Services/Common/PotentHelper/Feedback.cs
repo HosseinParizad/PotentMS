@@ -34,6 +34,7 @@ namespace PotentHelper
         public const string DeadlineUpdated = "Deadline has been added";
         public const string NewLocationAdded = "New location has been added";
         public const string NewGroupAdded = "New group/member has been added";
+        public const string NewGoalAdded = "New goal has been added";
 
 
         public const string CannotSetTag = "Error: cannot set tag";

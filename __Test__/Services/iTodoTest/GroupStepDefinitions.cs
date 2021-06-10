@@ -73,8 +73,8 @@ namespace SpecFlowDemo.Steps
                 var result = RestHelper.DynamicToList(groups, expectedColums);
                 Assert.Multiple(() =>
                 {
-                    Assert.IsTrue(expect.All(result.Contains));
-                    Assert.IsTrue(result.All(expect.Contains));
+                    Assert.IsTrue(expect.All(result.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
+                    Assert.IsTrue(result.All(expect.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
                 });
             }
         }

@@ -20,6 +20,7 @@ namespace iTodo
             var taskActions =
                 new Dictionary<string, Action<string, string>> {
                     { "newTask", Engine.CreateNewTask },
+                    { "newGoal", Engine.CreateNewGoal },
                     { "updateDescription", Engine.UpdateDescription },
                     { "setDeadline", Engine.SetDeadline },
                     { "setTag", Engine.SetTag },

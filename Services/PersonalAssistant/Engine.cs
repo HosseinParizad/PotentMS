@@ -29,6 +29,10 @@ namespace PersonalAssistant
                     ApplyNewGroupAdded(feedback);
                     break;
 
+                case FeedbackActions.NewGoalAdded:
+                    ApplyNewGoalAdded(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -51,7 +55,13 @@ namespace PersonalAssistant
             }
         }
 
-        public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
+        static void ApplyNewGoalAdded(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var goal = data.GetProperty("Goal").ToString();
+            ActiveTasks.Add(new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key });
+        }
 
         static void ApplyNewTagAdded(Feedback feedback)
         {
@@ -69,6 +79,7 @@ namespace PersonalAssistant
             var key = feedback.Key;
             var location = data.GetProperty("Location").ToString();
             List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
+
             if (!badges.Any(b => b.Text == location))
             {
                 badges.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
@@ -90,21 +101,42 @@ namespace PersonalAssistant
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;
 
+        static List<DashboardPart> GetDashboardSections(string key)
+        {
+            return GetDashboardOrAdd(key).Parts;
+        }
+
+        static Dashboard GetDashboardOrAdd(string key)
+        {
+            var dashbord = Dashboards.SingleOrDefault(d => d.Id == key);
+            if (dashbord == null)
+            {
+                dashbord = new Dashboard(key);
+                Dashboards.Add(dashbord);
+            }
+            return dashbord;
+        }
+
         #region GetDashboard
 
-        internal static IEnumerable<DashboardPart> GetDashboardSections(string assistantKey)
-            => GetDashboard(assistantKey).Parts.OrderBy(p => p.Sequence);
+        internal static IEnumerable<Dashboard> GetDashboards(string assistantKey)
+            => GetDashboard(assistantKey);
 
-        static Dashboard GetDashboard(string assistantKey)
+        static IEnumerable<Dashboard> GetDashboard(string assistantKey)
         {
-            var dashboard = Dashboards.SingleOrDefault(i => i.AssistantKey == assistantKey);
-            if (dashboard == null)
+            //Dashboards.Clear();
+            if (Groups.ContainsKey(assistantKey))
             {
-                dashboard = new Dashboard(assistantKey, Groups);
-                Dashboards.Add(dashboard);
+                foreach (var member in Groups[assistantKey])
+                {
+                    yield return GetDashboardOrAdd(member);
+                }
             }
-
-            return dashboard;
+            else
+            {
+                yield return GetDashboardOrAdd(assistantKey);
+            }
+            ///return Dashboards;
         }
 
 
@@ -115,6 +147,8 @@ namespace PersonalAssistant
         internal static void Reset(string arg1, string arg2)
         {
             Dashboards = new List<Dashboard>();
+            Groups = new Dictionary<string, HashSet<string>>();
+            ActiveTasks = new List<TodoItem>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
 
@@ -133,27 +167,37 @@ namespace PersonalAssistant
 
         #endregion
 
-        #region Location actions 
+        //#region Location actions 
 
-        public static void SetUsedLocation(string groupKey, string content)
-        {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var key = data.GetProperty("Member").ToString();
-            string location = data.GetProperty("Location").ToString();
-            IEnumerable<DashboardPart> dashbord = GetDashboardSections(groupKey);
-            var locations = dashbord.Single(d => d.Text == "UsedLocations").BadgesInternal;
-            if (!locations.Any(l => l.Text == location))
-            {
-                locations.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
-            }
-        }
+        //public static void SetUsedLocation(string groupKey, string content)
+        //{
+        //    var data = JsonSerializer.Deserialize<dynamic>(content);
+        //    var key = data.GetProperty("Member").ToString();
+        //    string location = data.GetProperty("Location").ToString();
+        //    IEnumerable<DashboardPart> dashbord = Dashboards.Single(d => d.Id == groupKey).Parts;
+        //    var locations = dashbord.Single(d => d.Text == "UsedLocations").BadgesInternal;
+        //    if (!locations.Any(l => l.Text == location))
+        //    {
+        //        locations.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
         #region Implement
 
         static List<Dashboard> Dashboards = new List<Dashboard>();
+        public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
+
         static List<TodoItem> ActiveTasks = new List<TodoItem>();
+
+        public static IEnumerable<BadgeItem> GetBadgesByGoal(string key)
+        {
+            foreach (var task in ActiveTasks.Where(t => t.GroupKey == key))
+            {
+                yield return new BadgeItem { Text = task.Text };
+            }
+        }
 
         #endregion
     }

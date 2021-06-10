@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace PersonalAssistant
 {
@@ -8,27 +9,18 @@ namespace PersonalAssistant
     {
         public string Text { get; set; }
         public string Description { get; set; }
-        public List<BadgeItem> Badges { get { return BadgesInternal; } }
+        public List<BadgeItem> Badges => BadgesInternal;
         internal List<BadgeItem> BadgesInternal { set; get; } = new List<BadgeItem>();
         public int Sequence;
     }
 
     public class Dashboard
     {
-        public Dashboard(string assistantKey, Dictionary<string, HashSet<string>> groups)
+        public Dashboard(string memberKey)
         {
-            Id = assistantKey;
-            AssistantKey = assistantKey;
-            Parts = new List<DashboardPart>();
-
-            if (!groups.Any() || !groups.TryGetValue(assistantKey, out var value) || value.Count < 2)
-            {
-                AddMemberSection();
-            }
-            else
-            {
-                AddMemberSectionForGroup(groups[Id]);
-            }
+            Id = memberKey;
+            AssistantKey = memberKey;
+            AddMemberSection();
         }
 
         void AddMemberSection()
@@ -38,30 +30,20 @@ namespace PersonalAssistant
             Parts.Add(DashboardItemLocation());
         }
 
-        void AddMemberSectionForGroup(IEnumerable<string> members)
-        {
-            foreach (var key in members)
-            {
-                Parts.Add(DashboardItemGroup(key));
-            }
-        }
-
         public string Id { get; set; }
         public string AssistantKey { get; set; }
         public string CurrentLocation { get; set; }
-        public List<DashboardPart> Parts;
+        public List<DashboardPart> Parts { get; } = new List<DashboardPart>();
 
-        static DashboardPart DashboardItemGoal()
-            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0 };
+        DashboardPart DashboardItemGoal()
+            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = Engine.GetBadgesByGoal(AssistantKey).ToList() };
 
         static DashboardPart DashboardItemTag()
-            => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g i am in shop now!", Sequence = 1 };
+            => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g I am in shop now!", Sequence = 1 };
 
         static DashboardPart DashboardItemLocation()
             => new DashboardPart { Text = "UsedLocations", Description = "For now we manually select location until ...", Sequence = 2 };
 
-        static DashboardPart DashboardItemGroup(string key)
-            => new DashboardPart { Text = key, Description = "...!", Sequence = 0 };
     }
 
     public class BadgeItem
@@ -81,6 +63,7 @@ namespace PersonalAssistant
     public class TodoItem
     {
         public string Id { get; set; }
+        public string GroupKey { get; set; }
         public string Text { get; set; }
         public string Deadline { get; set; }
     }

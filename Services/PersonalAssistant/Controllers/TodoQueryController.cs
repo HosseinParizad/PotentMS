@@ -23,9 +23,9 @@ namespace PersonalAssistant.Controllers
         [HttpGet("{assistantKey}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<DashboardPart>> Dashboard(string assistantKey)
+        public ActionResult<IEnumerable<Dashboard>> Dashboard(string assistantKey)
         {
-            return Engine.GetDashboardSections(assistantKey).ToList();
+            return Engine.GetDashboards(assistantKey).ToList();
         }
 
         //[HttpGet("/Deadlines/{groupKey}")]

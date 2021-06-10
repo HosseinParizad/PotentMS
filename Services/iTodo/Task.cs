@@ -27,6 +27,21 @@ namespace iTodo
             CreateGroupIfNotExists(groupKey);
         }
 
+        public static void CreateNewGoal(string groupKey, string content)
+        {
+            var newItem = new TodoItem();
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            newItem.Id = Guid.NewGuid().ToString();
+            newItem.Description = data.GetProperty("Description").ToString();
+            newItem.GroupKey = groupKey;
+            newItem.Sequence = Todos.Count;
+            newItem.Kind = TodoType.Goal;
+            Todos.Add(newItem);
+            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Goal = newItem.Description });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGoalAdded, key: groupKey, content: dataToSend);
+            CreateGroupIfNotExists(groupKey);
+        }
+
         #endregion
 
         #region UpdateDescription 
@@ -285,13 +300,14 @@ namespace iTodo
         public string Description { get; set; }
         public string GroupKey { get; set; }
         public string AssignedTo { get; set; }
-        public List<string> Category { get; set; }
         public DateTimeOffset? Deadline { get; set; }
         public int Sequence { get; set; }
         public List<string> Locations { get; set; } = new List<string>();
         public List<TagItem> Tags { get; set; } = new List<TagItem>();
         public TodoStatus Status { get; set; }
         public string ParentId { get; set; }
+        public TodoType Kind { get; set; }
+        public List<TodoItem> TodoItems { get; set; } = new List<TodoItem>();
     }
 
     public class GroupItem
@@ -318,6 +334,13 @@ namespace iTodo
     {
         Active,
         Close
+    }
+
+    public enum TodoType
+    {
+        Goal,
+        Category,
+        Task
     }
 
     #endregion

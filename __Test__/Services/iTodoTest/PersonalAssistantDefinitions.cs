@@ -18,7 +18,7 @@ namespace SpecFlowDemo.Steps
         public void ThenIShouldSeeTheFollowingBoard(string groupKey, Table table)
         {
             System.Threading.Thread.Sleep(1000);
-            dynamic[] dashboard = null;
+            dynamic[] dashboards = null;
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
@@ -29,7 +29,7 @@ namespace SpecFlowDemo.Steps
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
             var url = $"https://localhost:5007/PersonalAssistant/{groupKey}";
-            dashboard = RestHelper.MakeAGetRequest(url);
+            dashboards = RestHelper.MakeAGetRequest(url);
             Dictionary<String, string> replaceValues = new Dictionary<string, string>();
             if (tableColumns.Contains("Badges"))
             {
@@ -44,7 +44,35 @@ namespace SpecFlowDemo.Steps
 
                 }
             }
-            RestHelper.AreEqual(RestHelper.DynamicToList(dashboard, expectedColums), table.ToList(tableColumns, replaceValues));
+            var t2 = dashboards[0].GetProperty("parts");
+            var c = new List<dynamic>();
+            c.Add(t2[0]);
+            c.Add(t2[1]);
+            c.Add(t2[2]);
+            RestHelper.AreEqual(RestHelper.DynamicToList(c.ToArray(), expectedColums), table.ToList(tableColumns, replaceValues));
+        }
+
+        [Then(@"I should see the following group board for '(.*)':")]
+        public void ThenIShouldSeeTheFollowingGroupBoard(string groupKey, Table table)
+        {
+            System.Threading.Thread.Sleep(1000);
+            dynamic[] dashboards = null;
+            var tableColumns = table.Header.ToArray();
+            var map = new Dictionary<string, string>
+            {
+                { "Id", "id" },
+            };
+
+            var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
+
+            var url = $"https://localhost:5007/PersonalAssistant/{groupKey}";
+            dashboards = RestHelper.MakeAGetRequest(url);
+            Dictionary<String, string> replaceValues = new Dictionary<string, string>();
+            var c = new List<dynamic>();
+            c.Add(dashboards[0]);
+            c.Add(dashboards[1]);
+            c.Add(dashboards[2]);
+            RestHelper.AreEqual(RestHelper.DynamicToList(c.ToArray(), expectedColums), table.ToList(tableColumns, replaceValues));
         }
 
         static string DefaultBadgeItem(string item, int isLocation)

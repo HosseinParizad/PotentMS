@@ -14,14 +14,9 @@ namespace SpecFlowDemo.Steps
     {
         string selectedId = "";
 
-        public TodoStepDefinitions()
-        {
-        }
-
         [Given("I send the following task:")]
         public void WhenISendFllowingTasks(Table table)
         {
-            // RestHelper.MakeAGetRequest("https://localhost:5003/TodoQuery/Reset");
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
@@ -29,6 +24,22 @@ namespace SpecFlowDemo.Steps
             {
                 var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
                 var msg = new Msg(action: "newTask", key: row["GroupKey"], content: JsonSerializer.Serialize(content));
+                var dataToSend = JsonSerializer.Serialize(msg);
+                RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+            }
+        }
+
+
+        [Given("I send the following goals:")]
+        public void WhenISendFllowingGoals(Table table)
+        {
+            const string url = "https://localhost:5001/Gateway";
+            var httpMethod = HttpMethod.Post;
+
+            foreach (var row in table.Rows)
+            {
+                var content = new iTodo() { Description = row["Goal"], ParentId = selectedId };
+                var msg = new Msg(action: "newGoal", key: row["GroupKey"], content: JsonSerializer.Serialize(content));
                 var dataToSend = JsonSerializer.Serialize(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }

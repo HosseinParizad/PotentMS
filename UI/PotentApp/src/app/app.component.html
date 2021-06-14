@@ -40,7 +40,7 @@
   </mat-card>
 
 </div>
-<div class="actiongroup">
+<div class="actiongroup groupcard" style="white-space:nowrap">
   <span>New: </span>
   <span>
     <input id="name" [(ngModel)]="name" placeholder="name">
@@ -48,6 +48,7 @@
   <button id="basic" type="button" class="bttn" mat-button (click)="SendTaskRequest()">
     Add task
   </button>
+  <button id="basic" type="button" class="bttn" mat-button (click)="SendGoalRequest()">
+    Add Goal
+  </button>
 </div>
-
-{{selected | json }}

@@ -33,6 +33,10 @@ namespace PersonalAssistant
                     ApplyNewGoalAdded(feedback);
                     break;
 
+                case FeedbackActions.NewTaskAdded:
+                    ApplyNewTaskAdded(feedback);
+                    break;
+
                 case FeedbackActions.TaskAssginedToMember:
                     ApplyTaskAssginedToMember(feedback);
                     break;
@@ -64,7 +68,17 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
             var goal = data.GetProperty("Goal").ToString();
-            ActiveTasks.Add(new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key });
+            Goals.Add(new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key });
+            var key = feedback.Key;
+            Refresh(key);
+        }
+
+        static void ApplyNewTaskAdded(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var text = data.GetProperty("Text").ToString();
+            Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key });
             var key = feedback.Key;
             Refresh(key);
         }
@@ -80,8 +94,16 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
             var member = data.GetProperty("MemberKey").ToString();
-            ActiveTasks.Single(t => t.Id == id).GroupKey = member;
-            //ActiveTasks.Add(new TodoItem { Text = ActiveTasks.Single(t => t.Id == id)?.Text ?? "", Id = id, GroupKey = member });
+            TodoItem goal = Goals.SingleOrDefault(t => t.Id == id);
+            if (goal != null)
+            {
+                goal.GroupKey = member;
+            }
+            TodoItem due = Dues.SingleOrDefault(t => t.Id == id);
+            if (due != null)
+            {
+                due.GroupKey = member;
+            }
         }
 
         static void ApplyNewTagAdded(Feedback feedback)
@@ -169,7 +191,8 @@ namespace PersonalAssistant
         {
             Dashboards = new List<Dashboard>();
             Groups = new Dictionary<string, HashSet<string>>();
-            ActiveTasks = new List<TodoItem>();
+            Goals = new List<TodoItem>();
+            Dues = new List<TodoItem>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
 
@@ -210,11 +233,20 @@ namespace PersonalAssistant
         static List<Dashboard> Dashboards = new List<Dashboard>();
         public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
 
-        static List<TodoItem> ActiveTasks = new List<TodoItem>();
+        static List<TodoItem> Goals = new List<TodoItem>();
+        static List<TodoItem> Dues = new List<TodoItem>();
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key)
         {
-            foreach (var task in ActiveTasks.Where(t => t.GroupKey == key))
+            foreach (var task in Goals.Where(t => t.GroupKey == key))
+            {
+                yield return new BadgeItem { Text = task.Text };
+            }
+        }
+
+        public static IEnumerable<BadgeItem> GetBadgesDues(string key)
+        {
+            foreach (var task in Dues.Where(t => t.GroupKey == key))
             {
                 yield return new BadgeItem { Text = task.Text };
             }

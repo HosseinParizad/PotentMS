@@ -37,6 +37,15 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequest() {
+    this.SendRequest('newTask');
+    return false;
+  }
+  SendGoalRequest() {
+    this.SendRequest('newGoal');
+    return false;
+  }
+
+  SendRequest(action:string) {
     const headers = new HttpHeaders()
     // headers.append('Content-Type', 'application/json')
     // headers.append('Access-Control-Allow-Origin', '*')
@@ -44,7 +53,7 @@ export class AppComponent implements OnInit {
     // headers.append('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, PUT, OPTIONS')
     // headers.append('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With')
     headers.append('Accept', 'application/json')
-    const body = { Action: 'newGoal', Key: this.selected.group, Content: JSON.stringify({ Description: this.name, ParentId: "" }) };
+    const body = { Action: action, Key: this.selected.group, Content: JSON.stringify({ Description: this.name, ParentId: "" }) };
     this.http.post<any>('https://localhost:5001/Gateway', body, { headers }).subscribe({
       next: data => {
         this.name = '';

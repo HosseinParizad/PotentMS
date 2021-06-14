@@ -28,6 +28,7 @@ namespace PersonalAssistant
             Parts.Add(DashboardItemGoal());
             Parts.Add(DashboardItemTag());
             Parts.Add(DashboardItemLocation());
+            Parts.Add(DashboardItemDue());
         }
 
         public string Id { get; set; }
@@ -43,6 +44,9 @@ namespace PersonalAssistant
 
         static DashboardPart DashboardItemLocation()
             => new DashboardPart { Text = "UsedLocations", Description = "For now we manually select location until ...", Sequence = 2 };
+
+        DashboardPart DashboardItemDue()
+            => new DashboardPart { Text = "Due", Description = "Order by Due", Sequence = 3, BadgesInternal = Engine.GetBadgesDues(AssistantKey).ToList() };
 
     }
 

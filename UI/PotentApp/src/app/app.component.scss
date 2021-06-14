@@ -1,12 +1,10 @@
 .groupcard {
   padding: 10px;
-  margin: 10px;
+  margin: 20px;
 }
 
-
-.parttext
-{
-  font-size:large;
+.parttext {
+  font-size: large;
   border-style: solid;
   border-width: thin;
   border-color: gray;
@@ -16,25 +14,35 @@
   border-radius: 5px;
 }
 
-.badgetext
-{
-// font-style: italic;
+.badgetext {
+  // font-style: italic;
   line-height: 24px;
 }
 
-.bttn{
-  background-color:#ddd;
+.bttn {
+  background-color: #ddd;
 }
 
-.selectedgroup
-{
+.actiongroup {
+  border-style: solid;
+  border-width: thin;
+  border-color: gray;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.actiongroup input{
+  width: 80%;
+  margin: 5px 15px;
+}
+
+.selectedgroup {
   border-color: black;
   border-width: 2px;
   border-style: solid;
 }
 
-.selectedbadge
-{
+.selectedbadge {
   // color: red;
   font-weight: bolder;
   font-style: italic;

@@ -13,8 +13,6 @@ namespace iTodo
         public static void CreateNewTask(string groupKey, string content)
         {
             var newItem = new TodoItem();
-            // Console.WriteLine("ppppppppppppp");
-            // Console.WriteLine(groupKey);
             var data = JsonSerializer.Deserialize<dynamic>(content);
             newItem.Id = Guid.NewGuid().ToString();
             newItem.Description = data.GetProperty("Description").ToString();
@@ -27,7 +25,8 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
-            // Console.WriteLine("pppppp2ppppppp");
+            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, key: groupKey, content: dataToSend);
         }
 
         public static void CreateNewGoal(string groupKey, string content)

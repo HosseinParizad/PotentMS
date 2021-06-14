@@ -46,6 +46,10 @@ namespace SpecFlowDemo.Steps
             }
             var t2 = dashboards[0].GetProperty("parts");
             var c = new List<dynamic>();
+            //foreach (var item in t2)
+            //{
+            //    c.Add(item);
+            //}
             c.Add(t2[0]);
             c.Add(t2[1]);
             c.Add(t2[2]);
@@ -69,9 +73,13 @@ namespace SpecFlowDemo.Steps
             dashboards = RestHelper.MakeAGetRequest(url);
             Dictionary<String, string> replaceValues = new Dictionary<string, string>();
             var c = new List<dynamic>();
-            c.Add(dashboards[0]);
-            c.Add(dashboards[1]);
-            c.Add(dashboards[2]);
+            //c.Add(dashboards[0]);
+            //c.Add(dashboards[1]);
+            //c.Add(dashboards[2]);
+            foreach (var item in dashboards)
+            {
+                c.Add(item);
+            }
             RestHelper.AreEqual(RestHelper.DynamicToList(c.ToArray(), expectedColums), table.ToList(tableColumns, replaceValues));
         }
 

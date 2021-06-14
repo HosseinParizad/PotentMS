@@ -41,4 +41,4 @@ Feature: PersonalAssistant.Group
 			| family  | Yasmin  |
 			| Hossein | Hossein |
 			| Mania   | Mania   |
-			| Yasmin  | yasmin  |
+			| Yasmin  | Yasmin  |

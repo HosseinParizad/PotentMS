@@ -71,11 +71,20 @@ namespace SpecFlowDemo.Steps
             {
                 var expect = table.ToList(tableColumns);
                 var result = RestHelper.DynamicToList(groups, expectedColums);
+                //Assert.Multiple(() =>
+                //{
+                //    Assert.IsTrue(expect.All(result.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
+                //    Assert.IsTrue(result.All(expect.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
+                //});
+
+                var set1 = new HashSet<string>(expect);
+                var set2 = new HashSet<string>(result);
                 Assert.Multiple(() =>
                 {
-                    Assert.IsTrue(expect.All(result.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
-                    Assert.IsTrue(result.All(expect.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
+                    Assert.IsFalse(expect.Except(result).Any(), String.Join(",", expect.Except(result)));
+                    Assert.IsFalse(result.Except(expect).Any(), String.Join(",", expect.Except(expect)));
                 });
+
             }
         }
     }

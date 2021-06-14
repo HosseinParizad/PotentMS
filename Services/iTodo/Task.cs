@@ -13,6 +13,8 @@ namespace iTodo
         public static void CreateNewTask(string groupKey, string content)
         {
             var newItem = new TodoItem();
+            // Console.WriteLine("ppppppppppppp");
+            // Console.WriteLine(groupKey);
             var data = JsonSerializer.Deserialize<dynamic>(content);
             newItem.Id = Guid.NewGuid().ToString();
             newItem.Description = data.GetProperty("Description").ToString();
@@ -25,6 +27,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
+            // Console.WriteLine("pppppp2ppppppp");
         }
 
         public static void CreateNewGoal(string groupKey, string content)
@@ -133,6 +136,24 @@ namespace iTodo
             {
                 //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find task!", originalRequest: "CloseTask");
             }
+        }
+
+        #endregion
+
+        #region AssignTask
+
+        public static void AssignTask(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            var assignTo = data.GetProperty("AssignTo").ToString();
+            TodoItem task = FindById(groupKey, id);
+            if (task != null)
+            {
+                task.AssignedTo = assignTo;
+            }
+            var dataToSend = JsonSerializer.Serialize(new { Id = id, MemberKey = assignTo });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskAssginedToMember, key: groupKey, content: dataToSend);
         }
 
         #endregion

@@ -28,6 +28,7 @@ namespace iTodo
                     { "newMember", Engine.NewMember },
                     { "setLocation", Engine.SetLocation },
                     { "closeTask", Engine.CloseTask },
+                    { "assignTask", Engine.AssignTask },
                 };
 
             var locationActions =

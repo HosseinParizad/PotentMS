@@ -2,3 +2,37 @@
   padding: 10px;
   margin: 10px;
 }
+
+
+.parttext
+{
+  font-size:large;
+  border-style: solid;
+  border-width: thin;
+  border-color: gray;
+  padding: 3px 10px;
+  margin: 5px;
+  line-height: 35px;
+  border-radius: 5px;
+}
+
+.badgetext
+{
+// font-style: italic;
+  line-height: 24px;
+}
+
+.bttn{
+  background-color:#ddd;
+}
+
+.selectedgroup
+{
+  border-color: black;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.selectedbadge
+{color: red
+}

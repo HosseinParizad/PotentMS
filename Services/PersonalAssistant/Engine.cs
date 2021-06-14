@@ -33,6 +33,10 @@ namespace PersonalAssistant
                     ApplyNewGoalAdded(feedback);
                     break;
 
+                case FeedbackActions.TaskAssginedToMember:
+                    ApplyTaskAssginedToMember(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -61,6 +65,23 @@ namespace PersonalAssistant
             var id = data.GetProperty("Id").ToString();
             var goal = data.GetProperty("Goal").ToString();
             ActiveTasks.Add(new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key });
+            var key = feedback.Key;
+            Refresh(key);
+        }
+
+        static void Refresh(string key)
+        {
+            Dashboards.Remove(Dashboards.Single(d => d.Id == key));
+            GetDashboardOrAdd(key);
+        }
+
+        static void ApplyTaskAssginedToMember(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var member = data.GetProperty("MemberKey").ToString();
+            ActiveTasks.Single(t => t.Id == id).GroupKey = member;
+            //ActiveTasks.Add(new TodoItem { Text = ActiveTasks.Single(t => t.Id == id)?.Text ?? "", Id = id, GroupKey = member });
         }
 
         static void ApplyNewTagAdded(Feedback feedback)

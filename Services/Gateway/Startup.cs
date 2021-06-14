@@ -48,7 +48,9 @@ namespace Gateway
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors(builder => builder.AllowAnyOrigin());
+
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

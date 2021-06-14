@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
+import { FormsModule } from '@angular/forms'; 
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { MatChipsModule } from '@angular/material/chips';
     MatButtonModule,
     MatCardModule,
     MatBadgeModule,
-    MatChipsModule
+    MatChipsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

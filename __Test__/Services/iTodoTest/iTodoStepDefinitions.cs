@@ -45,7 +45,6 @@ namespace SpecFlowDemo.Steps
             }
         }
 
-
         [When("User select item (.*) from tasks of '(.*)'")]
         public void WhenUserSelectItemN(string index, string groupKey)
         {
@@ -91,6 +90,19 @@ namespace SpecFlowDemo.Steps
 
             var content = new { Id = selectedId };
             var msg = new Msg(action: "closeTask", key: groupKey, content: JsonSerializer.Serialize(content));
+
+            var dataToSend = JsonSerializer.Serialize(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
+        [When(@"User assign selected task to '(.*)' for '(.*)'")]
+        public void WhenUseCloseSelectedTask(string assignTo, string groupKey)
+        {
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId, AssignTo = assignTo };
+            var msg = new Msg(action: "assignTask", key: groupKey, content: JsonSerializer.Serialize(content));
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);

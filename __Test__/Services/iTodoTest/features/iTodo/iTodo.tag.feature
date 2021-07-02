@@ -5,10 +5,10 @@ Feature: Tag
 			| TaskDesc                            | GroupKey |
 			| Watch cat videos on YouTube all day | Ali      |
 		When User select item 1 from tasks of 'Ali'
-		When User add 'Home' to tag 0 on selected task for 'Ali'
+		When User add 'Home' to tag X on selected task for 'Ali'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Tags                                    |
-			| Watch cat videos on YouTube all day | Ali      | [{"tagParentKey":"0","value":["Home"]}] |
+			| Watch cat videos on YouTube all day | Ali      | [{"tagParentKey":"X","value":["Home"]}] |
 
 	Scenario: Should be able to set tag
 		Given  I send the following task:

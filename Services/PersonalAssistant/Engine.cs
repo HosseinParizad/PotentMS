@@ -248,7 +248,7 @@ namespace PersonalAssistant
         {
             foreach (var task in Dues.Where(t => t.GroupKey == key))
             {
-                yield return new BadgeItem { Text = task.Text };
+                yield return new BadgeItem { Text = task.Text, LinkItems = new List<LinkItem> { new LinkItem { Link = $"{task.Id}", Text = "Delete" }, new LinkItem { Link = "", Text = "Update" } } };
             }
         }
 

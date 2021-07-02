@@ -1,6 +1,6 @@
 Feature: Tree
 
-	Scenario: Should be able to make sub task
+	Scenario: Should be able to make a sub task
 		Given  I send the following task:
 			| TaskDesc | GroupKey |
 			| My goal  | Ali      |

@@ -71,9 +71,10 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  selectbadgepart(part:string, badge:string) {
+  selectbadgepart(part:string, badge:any) {
     this.selected.part = part;
-    this.selected.badge = badge;
+    this.selected.badge = badge.text;
+    this.selected.linkItems = badge.linkItems;
     //this.selected.tasklid = taskid;
     return false;
   }

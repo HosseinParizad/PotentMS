@@ -25,7 +25,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
-            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description });
+            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description, ParentId = parentId });
             SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, key: groupKey, content: dataToSend);
         }
 

@@ -24,13 +24,18 @@
         <li *ngFor="let part of dashboard.parts;">
           <span class="parttext">{{part.text}}</span>
           <ol>
-            <li *ngFor="let badge of part.badges;">
-              <span class="badgetext"
-                [class.selectedbadge] = "badge.text === selected.badge && part.text == selected.part"
-                (click)="selectbadgepart(part.text, badge)">
+            <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: part.badges, part:part }">
+            </ng-container>
+            <!-- <li *ngFor="let badge of part.badges;">
+              <span class="badgetext" [class.selectedbadge]="badge.id === selected.taskid && part.text == selected.part"
+                (click)="selectbadgepart($event, part.text, badge)">
                 {{badge.text}}
+                <ul>
+                  <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.items, part:part }">
+                  </ng-container>
+                </ul>
               </span>
-            </li>
+            </li> -->
           </ol>
         </li>
       </ul>
@@ -40,6 +45,23 @@
   </mat-card>
 
 </div>
+
+
+<ng-template #recursiveListTmpl let-list="list" let-part="part">
+  <li *ngFor="let badge of list">
+    <span 
+      [class.selectedbadge]="badge.id === selected.taskid && part.text == selected.part"
+      (click)="selectbadgepart($event, part.text, badge)">
+      {{badge.text}}
+    </span>
+
+    <ul *ngIf="badge.items.length > 0">
+      <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.items, part:part }"></ng-container>
+    </ul>
+  </li>
+</ng-template>
+
+
 <div class="actiongroup groupcard" style="white-space:nowrap">
   <span>New: </span>
   <span>
@@ -58,5 +80,5 @@
       </mat-chip>
     </p>
   </mat-chip-list>
-  <pre>{{sent|json}}</pre>
+  <pre>{{selected|json}}</pre>
 </div>

@@ -82,7 +82,9 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
             var text = data.GetProperty("Text").ToString();
-            Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key });
+            var parentId = data.GetProperty("ParentId").ToString();
+            parentId = parentId == "" ? null : parentId;
+            Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key, ParentId = parentId });
             var key = feedback.Key;
             Refresh(key);
         }
@@ -250,17 +252,20 @@ namespace PersonalAssistant
         static List<TodoItem> Goals = new List<TodoItem>();
         static List<TodoItem> Dues = new List<TodoItem>();
 
-        public static IEnumerable<BadgeItem> GetBadgesByGoal(string key)
+        public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
         {
-            foreach (var task in Goals.Where(t => t.GroupKey == key))
+            foreach (var task in Goals.Where(t => t.GroupKey == key && t.ParentId == parentId))
             {
-                yield return new BadgeItem { Text = task.Text };
+                yield return new BadgeItem
+                {
+                    Text = task.Text
+                };
             }
         }
 
-        public static IEnumerable<BadgeItem> GetBadgesDues(string key)
+        public static IEnumerable<BadgeItem> GetBadgesDues(string key, string parentId)
         {
-            foreach (var task in Dues.Where(t => t.GroupKey == key))
+            foreach (var task in Dues.Where(t => t.GroupKey == key && t.ParentId == parentId))
             {
                 //var s = $@"{  \"Action\": \"newTask\",  \"Key\": \"{this.selected.group}\",  \"Content\": \"{\"Description\":\"{this.name}\",\"ParentId\":\"{task.Id}\"}\"}";
                 var addSteps = new
@@ -281,6 +286,18 @@ namespace PersonalAssistant
                     Key = key,
                     Content = JsonSerializer.Serialize(new { Description = "[text]", Id = task.Id })
                 };
+                var setLocation = new
+                {
+                    Action = "setLocation",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Location = "[text]", Id = task.Id })
+                };
+                var setTag = new
+                {
+                    Action = "setTag",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Tag = "[text]", TagKey = 0, Id = task.Id })
+                };
 
                 yield return new BadgeItem
                 {
@@ -289,7 +306,10 @@ namespace PersonalAssistant
                         new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" },
                         new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" },
                         new LinkItem { Link = JsonSerializer.Serialize(update), Text = "Update" },
-                    }
+                        new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" },
+                        new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" },
+                    },
+                    Items = GetBadgesDues(key, task.Id).ToList()
                 };
             }
         }

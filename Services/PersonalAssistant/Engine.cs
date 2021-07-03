@@ -41,6 +41,10 @@ namespace PersonalAssistant
                     ApplyTaskAssginedToMember(feedback);
                     break;
 
+                case FeedbackActions.updateTaskDescription:
+                    ApplyUpdateTaskDescription(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -79,6 +83,16 @@ namespace PersonalAssistant
             var id = data.GetProperty("Id").ToString();
             var text = data.GetProperty("Text").ToString();
             Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key });
+            var key = feedback.Key;
+            Refresh(key);
+        }
+
+        static void ApplyUpdateTaskDescription(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var text = data.GetProperty("Description").ToString();
+            Dues.Single(d => d.Id == id).Text = text;
             var key = feedback.Key;
             Refresh(key);
         }
@@ -248,7 +262,35 @@ namespace PersonalAssistant
         {
             foreach (var task in Dues.Where(t => t.GroupKey == key))
             {
-                yield return new BadgeItem { Text = task.Text, LinkItems = new List<LinkItem> { new LinkItem { Link = $"{task.Id}", Text = "Delete" }, new LinkItem { Link = "", Text = "Update" } } };
+                //var s = $@"{  \"Action\": \"newTask\",  \"Key\": \"{this.selected.group}\",  \"Content\": \"{\"Description\":\"{this.name}\",\"ParentId\":\"{task.Id}\"}\"}";
+                var addSteps = new
+                {
+                    Action = "newTask",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = task.Id })
+                };
+                var delete = new
+                {
+                    Action = "delTask",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Id = task.Id })
+                };
+                var update = new
+                {
+                    Action = "updateDescription",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Description = "[text]", Id = task.Id })
+                };
+
+                yield return new BadgeItem
+                {
+                    Text = task.Text,
+                    LinkItems = new List<LinkItem> {
+                        new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" },
+                        new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" },
+                        new LinkItem { Link = JsonSerializer.Serialize(update), Text = "Update" },
+                    }
+                };
             }
         }
 

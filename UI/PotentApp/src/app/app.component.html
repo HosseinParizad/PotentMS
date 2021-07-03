@@ -26,7 +26,7 @@
           <ol>
             <li *ngFor="let badge of part.badges;">
               <span class="badgetext"
-                [class.selectedbadge]="badge.text === selected.badge && part.text == selected.part"
+                [class.selectedbadge] = "badge.text === selected.badge && part.text == selected.part"
                 (click)="selectbadgepart(part.text, badge)">
                 {{badge.text}}
               </span>
@@ -43,7 +43,7 @@
 <div class="actiongroup groupcard" style="white-space:nowrap">
   <span>New: </span>
   <span>
-    <input id="name" [(ngModel)]="name" placeholder="name">
+    <input id="text" [(ngModel)]="text" placeholder="name">
   </span>
   <button id="basic" type="button" class="bttn" mat-button (click)="SendTaskRequest()">
     Add task
@@ -53,9 +53,10 @@
   </button>
   <mat-chip-list aria-label="????" class="tagtag">
     <p *ngFor="let lit of selected.linkItems;">
-      <mat-chip mat-raised-button>
+      <mat-chip (click)="SendTaskRequestSpe(lit.link)" mat-raised-button>
         {{lit.text}}
       </mat-chip>
     </p>
   </mat-chip-list>
+  <pre>{{sent|json}}</pre>
 </div>

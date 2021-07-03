@@ -54,6 +54,8 @@ namespace iTodo
             var id = data.GetProperty("Id").ToString();
             var description = data.GetProperty("Description").ToString();
             FindById(groupKey, id).Description = description;
+            var dataToSend = JsonSerializer.Serialize(new { Id = id, Description = description });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.updateTaskDescription, key: groupKey, content: dataToSend);
         }
 
         #endregion

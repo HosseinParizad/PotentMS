@@ -14,8 +14,9 @@ export class AppComponent implements OnInit {
   cats: any[] = []
   totalAngularPackages: string = '';
   hidden = false;
-  name: string = "";
+  text: string = "";
   selected: any = {};
+  sent = {};
 
   constructor(private http: HttpClient) { }
 
@@ -25,7 +26,7 @@ export class AppComponent implements OnInit {
         this.cats = [];
         data.forEach((row: any) => {
           this.cats.push(row)
-          if (this.selected.group == undefined) { 
+          if (this.selected.group == undefined) {
             this.selected.group = row.id;
           }
         });
@@ -37,15 +38,19 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequest() {
-    this.SendRequest('newTask');
+    this.sent = this.SendRequest('newTask');
     return false;
   }
+  SendTaskRequestSpe(action: string) {
+    this.sent = this.SendRequest("", action);
+  }
+
   SendGoalRequest() {
-    this.SendRequest('newGoal');
+    this.sent = this.SendRequest('newGoal');
     return false;
   }
 
-  SendRequest(action:string) {
+  SendRequest(action: string, bod: string = "") {
     const headers = new HttpHeaders()
     // headers.append('Content-Type', 'application/json')
     // headers.append('Access-Control-Allow-Origin', '*')
@@ -53,17 +58,21 @@ export class AppComponent implements OnInit {
     // headers.append('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, PUT, OPTIONS')
     // headers.append('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With')
     headers.append('Accept', 'application/json')
-    const body = { Action: action, Key: this.selected.group, Content: JSON.stringify({ Description: this.name, ParentId: "" }) };
+    var body = { Action: action, Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    if (bod) {
+      bod = bod.replace('[text]', this.text)
+      body = JSON.parse(bod);
+    }
     this.http.post<any>('https://localhost:5001/Gateway', body, { headers }).subscribe({
       next: data => {
-        this.name = '';
+        this.text = '';
         this.ngOnInit();
       },
       error: error => {
         alert(error.message);
       }
     })
-    return false;
+    return body;
   }
 
   selectgroup(group: string) {
@@ -71,11 +80,12 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  selectbadgepart(part:string, badge:any) {
+  selectbadgepart(part: string, badge: any) {
     this.selected.part = part;
     this.selected.badge = badge.text;
     this.selected.linkItems = badge.linkItems;
-    //this.selected.tasklid = taskid;
+    this.selected.taskid = badge.id;
+    this.sent = badge;
     return false;
   }
 }

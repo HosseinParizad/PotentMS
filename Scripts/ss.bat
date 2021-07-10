@@ -21,4 +21,9 @@ start /B dotnet run
 cd ../../Services/PersonalAssistant/  
 start /B dotnet run
 
+call :wait
+
+cd ../../__Test__/Services/iTodoTest/
+start /B dotnet test --filter "WhenSelectGroupShouldGetBoardByMember"
+
 echo "Finishing"

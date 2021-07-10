@@ -52,6 +52,7 @@ namespace PersonalAssistant
 
     public class BadgeItem
     {
+        public string Id { get; set; }
         public string Text { get; set; }
         public List<LinkItem> LinkItems { get; set; }
         public BadgeType Type { get; set; }

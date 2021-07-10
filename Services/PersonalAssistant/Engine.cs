@@ -74,7 +74,7 @@ namespace PersonalAssistant
             var goal = data.GetProperty("Goal").ToString();
             Goals.Add(new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key });
             var key = feedback.Key;
-            Refresh(key);
+            GetDashboardSections(feedback.Key).Single(d => d.Text == "Goal").BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
@@ -85,8 +85,9 @@ namespace PersonalAssistant
             var parentId = data.GetProperty("ParentId").ToString();
             parentId = parentId == "" ? null : parentId;
             Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key, ParentId = parentId });
-            var key = feedback.Key;
-            Refresh(key);
+            GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
+            //var key = feedback.Key;
+            //Refresh(key);
         }
 
         static void ApplyUpdateTaskDescription(Feedback feedback)
@@ -96,14 +97,9 @@ namespace PersonalAssistant
             var text = data.GetProperty("Description").ToString();
             Dues.Single(d => d.Id == id).Text = text;
             var key = feedback.Key;
-            Refresh(key);
+            //Refresh(key);
         }
 
-        static void Refresh(string key)
-        {
-            Dashboards.Remove(Dashboards.Single(d => d.Id == key));
-            GetDashboardOrAdd(key);
-        }
 
         static void ApplyTaskAssginedToMember(Feedback feedback)
         {
@@ -258,6 +254,7 @@ namespace PersonalAssistant
             {
                 yield return new BadgeItem
                 {
+                    Id = task.Id,
                     Text = task.Text
                 };
             }
@@ -301,6 +298,7 @@ namespace PersonalAssistant
 
                 yield return new BadgeItem
                 {
+                    Id = task.Id,
                     Text = task.Text,
                     LinkItems = new List<LinkItem> {
                         new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" },

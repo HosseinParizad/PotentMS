@@ -50,7 +50,7 @@
 <ng-template #recursiveListTmpl let-list="list" let-part="part">
   <li *ngFor="let badge of list">
     <span 
-      [class.selectedbadge]="badge.id === selected.taskid && part.text == selected.part"
+      [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part"
       (click)="selectbadgepart($event, part.text, badge)">
       {{badge.text}}
     </span>
@@ -74,7 +74,7 @@
     Add Goal
   </button>
   <mat-chip-list aria-label="????" class="tagtag">
-    <p *ngFor="let lit of selected.linkItems;">
+    <p *ngFor="let lit of selected.badge.linkItems;">
       <mat-chip (click)="SendTaskRequestSpe(lit.link)" mat-raised-button>
         {{lit.text}}
       </mat-chip>

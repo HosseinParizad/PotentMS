@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.http.get<any>('https://localhost:5007/PersonalAssistant/family')
       .subscribe(data => {
+        this.selected.badge = {};
         this.cats = [];
         data.forEach((row: any) => {
           this.cats.push(row)
@@ -82,9 +83,7 @@ export class AppComponent implements OnInit {
 
   selectbadgepart(event:any, part: string, badge: any) {
     this.selected.part = part;
-    this.selected.badge = badge.text;
-    this.selected.linkItems = badge.linkItems;
-    this.selected.taskid = badge.id;
+    this.selected.badge = badge;
     this.sent = badge;
     event.stopPropagation();
     return false;

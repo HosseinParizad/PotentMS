@@ -49,6 +49,10 @@ namespace PersonalAssistant
                     ApplyTaskDeleted(feedback);
                     break;
 
+                case FeedbackActions.GoalDeleted:
+                    ApplyGoalDeleted(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -166,6 +170,19 @@ namespace PersonalAssistant
             {
                 Dues.Remove(task);
                 GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
+                Console.WriteLine("......................................done ..............................................");
+            }
+        }
+
+        static void ApplyGoalDeleted(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var goal = Goals.SingleOrDefault(t => t.Id == id);
+            if (goal != null)
+            {
+                Goals.Remove(goal);
+                GetDashboardSections(feedback.Key).Single(d => d.Text == "Goal").BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
             }
         }
 
@@ -269,10 +286,19 @@ namespace PersonalAssistant
         {
             foreach (var task in Goals.Where(t => t.GroupKey == key && t.ParentId == parentId))
             {
+                var delete = new
+                {
+                    Action = "delTask",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Id = task.Id })
+                };
                 yield return new BadgeItem
                 {
                     Id = task.Id,
-                    Text = task.Text
+                    Text = task.Text,
+                    LinkItems = new List<LinkItem> {
+                        new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" },
+                    }
                 };
             }
         }

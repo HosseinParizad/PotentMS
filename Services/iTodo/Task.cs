@@ -23,6 +23,7 @@ namespace iTodo
             }
             newItem.GroupKey = groupKey;
             newItem.Sequence = Todos.Count;
+            newItem.Kind = TodoType.Task;
             Todos.Add(newItem);
             CreateGroupIfNotExists(groupKey);
             var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description, ParentId = parentId });
@@ -151,9 +152,16 @@ namespace iTodo
             if (task != null)
             {
                 Todos.Remove(task);
-                
+
                 var dataToSend = JsonSerializer.Serialize(new { Id = id });
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, key: groupKey, content: dataToSend);
+                if (task.Kind == TodoType.Task)
+                {
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, key: groupKey, content: dataToSend);
+                }
+                else if(task.Kind == TodoType.Goal)
+                {
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, key: groupKey, content: dataToSend);
+                }
             }
             else
             {

@@ -225,17 +225,17 @@ services:
   #   depends_on:
   #     - "broker"
 
-  listener:
-    build:
-      context: .
-      dockerfile: services/gateway/dockerfile
-    ports:
-      - 3002:3002
-      - 8000:8000
-      - 80:80
-    depends_on:
-      - broker
-    network_mode: bridge
+  # listener:
+  #   build:
+  #     context: .
+  #     dockerfile: services/gateway/dockerfile
+  #   ports:
+  #     - 3002:3002
+  #     - 8000:8000
+  #     - 80:80
+  #   depends_on:
+  #     - broker
+  #   network_mode: bridge
   # test:
   #   build:
   #     context: .

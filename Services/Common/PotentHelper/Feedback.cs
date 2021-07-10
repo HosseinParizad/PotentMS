@@ -37,6 +37,7 @@ namespace PotentHelper
         public const string NewGoalAdded = "New goal has been added";
         public const string TaskAssginedToMember = "Task assgined to a member";
         public const string updateTaskDescription = "Task description has been added";
+        public const string TaskDeleted = "Task has been deleted";
 
         public const string CannotSetTag = "Error: cannot set tag";
         public const string CannotCloseTask = "Error: cannot close tag";

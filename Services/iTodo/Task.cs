@@ -141,6 +141,28 @@ namespace iTodo
 
         #endregion
 
+        #region DeleteTask 
+
+        public static void DeleteTask(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            var task = FindById(groupKey, id);
+            if (task != null)
+            {
+                Todos.Remove(task);
+                
+                var dataToSend = JsonSerializer.Serialize(new { Id = id });
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, key: groupKey, content: dataToSend);
+            }
+            else
+            {
+                //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find task!", originalRequest: "CloseTask");
+            }
+        }
+
+        #endregion
+
         #region AssignTask
 
         public static void AssignTask(string groupKey, string content)

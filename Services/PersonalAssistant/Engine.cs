@@ -45,6 +45,10 @@ namespace PersonalAssistant
                     ApplyUpdateTaskDescription(feedback);
                     break;
 
+                case FeedbackActions.TaskDeleted:
+                    ApplyTaskDeleted(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -152,6 +156,19 @@ namespace PersonalAssistant
             //        badges.Add(new BadgeItem { Text = deadline });
             //    }
         }
+
+        static void ApplyTaskDeleted(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var task = Dues.SingleOrDefault(t => t.Id == id);
+            if (task!= null)
+            {
+                Dues.Remove(task);
+                GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
+            }
+        }
+
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;

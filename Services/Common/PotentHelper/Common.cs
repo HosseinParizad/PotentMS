@@ -4,9 +4,9 @@ namespace PotentHelper
     public class MessageTopic
     {
         public const string TaskFeedback = "TaskFeedback";
-        public const string Task = "task";
-        public const string Location = "location";
-        public const string Common = "common";
+        public const string Task = "Task";
+        public const string Location = "Location";
+        public const string Common = "Common";
     }
 
     public class FeedbackGroupNames

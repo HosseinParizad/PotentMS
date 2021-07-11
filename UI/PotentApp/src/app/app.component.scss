@@ -1,6 +1,7 @@
 .groupcard {
   padding: 10px;
   margin: 20px;
+  border: solid #aaa thin;
 }
 
 .parttext {
@@ -21,9 +22,10 @@
 
 mat-card-header
 {
-  background-color: #ddd;
   text-align: center;
   vertical-align: middle;
+  border-radius: 10px;
+  border-bottom:solid #444 thin;
 }
 
 // .mat-card-header-text

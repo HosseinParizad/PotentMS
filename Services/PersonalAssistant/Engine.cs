@@ -94,8 +94,6 @@ namespace PersonalAssistant
             parentId = parentId == "" ? null : parentId;
             Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key, ParentId = parentId });
             GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
-            //var key = feedback.Key;
-            //Refresh(key);
         }
 
         static void ApplyUpdateTaskDescription(Feedback feedback)
@@ -105,7 +103,6 @@ namespace PersonalAssistant
             var text = data.GetProperty("Description").ToString();
             Dues.Single(d => d.Id == id).Text = text;
             var key = feedback.Key;
-            //Refresh(key);
         }
 
 
@@ -166,11 +163,10 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
             var task = Dues.SingleOrDefault(t => t.Id == id);
-            if (task!= null)
+            if (task != null)
             {
                 Dues.Remove(task);
                 GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
-                Console.WriteLine("......................................done ..............................................");
             }
         }
 
@@ -307,55 +303,60 @@ namespace PersonalAssistant
         {
             foreach (var task in Dues.Where(t => t.GroupKey == key && t.ParentId == parentId))
             {
-                //var s = $@"{  \"Action\": \"newTask\",  \"Key\": \"{this.selected.group}\",  \"Content\": \"{\"Description\":\"{this.name}\",\"ParentId\":\"{task.Id}\"}\"}";
-                var addSteps = new
-                {
-                    Action = "newTask",
-                    Key = key,
-                    Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = task.Id })
-                };
-                var delete = new
-                {
-                    Action = "delTask",
-                    Key = key,
-                    Content = JsonSerializer.Serialize(new { Id = task.Id })
-                };
-                var update = new
-                {
-                    Action = "updateDescription",
-                    Key = key,
-                    Content = JsonSerializer.Serialize(new { Description = "[text]", Id = task.Id })
-                };
-                var setLocation = new
-                {
-                    Action = "setLocation",
-                    Key = key,
-                    Content = JsonSerializer.Serialize(new { Location = "[text]", Id = task.Id })
-                };
-                var setTag = new
-                {
-                    Action = "setTag",
-                    Key = key,
-                    Content = JsonSerializer.Serialize(new { Tag = "[text]", TagKey = 0, Id = task.Id })
-                };
-
                 yield return new BadgeItem
                 {
                     Id = task.Id,
                     Text = task.Text,
-                    LinkItems = new List<LinkItem> {
-                        new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" },
-                        new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" },
-                        new LinkItem { Link = JsonSerializer.Serialize(update), Text = "Update" },
-                        new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" },
-                        new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" },
-                    },
+                    LinkItems = GetLinkItems(task, key).ToList(),
                     Items = GetBadgesDues(key, task.Id).ToList()
                 };
             }
         }
 
-        #endregion
+        static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key)
+        {
+            var id = task.Id;
+            var addSteps = new
+            {
+                Action = "newTask",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = id })
+            };
+            var delete = new
+            {
+                Action = "delTask",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Id = id })
+            };
+            var update = new
+            {
+                Action = "updateDescription",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Description = "[text]", Id = id })
+            };
+            var setLocation = new
+            {
+                Action = "setLocation",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Location = "[text]", Id = id })
+            };
+            var setTag = new
+            {
+                Action = "setTag",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Tag = "[text]", TagKey = 0, Id = id })
+            };
+
+
+            yield return new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(update), Text = "Update" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" };
+        }
     }
+
+    #endregion
 }
+
 

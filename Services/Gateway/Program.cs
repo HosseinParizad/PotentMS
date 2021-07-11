@@ -11,6 +11,7 @@ namespace Gateway
     public class Program
     {
         const string AppGroupId = "Gateway";
+        static string AppId = AppGroupId + Guid.NewGuid().ToString();
 
         public static void Main(string[] args)
         {
@@ -22,8 +23,8 @@ namespace Gateway
 
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, actions), AppGroupId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppGroupId)
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(m, actions), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppId)
                 );
         }
 

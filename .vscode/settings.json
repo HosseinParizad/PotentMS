@@ -4,4 +4,7 @@
     "dotnet-test-explorer.autoWatch": true,
     "editor.fontFamily": "Consolas",
     "editor.fontSize": 14,
+    "files.autoSave": "afterDelay",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
 }

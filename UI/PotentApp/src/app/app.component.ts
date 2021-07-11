@@ -82,9 +82,12 @@ export class AppComponent implements OnInit {
   }
 
   selectbadgepart(event:any, part: string, badge: any) {
-    this.selected.part = part;
-    this.selected.badge = badge;
-    this.sent = badge;
+    if (badge.id)
+    {
+      this.selected.part = part;
+      this.selected.badge = badge;
+      this.sent = badge;
+    }
     event.stopPropagation();
     return false;
   }

@@ -158,7 +158,7 @@ namespace iTodo
                 {
                     SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, key: groupKey, content: dataToSend);
                 }
-                else if(task.Kind == TodoType.Goal)
+                else if (task.Kind == TodoType.Goal)
                 {
                     SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, key: groupKey, content: dataToSend);
                 }

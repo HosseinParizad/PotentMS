@@ -23,7 +23,7 @@ start /B dotnet run
 
 call :wait
 
-cd ../../__Test__/Services/iTodoTest/
-start /B dotnet test --filter "WhenSelectGroupShouldGetBoardByMember"
+@REM cd ../../__Test__/Services/iTodoTest/
+@REM start /B dotnet test --filter "WhenSelectGroupShouldGetBoardByMember2"
 
 echo "Finishing"

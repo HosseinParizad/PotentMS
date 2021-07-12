@@ -18,7 +18,7 @@ namespace PotentHelper
                 var source = new CancellationTokenSource();
                 var token = source.Token;
 
-                _ = new ConsumerHelper("localhost:9092", new List<string>() { topic }, token, onMessageReceived, groupId);
+                _ = new ConsumerHelper("localhost:9092", new List<string>() { KafkaEnviroment.preFix + topic }, token, onMessageReceived, groupId);
             };
         }
 

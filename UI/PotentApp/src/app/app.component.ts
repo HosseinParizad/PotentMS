@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.http.get<any>('https://localhost:5007/PersonalAssistant/family')
+    this.http.get<any>('https://localhost:5007/PersonalAssistant/AllofUs')
       .subscribe(data => {
         this.selected.badge = {};
         this.cats = [];
@@ -39,19 +39,35 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequest() {
-    this.sent = this.SendRequest('newTask');
+    var body = { Action: 'newTask', Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    this.sent = this.SendRequest(body);
     return false;
   }
-  SendTaskRequestSpe(action: string) {
-    this.sent = this.SendRequest("", action);
+
+  SendTaskRequestSpe(body: string) {
+    body = body.replace('[text]', this.text)
+    this.sent = this.SendRequest(JSON.parse(body));
   }
 
   SendGoalRequest() {
-    this.sent = this.SendRequest('newGoal');
+    var body = { Action: 'newGoal', Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    this.sent = this.SendRequest(body);
     return false;
   }
 
-  SendRequest(action: string, bod: string = "") {
+  SendGroupRequest() {
+    var body = { Action: 'newGroup', Key: this.text, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    this.sent = this.SendRequest(body);
+    return false;
+  }
+
+  SendMemberRequest() {
+    var body = { Action: 'newMember', Key: this.selected.group, Content: JSON.stringify({ NewMember: this.text }) };
+    this.sent = this.SendRequest(body);
+    return false;
+  }
+
+  SendRequest(body: any) {
     const headers = new HttpHeaders()
     // headers.append('Content-Type', 'application/json')
     // headers.append('Access-Control-Allow-Origin', '*')
@@ -59,15 +75,14 @@ export class AppComponent implements OnInit {
     // headers.append('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, PUT, OPTIONS')
     // headers.append('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With')
     headers.append('Accept', 'application/json')
-    var body = { Action: action, Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
-    if (bod) {
-      bod = bod.replace('[text]', this.text)
-      body = JSON.parse(bod);
-    }
+
     this.http.post<any>('https://localhost:5001/Gateway', body, { headers }).subscribe({
       next: data => {
         this.text = '';
-        this.ngOnInit();
+        setTimeout(() => {
+          this.ngOnInit();
+        }, 100);
+
       },
       error: error => {
         alert(error.message);
@@ -81,9 +96,8 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  selectbadgepart(event:any, part: string, badge: any) {
-    if (badge.id)
-    {
+  selectbadgepart(event: any, part: string, badge: any) {
+    if (badge.id) {
       this.selected.part = part;
       this.selected.badge = badge;
       this.sent = badge;

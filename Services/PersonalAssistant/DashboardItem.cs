@@ -54,6 +54,8 @@ namespace PersonalAssistant
     {
         public string Id { get; set; }
         public string Text { get; set; }
+
+        public string ParentId { get; set; }
         public List<LinkItem> LinkItems { get; set; }
         public BadgeType Type { get; set; }
         public int Count { get; set; }

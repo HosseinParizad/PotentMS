@@ -11,7 +11,7 @@ namespace Gateway
     public class Program
     {
         const string AppGroupId = "Gateway";
-        static string AppId = AppGroupId + Guid.NewGuid().ToString();
+        static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
         public static void Main(string[] args)
         {

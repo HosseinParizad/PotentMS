@@ -49,8 +49,7 @@
 
 <ng-template #recursiveListTmpl let-list="list" let-part="part">
   <li *ngFor="let badge of list">
-    <span 
-      [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part"
+    <span [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part"
       (click)="selectbadgepart($event, part.text, badge)">
       {{badge.text}}
     </span>
@@ -62,16 +61,26 @@
 </ng-template>
 
 
-<div class="actiongroup groupcard" style="white-space:nowrap">
+<br />
+<br />
+<br />
+<div class="cmdPanel" style="white-space:nowrap;margin: 50px; padding: 20px;">
   <span>New: </span>
   <span>
     <input id="text" [(ngModel)]="text" placeholder="name">
   </span>
+  <hr />
   <button id="basic" type="button" class="bttn" mat-button (click)="SendTaskRequest()">
     Add task
   </button>
   <button id="basic" type="button" class="bttn" mat-button (click)="SendGoalRequest()">
     Add Goal
+  </button>
+  <button id="basic" type="button" class="bttn" mat-button (click)="SendGroupRequest()">
+    Add Group
+  </button>
+  <button id="basic" type="button" class="bttn" mat-button (click)="SendMemberRequest()">
+    Add Member
   </button>
   <mat-chip-list aria-label="????" class="tagtag">
     <p *ngFor="let lit of selected.badge.linkItems;">
@@ -80,5 +89,6 @@
       </mat-chip>
     </p>
   </mat-chip-list>
-  <pre>{{selected|json}}</pre>
+
 </div>
+<pre>{{selected|json}}</pre>

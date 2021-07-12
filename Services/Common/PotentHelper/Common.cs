@@ -14,4 +14,9 @@ namespace PotentHelper
         public const string Task = "FromTask";
     }
 
+    public class KafkaEnviroment
+    {
+        //public const string preFix = "Production.";
+        public const string preFix = "";
+    }
 }

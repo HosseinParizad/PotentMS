@@ -282,6 +282,12 @@ namespace PersonalAssistant
         {
             foreach (var task in Goals.Where(t => t.GroupKey == key && t.ParentId == parentId))
             {
+                var addSteps = new
+                {
+                    Action = "newTask",
+                    Key = key,
+                    Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = task.Id })
+                };
                 var delete = new
                 {
                     Action = "delTask",
@@ -293,22 +299,40 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     LinkItems = new List<LinkItem> {
+                        new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" },
                         new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" },
-                    }
+                    },
+                    Items = GetBadgesDuesTree(key, task.Id).ToList()
+                };
+            }
+        }
+
+        public static IEnumerable<BadgeItem> GetBadgesDuesTree(string key, string parentId)
+        {
+            foreach (var task in Dues.Where(t => t.GroupKey == key && parentId == t.ParentId))
+            {
+                yield return new BadgeItem
+                {
+                    Id = task.Id,
+                    Text = task.Text,
+                    ParentId = task.ParentId,
+                    LinkItems = GetLinkItems(task, key).ToList(),
+                    Items = GetBadgesDuesTree(key, task.Id).ToList()
                 };
             }
         }
 
         public static IEnumerable<BadgeItem> GetBadgesDues(string key, string parentId)
         {
-            foreach (var task in Dues.Where(t => t.GroupKey == key && t.ParentId == parentId))
+            foreach (var task in Dues.Where(t => t.GroupKey == key))
             {
                 yield return new BadgeItem
                 {
                     Id = task.Id,
                     Text = task.Text,
+                    ParentId = task.ParentId,
                     LinkItems = GetLinkItems(task, key).ToList(),
-                    Items = GetBadgesDues(key, task.Id).ToList()
+                    Items = new List<BadgeItem>()
                 };
             }
         }

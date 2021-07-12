@@ -14,7 +14,7 @@ namespace iTodo
     public class Program
     {
         const string AppGroupId = "iTodo";
-        static string AppId = AppGroupId + Guid.NewGuid().ToString();
+        static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
 
         public static void Main(string[] args)
@@ -36,15 +36,7 @@ namespace iTodo
 
             var locationActions =
                 new Dictionary<string, Action<string, string>> {
-                    { "newTask", Engine.CreateNewTask },
-                    { "updateDescription", Engine.UpdateDescription },
-                    { "setDeadline", Engine.SetDeadline },
-                    { "setTag", Engine.SetTag },
                     { "setCurrentLocation", Engine.SetCurrentLocation },
-                    { "newGroup", Engine.NewGroup },
-                    { "newMember", Engine.NewMember },
-                    { "setLocation", Engine.SetLocation },
-                    { "closeTask", Engine.CloseTask },
                 };
 
             var commonActions =

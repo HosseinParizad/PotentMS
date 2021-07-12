@@ -14,7 +14,7 @@ namespace PersonalAssistant
     public class Program
     {
         const string AppGroupId = "PersonalAssistant";
-        static string AppId = AppGroupId + Guid.NewGuid().ToString();
+        static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
         public static void Main(string[] args)
         {

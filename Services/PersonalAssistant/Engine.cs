@@ -148,14 +148,14 @@ namespace PersonalAssistant
 
         static void ApplyDeadlineUpdated(Feedback feedback)
         {
-            //    var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-            //    var key = data.GetProperty("Id").ToString();
-            //    var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-            //    List<BadgeItem> badges = GetDashboardSectionBadges(key, ":("); // Todo: desgin this part
-            //    if (!badges.Any(b => b.Text == deadline))
-            //    {
-            //        badges.Add(new BadgeItem { Text = deadline });
-            //    }
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
+            var task = Dues.Single(t => t.Id == id);
+            if (task != null)
+            {
+                task.Deadline = deadline;
+            }
         }
 
         static void ApplyTaskDeleted(Feedback feedback)
@@ -288,12 +288,14 @@ namespace PersonalAssistant
                     Key = key,
                     Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = task.Id })
                 };
+
                 var delete = new
                 {
                     Action = "delTask",
                     Key = key,
                     Content = JsonSerializer.Serialize(new { Id = task.Id })
                 };
+
                 yield return new BadgeItem
                 {
                     Id = task.Id,
@@ -332,7 +334,8 @@ namespace PersonalAssistant
                     Text = task.Text,
                     ParentId = task.ParentId,
                     LinkItems = GetLinkItems(task, key).ToList(),
-                    Items = new List<BadgeItem>()
+                    Items = new List<BadgeItem>(),
+                    Info = JsonSerializer.Serialize(task)
                 };
             }
         }
@@ -370,6 +373,12 @@ namespace PersonalAssistant
                 Key = key,
                 Content = JsonSerializer.Serialize(new { Tag = "[text]", TagKey = 0, Id = id })
             };
+            var setDeadline = new
+            {
+                Action = "setDeadline",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Deadline = "[date]", Id = id })
+            };
 
 
             yield return new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" };
@@ -377,6 +386,7 @@ namespace PersonalAssistant
             yield return new LinkItem { Link = JsonSerializer.Serialize(update), Text = "Update" };
             yield return new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" };
             yield return new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(setDeadline), Text = "Deadline" };
         }
     }
 

@@ -60,6 +60,7 @@ namespace PersonalAssistant
         public BadgeType Type { get; set; }
         public int Count { get; set; }
         public List<BadgeItem> Items { get; set; } = new List<BadgeItem>();
+        public string Info { get; set; }
     }
 
     public class LinkItem
@@ -80,6 +81,6 @@ namespace PersonalAssistant
         public string ParentId { get; set; }
         public string GroupKey { get; set; }
         public string Text { get; set; }
-        public string Deadline { get; set; }
+        public DateTimeOffset Deadline { get; set; }
     }
 }

@@ -68,6 +68,9 @@
   <span>New: </span>
   <span>
     <input id="text" [(ngModel)]="text" placeholder="name">
+    <br />
+    <span>date: </span>
+    <input type="date" [(ngModel)]="inputdate" />
   </span>
   <hr />
   <button id="basic" type="button" class="bttn" mat-button (click)="SendTaskRequest()">
@@ -83,7 +86,7 @@
     Add Member
   </button>
   <mat-chip-list aria-label="????" class="tagtag">
-    <p *ngFor="let lit of selected.badge.linkItems;">
+    <p *ngFor="let lit of selected.badge?.linkItems;">
       <mat-chip (click)="SendTaskRequestSpe(lit.link)" mat-raised-button>
         {{lit.text}}
       </mat-chip>

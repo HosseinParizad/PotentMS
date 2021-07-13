@@ -17,6 +17,7 @@ export class AppComponent implements OnInit {
   text: string = "";
   selected: any = {};
   sent = {};
+  inputdate: any;
 
   constructor(private http: HttpClient) { }
 
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit {
 
   SendTaskRequestSpe(body: string) {
     body = body.replace('[text]', this.text)
+    body = body.replace('[date]', this.inputdate)
     this.sent = this.SendRequest(JSON.parse(body));
   }
 

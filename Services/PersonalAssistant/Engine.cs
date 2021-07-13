@@ -79,10 +79,12 @@ namespace PersonalAssistant
         {
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
-            var goal = data.GetProperty("Goal").ToString();
-            Goals.Add(new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key });
+            var goal = data.GetProperty(GoalSectionKey).ToString();
+            var item = new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key };
+            Goals.Add(item);
+            Tasks.Add(item);
             var key = feedback.Key;
-            GetDashboardSections(feedback.Key).Single(d => d.Text == "Goal").BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
+            GetDashboardSections(feedback.Key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
@@ -92,8 +94,14 @@ namespace PersonalAssistant
             var text = data.GetProperty("Text").ToString();
             var parentId = data.GetProperty("ParentId").ToString();
             parentId = parentId == "" ? null : parentId;
-            Dues.Add(new TodoItem { Text = text, Id = id, GroupKey = feedback.Key, ParentId = parentId });
-            GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
+            var item = new TodoItem { Text = text, Id = id, GroupKey = feedback.Key, ParentId = parentId };
+            Tasks.Add(item);
+            var parent = Tasks.SingleOrDefault(d => d.Id == parentId);
+            if (parent != null)
+            {
+                parent.IsParent = true;
+            }
+            OnTaskChanged(feedback.Key);
         }
 
         static void ApplyUpdateTaskDescription(Feedback feedback)
@@ -101,8 +109,9 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
             var text = data.GetProperty("Description").ToString();
-            Dues.Single(d => d.Id == id).Text = text;
+            Tasks.Single(d => d.Id == id).Text = text;
             var key = feedback.Key;
+            OnTaskChanged(feedback.Key);
         }
 
 
@@ -116,10 +125,10 @@ namespace PersonalAssistant
             {
                 goal.GroupKey = member;
             }
-            TodoItem due = Dues.SingleOrDefault(t => t.Id == id);
-            if (due != null)
+            var task = Tasks.SingleOrDefault(t => t.Id == id);
+            if (task != null)
             {
-                due.GroupKey = member;
+                task.GroupKey = member;
             }
         }
 
@@ -151,22 +160,23 @@ namespace PersonalAssistant
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-            var task = Dues.Single(t => t.Id == id);
+            var task = Tasks.Single(t => t.Id == id);
             if (task != null)
             {
                 task.Deadline = deadline;
             }
+            OnTaskChanged(feedback.Key);
         }
 
         static void ApplyTaskDeleted(Feedback feedback)
         {
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
-            var task = Dues.SingleOrDefault(t => t.Id == id);
+            var task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
             {
-                Dues.Remove(task);
-                GetDashboardSections(feedback.Key).Single(d => d.Text == "Due").BadgesInternal = Engine.GetBadgesDues(feedback.Key, null).ToList();
+                Tasks.Remove(task);
+                OnTaskChanged(feedback.Key);
             }
         }
 
@@ -178,7 +188,13 @@ namespace PersonalAssistant
             if (goal != null)
             {
                 Goals.Remove(goal);
-                GetDashboardSections(feedback.Key).Single(d => d.Text == "Goal").BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
+                GetDashboardSections(feedback.Key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
+            }
+            var task = Tasks.SingleOrDefault(t => t.Id == id);
+            if (task != null)
+            {
+                Tasks.Remove(goal);
+                GetDashboardSections(feedback.Key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(feedback.Key, null).ToList();
             }
         }
 
@@ -234,7 +250,7 @@ namespace PersonalAssistant
             Dashboards = new List<Dashboard>();
             Groups = new Dictionary<string, HashSet<string>>();
             Goals = new List<TodoItem>();
-            Dues = new List<TodoItem>();
+            Tasks = new List<TodoItem>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
 
@@ -272,11 +288,23 @@ namespace PersonalAssistant
 
         #region Implement
 
+        const string GoalSectionKey = "Goal";
+        const string DueSectionKey = "Due";
+        const string TaskSectionKey = "Task";
+
+        static void OnTaskChanged(string key)
+        {
+            GetDashboardSections(key).Single(d => d.Text == DueSectionKey).BadgesInternal = Engine.GetBadgesDues(key).ToList();
+            GetDashboardSections(key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(key, null).ToList();
+        }
+
+
         static List<Dashboard> Dashboards = new List<Dashboard>();
         public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
 
         static List<TodoItem> Goals = new List<TodoItem>();
-        static List<TodoItem> Dues = new List<TodoItem>();
+        //static List<TodoItem> Dues = new List<TodoItem>();
+        static List<TodoItem> Tasks = new List<TodoItem>();
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
         {
@@ -311,7 +339,7 @@ namespace PersonalAssistant
 
         public static IEnumerable<BadgeItem> GetBadgesDuesTree(string key, string parentId)
         {
-            foreach (var task in Dues.Where(t => t.GroupKey == key && parentId == t.ParentId))
+            foreach (var task in Tasks.Where(t => t.GroupKey == key && parentId == t.ParentId))
             {
                 yield return new BadgeItem
                 {
@@ -324,9 +352,9 @@ namespace PersonalAssistant
             }
         }
 
-        public static IEnumerable<BadgeItem> GetBadgesDues(string key, string parentId)
+        public static IEnumerable<BadgeItem> GetBadgesDues(string key)
         {
-            foreach (var task in Dues.Where(t => t.GroupKey == key))
+            foreach (var task in Tasks.Where(t => t.GroupKey == key && !t.IsParent).OrderBy(t => t.Deadline == DateTimeOffset.MinValue ? DateTimeOffset.MaxValue : t.Deadline))
             {
                 yield return new BadgeItem
                 {
@@ -335,6 +363,22 @@ namespace PersonalAssistant
                     ParentId = task.ParentId,
                     LinkItems = GetLinkItems(task, key).ToList(),
                     Items = new List<BadgeItem>(),
+                    Info = JsonSerializer.Serialize(task)
+                };
+            }
+        }
+
+        public static IEnumerable<BadgeItem> GetBadgesTasks(string key, string parentId)
+        {
+            foreach (var task in Tasks.Where(t => t.GroupKey == key && t.ParentId == parentId).Take(10))
+            {
+                yield return new BadgeItem
+                {
+                    Id = task.Id,
+                    Text = task.Text,
+                    ParentId = task.ParentId,
+                    LinkItems = GetLinkItems(task, key).ToList(),
+                    Items = GetBadgesTasks(key, task.Id).ToList(),
                     Info = JsonSerializer.Serialize(task)
                 };
             }

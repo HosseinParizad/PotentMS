@@ -29,6 +29,7 @@ namespace PersonalAssistant
             Parts.Add(DashboardItemTag());
             Parts.Add(DashboardItemLocation());
             Parts.Add(DashboardItemDue());
+            Parts.Add(DashboardItemTask());
         }
 
         public string Id { get; set; }
@@ -46,7 +47,10 @@ namespace PersonalAssistant
             => new DashboardPart { Text = "UsedLocations", Description = "For now we manually select location until ...", Sequence = 2 };
 
         DashboardPart DashboardItemDue()
-            => new DashboardPart { Text = "Due", Description = "Order by Due", Sequence = 3, BadgesInternal = Engine.GetBadgesDues(AssistantKey, null).ToList() };
+            => new DashboardPart { Text = "Due", Description = "Order by Due", Sequence = 3, BadgesInternal = Engine.GetBadgesDues(AssistantKey).ToList() };
+
+        DashboardPart DashboardItemTask()
+            => new DashboardPart { Text = "Task", Description = "All tasks", Sequence = 4, BadgesInternal = Engine.GetBadgesTasks(AssistantKey, null).ToList() };
 
     }
 
@@ -82,5 +86,7 @@ namespace PersonalAssistant
         public string GroupKey { get; set; }
         public string Text { get; set; }
         public DateTimeOffset Deadline { get; set; }
+        public bool IsParent { get; set; }
+
     }
 }

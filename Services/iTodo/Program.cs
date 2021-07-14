@@ -32,6 +32,8 @@ namespace iTodo
                     { "closeTask", Engine.CloseTask },
                     { "assignTask", Engine.AssignTask },
                     { "delTask", Engine.DeleteTask },
+                    { "startTask", Engine.StartTask },
+                    { "pauseTask", Engine.PauseTask },
                 };
 
             var locationActions =

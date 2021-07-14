@@ -52,6 +52,8 @@
     <span [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part"
       (click)="selectbadgepart($event, part.text, badge)">
       {{badge.text}}
+      <mat-icon *ngIf="badge.status == 2">pause</mat-icon>
+      <mat-icon *ngIf="badge.status == 1">play_arrow</mat-icon>
     </span>
 
     <ul *ngIf="badge.items.length > 0">
@@ -65,6 +67,7 @@
 <br />
 <br />
 <div class="cmdPanel" style="white-space:nowrap;margin: 50px; padding: 20px;">
+
   <span>New: </span>
   <span>
     <input id="text" [(ngModel)]="text" placeholder="name">
@@ -94,4 +97,47 @@
   </mat-chip-list>
 
 </div>
+<hr />
+<!-- <label (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for Tasks</label><br>
+<label (click)="text = 'The Unicorn Principle'">The Unicorn Principle</label> <br>
+<label (click)="text = 'Repurpose Your Great Content'">Repurpose Your Great Content</label> <br>
+<label (click)="text = 'Work Less'">Work Less</label> <br>
+<label (click)="text = 'Work at Times You’re Most Productive'">Work at Times You’re Most Productive</label> <br>
+<label (click)="text = 'Be an Intentional Procrastinator'">Be an Intentional Procrastinator</label> <br>
+<label (click)="text = 'Prioritize Your Tasks'">Prioritize Your Tasks(4 section)</label> <br>
+<label (click)="text = 'Let a Great Assistant Keep You Organized'">Let a Great Assistant Keep You Organized</label> <br>
+<label (click)="text = 'Surround Yourself With Smart People'">Surround Yourself With Smart People</label> <br>
+<label (click)="text = 'Find Tools That Automate Repetitive Tasks'">Find Tools That Automate Repetitive Tasks</label>
+<br>
+<label (click)="text = 'Use Productivity Apps'">Use Productivity Apps</label> <br>
+<label (click)="text = 'Use Keyboard Shortcuts'">Use Keyboard Shortcuts</label> <br>
+<label (click)="text = ' Be More Efficient With Emails'">Be More Efficient With Emails</label> <br>
+<label (click)="text = 'Do More Things You Enjoy'">Do More Things You Enjoy</label> <br>
+<label (click)="text = 'Ignore Sports'">Ignore Sports</label> <br>
+<label (click)="text = 'Avoid Complaining!'">Avoid Complaining!</label> <br>
+<label (click)="text = 'Quit Your Job'">Quit Your Job</label> <br>
+ -->
+<ol>
+  <li (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for Tasks</li><br>
+  <li (click)="text = 'The Unicorn Principle'">The Unicorn Principle</li> <br>
+  <li (click)="text = 'Repurpose Your Great Content'">Repurpose Your Great Content</li> <br>
+  <li (click)="text = 'Work Less'">Work Less</li> <br>
+  <li (click)="text = 'Work at Times You’re Most Productive'">Work at Times You’re Most Productive</li> <br>
+  <li (click)="text = 'Be an Intentional Procrastinator'">Be an Intentional Procrastinator</li> <br>
+  <li (click)="text = 'Prioritize Your Tasks'">Prioritize Your Tasks(4 section)</li> <br>
+  <li (click)="text = 'Let a Great Assistant Keep You Organized'">Let a Great Assistant Keep You Organized</li> <br>
+  <li (click)="text = 'Surround Yourself With Smart People'">Surround Yourself With Smart People</li> <br>
+  <li (click)="text = 'Find Tools That Automate Repetitive Tasks'">Find Tools That Automate Repetitive Tasks</li>
+  <br>
+  <li (click)="text = 'Use Productivity Apps'">Use Productivity Apps</li> <br>
+  <li (click)="text = 'Use Keyboard Shortcuts'">Use Keyboard Shortcuts</li> <br>
+  <li (click)="text = ' Be More Efficient With Emails'">Be More Efficient With Emails</li> <br>
+  <li (click)="text = 'Do More Things You Enjoy'">Do More Things You Enjoy</li> <br>
+  <li (click)="text = 'Ignore Sports'">Ignore Sports</li> <br>
+  <li (click)="text = 'Avoid Complaining!'">Avoid Complaining!</li> <br>
+  <li (click)="text = 'Quit Your Job'">Quit Your Job</li> <br>
+</ol>
+<br>
+<hr />
+
 <pre>{{selected|json}}</pre>

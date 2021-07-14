@@ -131,13 +131,57 @@ namespace iTodo
             if (task != null)
             {
                 task.Status = TodoStatus.Close;
-                //SendFeedbackMessage(type: FeedbackType.Success, groupKey: groupKey, id: id, content: null, originalRequest: "CloseTask");
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, key: groupKey, content: "Cannot find Todo item to close task!");
+                var dataToSend = JsonSerializer.Serialize(new { Id = id });
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, key: groupKey, content: dataToSend);
             }
-            else
+        }
+
+        #endregion
+
+        #region StartTask
+
+        public static void StartTask(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            var task = FindById(groupKey, id);
+            if (task != null)
             {
-                //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find task!", originalRequest: "CloseTask");
+                var startingtask = FindFirstByCondition(groupKey, (t) => { return t.Status == TodoStatus.start; });
+                if (startingtask != null)
+                {
+                    PauseTask(groupKey, startingtask.Id, startingtask);
+                }
+
+                task.Status = TodoStatus.start;
+                TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Start });
+
+                var dataToSend = JsonSerializer.Serialize(new { Id = id });
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskStarted, key: groupKey, content: dataToSend);
             }
+        }
+
+        #endregion
+
+        #region PauseTask
+
+        public static void PauseTask(string groupKey, string content)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(content);
+            var id = data.GetProperty("Id").ToString();
+            var task = FindById(groupKey, id);
+            if (task != null && task.Status == TodoStatus.start)
+            {
+                PauseTask(groupKey, id, task);
+            }
+        }
+
+        static void PauseTask(string groupKey, dynamic id, dynamic task)
+        {
+            task.Status = TodoStatus.pause;
+            TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Pause });
+            var dataToSend = JsonSerializer.Serialize(new { Id = id });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskPaused, key: groupKey, content: dataToSend);
         }
 
         #endregion
@@ -301,8 +345,10 @@ namespace iTodo
             => ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, key: key, content: content))).GetAwaiter().GetResult();
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
+        static TodoItem FindFirstByCondition(string groupKey, Func<TodoItem , bool> condition) => Todos.FirstOrDefault(t => t.GroupKey == groupKey && condition(t));
 
         static List<TodoItem> Todos = new List<TodoItem>();
+        static List<TimeItem> TimeLog = new List<TimeItem>();
 
         static List<GroupItem> Groups { get; set; } = new List<GroupItem>();
 
@@ -338,6 +384,7 @@ namespace iTodo
         {
             Todos = new List<TodoItem>();
             Groups = new List<GroupItem>();
+            TimeLog = new List<TimeItem>();
             MemberCurrentLocation = new Dictionary<string, string>();
         }
 
@@ -360,6 +407,14 @@ namespace iTodo
         public string ParentId { get; set; }
         public TodoType Kind { get; set; }
         public List<TodoItem> TodoItems { get; set; } = new List<TodoItem>();
+    }
+
+    public class TimeItem
+    {
+        public string Id { get; set; }
+        public string TodoId { get; set; }
+        public DateTimeOffset ActionTime { get; set; }
+        public TimeActionStatus Status { get; set; }
     }
 
     public class GroupItem
@@ -385,7 +440,9 @@ namespace iTodo
     public enum TodoStatus
     {
         Active,
-        Close
+        Close,
+        start,
+        pause
     }
 
     public enum TodoType
@@ -393,6 +450,12 @@ namespace iTodo
         Goal,
         Category,
         Task
+    }
+
+    public enum TimeActionStatus
+    {
+        Start,
+        Pause,
     }
 
     #endregion

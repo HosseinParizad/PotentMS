@@ -39,8 +39,10 @@ namespace PotentHelper
         public const string updateTaskDescription = "Task description has been added";
         public const string TaskDeleted = "Task has been deleted";
         public const string GoalDeleted = "Goal has been deleted";
-
         public const string CannotSetTag = "Error: cannot set tag";
         public const string CannotCloseTask = "Error: cannot close tag";
+        public const string TaskClosed = "Task has been closed";
+        public const string TaskStarted = "Task has been started";
+        public const string TaskPaused = "Task has been paused";
     }
 }

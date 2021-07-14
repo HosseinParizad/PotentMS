@@ -65,6 +65,7 @@ namespace PersonalAssistant
         public int Count { get; set; }
         public List<BadgeItem> Items { get; set; } = new List<BadgeItem>();
         public string Info { get; set; }
+        public TodoStatus Status { get; set; }
     }
 
     public class LinkItem
@@ -87,6 +88,14 @@ namespace PersonalAssistant
         public string Text { get; set; }
         public DateTimeOffset Deadline { get; set; }
         public bool IsParent { get; set; }
+        public TodoStatus Status { get; set; }
 
+    }
+
+    public enum TodoStatus
+    {
+        none,
+        start,
+        pause
     }
 }

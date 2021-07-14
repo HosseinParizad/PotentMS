@@ -28,12 +28,17 @@ mat-card-header
   border-bottom:solid #444 thin;
 }
 
+mat-icon {
+  font-size: 14px;
+  color: darkred;
+}
+
 // .mat-card-header-text
 // {
 //   width: 100%;
 // }
 
-.cmdPanel button{
+.cmdPanel button {
   margin: 3px;
   background-color: #fafafa;
   border: solid #444 2px;

@@ -53,6 +53,14 @@ namespace PersonalAssistant
                     ApplyGoalDeleted(feedback);
                     break;
 
+                case FeedbackActions.TaskStarted:
+                    ApplyStartTask(feedback);
+                    break;
+
+                case FeedbackActions.TaskPaused:
+                    ApplyPauseTask(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -172,10 +180,18 @@ namespace PersonalAssistant
         {
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
-            var task = Tasks.SingleOrDefault(t => t.Id == id);
+            TodoItem task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
             {
                 Tasks.Remove(task);
+                if (!string.IsNullOrEmpty(task.ParentId))
+                {
+                    var parent = Tasks.Single(t => t.Id == task.ParentId);
+                    if (!Tasks.Any(t => t.ParentId == parent.Id))
+                    {
+                        parent.IsParent = false;
+                    }
+                }
                 OnTaskChanged(feedback.Key);
             }
         }
@@ -198,6 +214,23 @@ namespace PersonalAssistant
             }
         }
 
+        static void ApplyStartTask(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            Tasks.Single(d => d.Id == id).Status = TodoStatus.start;
+            var key = feedback.Key;
+            OnTaskChanged(feedback.Key);
+        }
+
+        static void ApplyPauseTask(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            Tasks.Single(d => d.Id == id).Status = TodoStatus.pause;
+            var key = feedback.Key;
+            OnTaskChanged(feedback.Key);
+        }
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;
@@ -377,6 +410,7 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     ParentId = task.ParentId,
+                    Status = task.Status,
                     LinkItems = GetLinkItems(task, key).ToList(),
                     Items = GetBadgesTasks(key, task.Id).ToList(),
                     Info = JsonSerializer.Serialize(task)
@@ -423,6 +457,24 @@ namespace PersonalAssistant
                 Key = key,
                 Content = JsonSerializer.Serialize(new { Deadline = "[date]", Id = id })
             };
+            var close = new
+            {
+                Action = "closeTask",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Id = id })
+            };
+            var start = new
+            {
+                Action = "startTask",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Id = id })
+            };
+            var pause = new
+            {
+                Action = "pauseTask",
+                Key = key,
+                Content = JsonSerializer.Serialize(new { Id = id })
+            };
 
 
             yield return new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" };
@@ -431,6 +483,18 @@ namespace PersonalAssistant
             yield return new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" };
             yield return new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" };
             yield return new LinkItem { Link = JsonSerializer.Serialize(setDeadline), Text = "Deadline" };
+            if (!task.IsParent)
+            {
+                yield return new LinkItem { Link = JsonSerializer.Serialize(close), Text = "close" };
+                if (task.Status == TodoStatus.start)
+                {
+                    yield return new LinkItem { Link = JsonSerializer.Serialize(pause), Text = "pause" };
+                }
+                else
+                {
+                    yield return new LinkItem { Link = JsonSerializer.Serialize(start), Text = "start" };
+                }
+            }
         }
     }
 

@@ -39,6 +39,12 @@ export class AppComponent implements OnInit {
     this.hidden = !this.hidden;
   }
 
+  setdate(days: number) {
+    var date = new Date();
+    var date = new Date(date.setDate(date.getDate() + days))
+    this.inputdate = date.toISOString().substring(0, 10);
+  }
+
   SendTaskRequest() {
     var body = { Action: 'newTask', Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
     this.sent = this.SendRequest(body);

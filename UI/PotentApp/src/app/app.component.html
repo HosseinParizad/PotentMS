@@ -117,6 +117,16 @@
 <label (click)="text = 'Avoid Complaining!'">Avoid Complaining!</label> <br>
 <label (click)="text = 'Quit Your Job'">Quit Your Job</label> <br>
  -->
+<ol class="list-inline">
+  <li (click)='setdate(+0)'>today</li>
+  <li (click)='setdate(+1)'>tommorow</li>
+  <li (click)='setdate(+7)'>next week</li>
+  <li (click)='setdate(+10)'>10 days</li>
+  <li (click)='setdate(+14)'>two weeks</li>
+  <li (click)='setdate(+30)'>next month</li>
+</ol>
+
+<hr />
 <ol>
   <li (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for Tasks</li><br>
   <li (click)="text = 'The Unicorn Principle'">The Unicorn Principle</li> <br>

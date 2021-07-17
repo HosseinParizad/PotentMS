@@ -324,11 +324,8 @@ namespace iTodo
             var ctask = task.Clone();
             ctask.ParentId = parentId;
             AddTask(ctask);
-            foreach (var child in Todos.Where(t => t.ParentId == task.Id))
+            foreach (var child in Todos.Where(t => t.ParentId == task.Id).ToArray())
             {
-                Console.WriteLine("Child !!!!!!!!!!!!!!!!!");
-                //var cchild = child.Clone();
-                //cchild.ParentId = ctask.Id;
                 AddTaskAndChildren(child, ctask.Id);
             }
         }

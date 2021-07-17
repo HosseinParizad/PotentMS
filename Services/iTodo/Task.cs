@@ -315,19 +315,21 @@ namespace iTodo
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                AddTaskAndChildren(task);
+                AddTaskAndChildren(task, task.ParentId);
             }
         }
 
-        static void AddTaskAndChildren(TodoItem task)
+        static void AddTaskAndChildren(TodoItem task, string parentId)
         {
             var ctask = task.Clone();
+            ctask.ParentId = parentId;
             AddTask(ctask);
-            foreach (var child in ctask.TodoItems)
+            foreach (var child in Todos.Where(t => t.ParentId == task.Id))
             {
-                var cchild = child.Clone();
-                AddTask(cchild);
-                AddTaskAndChildren(cchild);
+                Console.WriteLine("Child !!!!!!!!!!!!!!!!!");
+                //var cchild = child.Clone();
+                //cchild.ParentId = ctask.Id;
+                AddTaskAndChildren(child, ctask.Id);
             }
         }
 
@@ -461,7 +463,11 @@ namespace iTodo
 
         public TodoItem Clone()
         {
-            return (TodoItem)MemberwiseClone();
+            TodoItem todoItem = (TodoItem)MemberwiseClone();
+            todoItem.Locations = Locations;
+            todoItem.Tags = Tags;
+            todoItem.Id = Guid.NewGuid().ToString();
+            return todoItem;
         }
     }
 

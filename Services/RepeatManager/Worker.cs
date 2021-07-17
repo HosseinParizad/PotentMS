@@ -28,7 +28,7 @@ namespace RepeatManager
 
                 foreach (var item in Engine.Repeat.Where(r => r.LastGeneratedTime.AddDays(r.Days) < now))
                 {
-                    //if (item.ReferenceName == "task")
+                    if (item.ReferenceName == "Task")
                     {
                         var dataToSend = new { Id = item.ReferenceId };
                         item.LastGeneratedTime = now;

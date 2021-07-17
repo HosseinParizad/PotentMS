@@ -312,21 +312,25 @@ namespace iTodo
         {
             var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
             var id = data.GetProperty("Id").ToString();
+            var date = DateTimeOffset.Parse(data.GetProperty("LastGeneratedTime").ToString());
+            var dateStr = " (" + date.Date.ToShortDateString() + ")";
+
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                AddTaskAndChildren(task, task.ParentId);
+                AddTaskAndChildren(task, task.ParentId, dateStr);
             }
         }
 
-        static void AddTaskAndChildren(TodoItem task, string parentId)
+        static void AddTaskAndChildren(TodoItem task, string parentId, string date)
         {
             var ctask = task.Clone();
             ctask.ParentId = parentId;
+            ctask.Description += date;
             AddTask(ctask);
             foreach (var child in Todos.Where(t => t.ParentId == task.Id).ToArray())
             {
-                AddTaskAndChildren(child, ctask.Id);
+                AddTaskAndChildren(child, ctask.Id, date);
             }
         }
 

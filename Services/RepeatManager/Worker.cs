@@ -13,7 +13,7 @@ namespace RepeatManager
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        public DateTimeOffset now { set; get; } = DateTimeOffset.Now;
+        public DateTimeOffset Now => DateTimeOffset.Now;
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
@@ -23,14 +23,15 @@ namespace RepeatManager
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", now);
+                _logger.LogInformation("Worker running at: {time}", Now);
                 await Task.Delay(10000, stoppingToken);
 
-                foreach (var item in Engine.Repeat.Where(r => r.LastGeneratedTime.AddDays(r.Days) < now))
+                foreach (var item in Engine.Repeat.Where(r => r.LastGeneratedTime.AddDays(r.Days) < Now).ToArray())
                 {
                     if (item.ReferenceName == "Task")
                     {
-                        var dataToSend = new { Id = item.ReferenceId };
+                        var now = Now;
+                        var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now };
                         item.LastGeneratedTime = now;
                         SendAMessage(type: FeedbackType.Apply, action: MapAction.Task.RepeatTask, content: JsonSerializer.Serialize(dataToSend));
                     }

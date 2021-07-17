@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTodoTest", "__Test__\Services\iTodoTest\iTodoTest.csproj", "{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iTodoTest", "__Test__\Services\iTodoTest\iTodoTest.csproj", "{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateWay", "Services\Gateway\GateWay.csproj", "{11507348-988D-4278-9626-443B04261825}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GateWay", "Services\Gateway\GateWay.csproj", "{11507348-988D-4278-9626-443B04261825}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTodo", "Services\iTodo\iTodo.csproj", "{2FF0E2D7-C9F3-4749-9CB8-0FF5700C7188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iTodo", "Services\iTodo\iTodo.csproj", "{2FF0E2D7-C9F3-4749-9CB8-0FF5700C7188}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PotentHelper", "Services\Common\PotentHelper\PotentHelper.csproj", "{FE89A3EA-44FF-4D69-A89A-34FF35DF96AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PotentHelper", "Services\Common\PotentHelper\PotentHelper.csproj", "{FE89A3EA-44FF-4D69-A89A-34FF35DF96AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{802C2FCA-7EFC-4942-8E17-7CA9880A85BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalAssistant", "Services\PersonalAssistant\PersonalAssistant.csproj", "{0D7849A3-66FE-4F68-B2AF-3F050E907736}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalAssistant", "Services\PersonalAssistant\PersonalAssistant.csproj", "{0D7849A3-66FE-4F68-B2AF-3F050E907736}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepeatManager", "Services\RepeatManager\RepeatManager.csproj", "{E918CD3A-1333-4351-BC33-0DAF061E43D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,9 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B0C420C6-CDC5-491D-AAF2-0D57E84DC278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -88,10 +87,29 @@ Global
 		{0D7849A3-66FE-4F68-B2AF-3F050E907736}.Release|x64.Build.0 = Release|Any CPU
 		{0D7849A3-66FE-4F68-B2AF-3F050E907736}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D7849A3-66FE-4F68-B2AF-3F050E907736}.Release|x86.Build.0 = Release|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Debug|x64.Build.0 = Debug|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Debug|x86.Build.0 = Debug|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Release|x64.ActiveCfg = Release|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Release|x64.Build.0 = Release|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Release|x86.ActiveCfg = Release|Any CPU
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2FF0E2D7-C9F3-4749-9CB8-0FF5700C7188} = {802C2FCA-7EFC-4942-8E17-7CA9880A85BE}
 		{11507348-988D-4278-9626-443B04261825} = {802C2FCA-7EFC-4942-8E17-7CA9880A85BE}
+		{2FF0E2D7-C9F3-4749-9CB8-0FF5700C7188} = {802C2FCA-7EFC-4942-8E17-7CA9880A85BE}
 		{0D7849A3-66FE-4F68-B2AF-3F050E907736} = {802C2FCA-7EFC-4942-8E17-7CA9880A85BE}
+		{E918CD3A-1333-4351-BC33-0DAF061E43D2} = {802C2FCA-7EFC-4942-8E17-7CA9880A85BE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8C4F0EA-4E30-475C-944B-7759177C2E53}
 	EndGlobalSection
 EndGlobal

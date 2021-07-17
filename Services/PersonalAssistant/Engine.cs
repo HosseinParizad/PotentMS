@@ -475,6 +475,19 @@ namespace PersonalAssistant
                 Key = key,
                 Content = JsonSerializer.Serialize(new { Id = id })
             };
+            var repeatDaily = new
+            {
+                Action = MapAction.Repeat.RegisterRepeat,
+                Key = key,
+                Content = JsonSerializer.Serialize(new { ReferenceId = id, Days = 1, ReferenceName = "task" })
+            };
+
+            var repeatWeekly = new
+            {
+                Action = MapAction.Repeat.RegisterRepeat,
+                Key = key,
+                Content = JsonSerializer.Serialize(new { ReferenceId = id, Days = 7, ReferenceName = "task" })
+            };
 
 
             yield return new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" };
@@ -483,6 +496,9 @@ namespace PersonalAssistant
             yield return new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" };
             yield return new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" };
             yield return new LinkItem { Link = JsonSerializer.Serialize(setDeadline), Text = "Deadline" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(repeatDaily), Text = "Repeat daily" };
+            yield return new LinkItem { Link = JsonSerializer.Serialize(repeatWeekly), Text = "Repeat weekly" };
+
             if (!task.IsParent)
             {
                 yield return new LinkItem { Link = JsonSerializer.Serialize(close), Text = "close" };

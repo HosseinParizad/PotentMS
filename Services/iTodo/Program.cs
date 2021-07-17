@@ -37,23 +37,20 @@ namespace iTodo
 
             #endregion
 
-            var locationActions =
-                new Dictionary<string, Action<string, string>> {
-                    { "setCurrentLocation", Engine.SetCurrentLocation },
-                };
+            var locationActions = new Dictionary<string, Action<string, string>> { { "setCurrentLocation", Engine.SetCurrentLocation }, };
 
-            var commonActions =
-                new Dictionary<string, Action<string, string>> {
-                    { "reset", Engine.Reset },
-                };
+            var commonActions = new Dictionary<string, Action<string, string>> { { "reset", Engine.Reset }, };
+
+            var repeatActions = new Dictionary<string, Action<Feedback>> { { MapAction.Task.RepeatTask, Engine.RepeatTask } };
 
             var source = new CancellationTokenSource();
             var token = source.Token;
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(m, taskActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(m, locationActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(m, commonActions), AppId)
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(AppId, m, taskActions), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, locationActions), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.RepeatFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, repeatActions), AppId)
                 );
         }
 

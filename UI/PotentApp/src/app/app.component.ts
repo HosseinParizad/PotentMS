@@ -75,7 +75,17 @@ export class AppComponent implements OnInit {
     return false;
   }
 
+  SendReapeatRequest() {
+    var body = { Action: 'registerRepeat', Key: this.selected.group, Content: JSON.stringify({ ReferenceId: this.selected.badge.id, Days: this.text, ReferenceName: "Task" }) };
+    this.sent = this.SendRequestCore("/Repeat", body);
+    return false;
+  }
+
   SendRequest(body: any) {
+    return this.SendRequestCore("", body)
+  }
+
+  SendRequestCore(url: string, body: any) {
     const headers = new HttpHeaders()
     // headers.append('Content-Type', 'application/json')
     // headers.append('Access-Control-Allow-Origin', '*')
@@ -84,13 +94,12 @@ export class AppComponent implements OnInit {
     // headers.append('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With')
     headers.append('Accept', 'application/json')
 
-    this.http.post<any>('https://localhost:5001/Gateway', body, { headers }).subscribe({
+    this.http.post<any>('https://localhost:5001/Gateway' + url, body, { headers }).subscribe({
       next: data => {
         this.text = '';
         setTimeout(() => {
           this.ngOnInit();
         }, 100);
-
       },
       error: error => {
         alert(error.message);

@@ -31,10 +31,15 @@ namespace iTodo
             {
                 newItem.ParentId = parentId;
             }
+            AddTask(newItem);
+        }
+
+        static void AddTask(TodoItem newItem)
+        {
             Todos.Add(newItem);
 
-            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = description, ParentId = parentId });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, key: groupKey, content: dataToSend);
+            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description, ParentId = newItem.ParentId });
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, key: newItem.GroupKey, content: dataToSend);
         }
 
         public static void CreateNewGoal(string groupKey, string content)
@@ -301,6 +306,33 @@ namespace iTodo
 
         #endregion
 
+        #region RepeatTask
+
+        public static void RepeatTask(Feedback feedback)
+        {
+            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var id = data.GetProperty("Id").ToString();
+            TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
+            if (task != null)
+            {
+                AddTaskAndChildren(task);
+            }
+        }
+
+        static void AddTaskAndChildren(TodoItem task)
+        {
+            var ctask = task.Clone();
+            AddTask(ctask);
+            foreach (var child in ctask.TodoItems)
+            {
+                var cchild = child.Clone();
+                AddTask(cchild);
+                AddTaskAndChildren(cchild);
+            }
+        }
+
+        #endregion
+
         #region GetTask 
 
         public static IEnumerable<TodoItem> GetTask(string member)
@@ -413,7 +445,24 @@ namespace iTodo
         public TodoStatus Status { get; set; }
         public string ParentId { get; set; }
         public TodoType Kind { get; set; }
-        public List<TodoItem> TodoItems { get; set; } = new List<TodoItem>();
+        public List<TodoItem> TodoItems
+        {
+            get => todoItems ??= new List<TodoItem>();
+            set
+            {
+                todoItems = value;
+                foreach (var item in todoItems.Where(i => i.ParentId != ParentId))
+                {
+                    item.ParentId = ParentId;
+                }
+            }
+        }
+        List<TodoItem> todoItems;
+
+        public TodoItem Clone()
+        {
+            return (TodoItem)MemberwiseClone();
+        }
     }
 
     public class TimeItem

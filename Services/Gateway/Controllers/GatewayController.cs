@@ -40,6 +40,15 @@ namespace Gateway.Controllers
         }
 
         [HttpPost]
+        [Route("Repeat")]
+        public IActionResult PostRepeat([FromBody] Msg msg)
+        {
+            var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, JsonSerializer.Serialize(msg));
+            task.GetAwaiter().GetResult();
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+        [HttpPost]
         [Route("Common")]
         public IActionResult PostCommon([FromBody] Msg msg)
         {

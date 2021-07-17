@@ -21,6 +21,9 @@ start /B dotnet run
 cd ../../Services/PersonalAssistant/  
 start /B dotnet run
 
+cd ../../Services/RepeatManager/  
+start /B dotnet run
+
 call :wait
 
 @REM cd ../../__Test__/Services/iTodoTest/

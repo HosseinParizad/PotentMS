@@ -23,6 +23,7 @@ namespace PotentHelper
     public enum FeedbackType
     {
         Success,
+        Apply,
         Info,
         Error
     }
@@ -44,5 +45,6 @@ namespace PotentHelper
         public const string TaskClosed = "Task has been closed";
         public const string TaskStarted = "Task has been started";
         public const string TaskPaused = "Task has been paused";
+        public const string RepeatTask = "Repeat task";
     }
 }

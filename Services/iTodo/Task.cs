@@ -12,21 +12,28 @@ namespace iTodo
 
         public static void CreateNewTask(string groupKey, string content)
         {
-            var newItem = new TodoItem();
             var data = JsonSerializer.Deserialize<dynamic>(content);
-            newItem.Id = Guid.NewGuid().ToString();
-            newItem.Description = data.GetProperty("Description").ToString();
+            var description = data.GetProperty("Description").ToString();
             var parentId = data.GetProperty("ParentId").ToString();
+            CreateGroupIfNotExists(groupKey);
+            AddTask(groupKey, description, parentId);
+        }
+
+        static void AddTask(string groupKey, dynamic description, dynamic parentId)
+        {
+            var newItem = new TodoItem();
+            newItem.Id = Guid.NewGuid().ToString();
+            newItem.GroupKey = groupKey;
+            newItem.Sequence = Todos.Count;
+            newItem.Description = description;
+            newItem.Kind = TodoType.Task;
             if (!string.IsNullOrEmpty(parentId))
             {
                 newItem.ParentId = parentId;
             }
-            newItem.GroupKey = groupKey;
-            newItem.Sequence = Todos.Count;
-            newItem.Kind = TodoType.Task;
             Todos.Add(newItem);
-            CreateGroupIfNotExists(groupKey);
-            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description, ParentId = parentId });
+
+            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = description, ParentId = parentId });
             SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, key: groupKey, content: dataToSend);
         }
 
@@ -345,7 +352,7 @@ namespace iTodo
             => ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, key: key, content: content))).GetAwaiter().GetResult();
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
-        static TodoItem FindFirstByCondition(string groupKey, Func<TodoItem , bool> condition) => Todos.FirstOrDefault(t => t.GroupKey == groupKey && condition(t));
+        static TodoItem FindFirstByCondition(string groupKey, Func<TodoItem, bool> condition) => Todos.FirstOrDefault(t => t.GroupKey == groupKey && condition(t));
 
         static List<TodoItem> Todos = new List<TodoItem>();
         static List<TimeItem> TimeLog = new List<TimeItem>();

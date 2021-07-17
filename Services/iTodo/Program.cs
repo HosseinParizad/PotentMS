@@ -1,24 +1,23 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using PotentHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PotentHelper;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace iTodo
 {
-    public class Program
+    public partial class Program
     {
         const string AppGroupId = "iTodo";
         static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
-
         public static void Main(string[] args)
         {
+            #region  actions
+
             var taskActions =
                 new Dictionary<string, Action<string, string>> {
                     { "newTask", Engine.CreateNewTask },
@@ -35,6 +34,8 @@ namespace iTodo
                     { "startTask", Engine.StartTask },
                     { "pauseTask", Engine.PauseTask },
                 };
+
+            #endregion
 
             var locationActions =
                 new Dictionary<string, Action<string, string>> {

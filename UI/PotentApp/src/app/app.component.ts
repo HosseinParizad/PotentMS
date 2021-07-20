@@ -43,6 +43,20 @@ export class AppComponent implements OnInit {
     var date = new Date();
     var date = new Date(date.setDate(date.getDate() + days))
     this.inputdate = date.toISOString().substring(0, 10);
+
+    var badge = this.selected.badge;
+    if (badge) {
+      for (const key in badge.linkItems) {
+        if (Object.prototype.hasOwnProperty.call(badge.linkItems, key)) {
+          const e = badge.linkItems[key];
+          if (e.text == 'Deadline') {
+            this.SendTaskRequestSpe(e.link);
+          }
+        }
+      }
+
+    }
+
   }
 
   SendTaskRequest() {
@@ -75,10 +89,16 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  SendReapeatRequest() {
-    var body = { Action: 'registerRepeat', Key: this.selected.group, Content: JSON.stringify({ ReferenceId: this.selected.badge.id, Days: this.text, ReferenceName: "Task" }) };
+  SendReapeatRequest(days: number) {
+    var body = { Action: 'registerRepeat', Key: this.selected.group, Content: JSON.stringify({ ReferenceId: this.selected.badge.id, Days: days, ReferenceName: "Task" }) };
     this.sent = this.SendRequestCore("/Repeat", body);
     return false;
+  }
+
+  Reset() {
+    var url = "https://localhost:5001/Gateway/Common";
+    var body = { action: "reset", key: "Do not care", content: null };
+    this.SendRequestCore(url, body);
   }
 
   SendRequest(body: any) {
@@ -93,8 +113,10 @@ export class AppComponent implements OnInit {
     // headers.append('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, PUT, OPTIONS')
     // headers.append('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With')
     headers.append('Accept', 'application/json')
-
-    this.http.post<any>('https://localhost:5001/Gateway' + url, body, { headers }).subscribe({
+    if (url.substr(0, 4) != 'http') {
+      url = 'https://localhost:5001/Gateway' + url
+    }
+    this.http.post<any>(url, body, { headers }).subscribe({
       next: data => {
         this.text = '';
         setTimeout(() => {

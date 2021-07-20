@@ -88,9 +88,6 @@
   <button id="basic" type="button" class="bttn" mat-button (click)="SendMemberRequest()">
     Add Member
   </button>
-  <button id="basic" type="button" class="bttn" mat-button (click)="SendReapeatRequest()">
-    Repeat
-  </button>
   <mat-chip-list aria-label="????" class="tagtag">
     <p *ngFor="let lit of selected.badge?.linkItems;">
       <mat-chip (click)="SendTaskRequestSpe(lit.link)" mat-raised-button>
@@ -120,6 +117,16 @@
 <label (click)="text = 'Avoid Complaining!'">Avoid Complaining!</label> <br>
 <label (click)="text = 'Quit Your Job'">Quit Your Job</label> <br>
  -->
+<ol class="list-inline">
+  <li (click)='SendReapeatRequest(+1)'>every day</li>
+  <li (click)='SendReapeatRequest(+7)'>weekly</li>
+  <li (click)='SendReapeatRequest(+10)'>10 days</li>
+  <li (click)='SendReapeatRequest(+14)'>fortnightly</li>
+  <li (click)='SendReapeatRequest(+30)'>monthly</li>
+</ol>
+
+<hr />
+
 <ol class="list-inline">
   <li (click)='setdate(+0)'>today</li>
   <li (click)='setdate(+1)'>tommorow</li>
@@ -152,5 +159,8 @@
 </ol>
 <br>
 <hr />
+<button id="basic" type="button" class="bttn" mat-button (click)="Reset()">
+  Reset
+</button>
 
 <pre>{{selected|json}}</pre>

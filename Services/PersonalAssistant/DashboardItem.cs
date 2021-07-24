@@ -29,10 +29,12 @@ namespace PersonalAssistant
             Parts.Add(DashboardItemLocation());
             Parts.Add(DashboardItemDue());
             Parts.Add(DashboardItemTask());
+            Parts.Add(DashboardItemOrdered());
         }
 
         public string Id { get; set; }
         public string AssistantKey { get; set; }
+        public HashSet<string> Locations { get; set; } = new HashSet<string>();
         public string CurrentLocation { get; set; }
         public List<DashboardPart> Parts { get; } = new List<DashboardPart>();
 
@@ -51,13 +53,16 @@ namespace PersonalAssistant
         DashboardPart DashboardItemTask()
             => new DashboardPart { Text = "Task", Description = "All tasks", Sequence = 4, BadgesInternal = Engine.GetBadgesTasks(AssistantKey, null).ToList() };
 
+        DashboardPart DashboardItemOrdered()
+            => new DashboardPart { Text = "Ordered", Description = "Ordered", Sequence = 5, BadgesInternal = Engine.GetBadgesOrdered(AssistantKey, null).ToList() };
+
     }
 
     public class BadgeItem
+
     {
         public string Id { get; set; }
         public string Text { get; set; }
-
         public string ParentId { get; set; }
         public List<LinkItem> LinkItems { get; set; }
         public BadgeType Type { get; set; }
@@ -88,7 +93,6 @@ namespace PersonalAssistant
         public DateTimeOffset Deadline { get; set; }
         public bool IsParent { get; set; }
         public TodoStatus Status { get; set; }
-
     }
 
     public enum TodoStatus

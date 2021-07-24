@@ -34,6 +34,11 @@ namespace PotentHelper
         {
             public const string RepeatTask = "repeatTask";
         }
+        
+        public static class Location
+        {
+            public const string SetCurrentLocation = "setCurrentLocation";
+        }
     }
 
 }

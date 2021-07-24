@@ -160,7 +160,16 @@ namespace PersonalAssistant
             if (!badges.Any(b => b.Text == location))
             {
                 badges.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
+                if (!Locations.ContainsKey(key))
+                {
+                    Locations.Add(key, new HashSet<string> { location });
+                }
+                else if (!Locations[key].Contains(location))
+                {
+                    Locations[key].Add(location);
+                }
             }
+            GetDashboardOrAdd(key).Locations.Add(location);
         }
 
         static void ApplyDeadlineUpdated(Feedback feedback)
@@ -235,10 +244,7 @@ namespace PersonalAssistant
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;
 
-        static List<DashboardPart> GetDashboardSections(string key)
-        {
-            return GetDashboardOrAdd(key).Parts;
-        }
+        static List<DashboardPart> GetDashboardSections(string key) => GetDashboardOrAdd(key).Parts;
 
         static Dashboard GetDashboardOrAdd(string key)
         {
@@ -284,6 +290,7 @@ namespace PersonalAssistant
             Groups = new Dictionary<string, HashSet<string>>();
             Goals = new List<TodoItem>();
             Tasks = new List<TodoItem>();
+            Locations = new Dictionary<string, HashSet<string>>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
 
@@ -324,11 +331,13 @@ namespace PersonalAssistant
         const string GoalSectionKey = "Goal";
         const string DueSectionKey = "Due";
         const string TaskSectionKey = "Task";
+        const string OrderedSectionKey = "Ordered";
 
         static void OnTaskChanged(string key)
         {
             GetDashboardSections(key).Single(d => d.Text == DueSectionKey).BadgesInternal = Engine.GetBadgesDues(key).ToList();
             GetDashboardSections(key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(key, null).ToList();
+            GetDashboardSections(key).Single(d => d.Text == OrderedSectionKey).BadgesInternal = Engine.GetBadgesOrdered(key, null).ToList();
         }
 
 
@@ -338,10 +347,11 @@ namespace PersonalAssistant
         static List<TodoItem> Goals = new List<TodoItem>();
         //static List<TodoItem> Dues = new List<TodoItem>();
         static List<TodoItem> Tasks = new List<TodoItem>();
+        public static Dictionary<string, HashSet<string>> Locations = new Dictionary<string, HashSet<string>>();
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
         {
-            foreach (var task in Goals.Where(t => t.GroupKey == key && t.ParentId == parentId))
+            foreach (var task in Tasks.Where(t => t.GroupKey == key && t.ParentId == parentId))
             {
                 var addSteps = new
                 {
@@ -413,6 +423,23 @@ namespace PersonalAssistant
                     Status = task.Status,
                     LinkItems = GetLinkItems(task, key).ToList(),
                     Items = GetBadgesTasks(key, task.Id).ToList(),
+                    Info = JsonSerializer.Serialize(task)
+                };
+            }
+        }
+
+        public static IEnumerable<BadgeItem> GetBadgesOrdered(string key, string parentId)
+        {
+            foreach (var task in Tasks.Where(t => t.GroupKey == key && t.ParentId == parentId).Take(10))
+            {
+                yield return new BadgeItem
+                {
+                    Id = task.Id,
+                    Text = task.Text,
+                    ParentId = task.ParentId,
+                    Status = task.Status,
+                    LinkItems = GetLinkItems(task, key).ToList(),
+                    Items = GetBadgesOrdered(key, task.Id).ToList(),
                     Info = JsonSerializer.Serialize(task)
                 };
             }

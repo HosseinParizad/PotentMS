@@ -37,7 +37,7 @@ namespace iTodo
 
             #endregion
 
-            var locationActions = new Dictionary<string, Action<string, string>> { { "setCurrentLocation", Engine.SetCurrentLocation }, };
+            var locationActions = new Dictionary<string, Action<string, string>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
 
             var commonActions = new Dictionary<string, Action<string, string>> { { "reset", Engine.Reset }, };
 

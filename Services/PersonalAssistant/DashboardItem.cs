@@ -4,23 +4,30 @@ using System.Linq;
 
 namespace PersonalAssistant
 {
-    public class DashboardPart
-    {
-        public string Text { get; set; }
-        public string Description { get; set; }
-        public List<BadgeItem> Badges => BadgesInternal;
-        internal List<BadgeItem> BadgesInternal { set; get; } = new List<BadgeItem>();
-        public int Sequence;
-    }
-
     public class Dashboard
     {
+        #region ctor
+
         public Dashboard(string memberKey)
         {
             Id = memberKey;
             AssistantKey = memberKey;
             AddMemberSection();
         }
+
+        #endregion
+
+        #region prop
+
+        public string Id { get; set; }
+        public string AssistantKey { get; set; }
+        public HashSet<string> Locations { get; set; } = new HashSet<string>();
+        public string CurrentLocation { get; set; }
+        public List<DashboardPart> Parts { get; } = new List<DashboardPart>();
+
+        #endregion
+
+        #region DashboardPart
 
         void AddMemberSection()
         {
@@ -31,12 +38,6 @@ namespace PersonalAssistant
             Parts.Add(DashboardItemTask());
             Parts.Add(DashboardItemOrdered());
         }
-
-        public string Id { get; set; }
-        public string AssistantKey { get; set; }
-        public HashSet<string> Locations { get; set; } = new HashSet<string>();
-        public string CurrentLocation { get; set; }
-        public List<DashboardPart> Parts { get; } = new List<DashboardPart>();
 
         DashboardPart DashboardItemGoal()
             => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = Engine.GetBadgesByGoal(AssistantKey, null).ToList() };
@@ -56,10 +57,21 @@ namespace PersonalAssistant
         DashboardPart DashboardItemOrdered()
             => new DashboardPart { Text = "Ordered", Description = "Ordered", Sequence = 5, BadgesInternal = Engine.GetBadgesOrdered(AssistantKey, null).ToList() };
 
+        #endregion
+    }
+
+    #region Releated Classes
+
+    public class DashboardPart
+    {
+        public string Text { get; set; }
+        public string Description { get; set; }
+        public List<BadgeItem> Badges => BadgesInternal;
+        internal List<BadgeItem> BadgesInternal { set; get; } = new List<BadgeItem>();
+        public int Sequence;
     }
 
     public class BadgeItem
-
     {
         public string Id { get; set; }
         public string Text { get; set; }
@@ -101,4 +113,6 @@ namespace PersonalAssistant
         start,
         pause
     }
+
+    #endregion
 }

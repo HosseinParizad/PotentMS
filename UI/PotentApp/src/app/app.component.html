@@ -41,6 +41,14 @@
       </ul>
     </mat-card-content>
     <mat-card-actions>
+      <div class="locationPanel">
+        <span *ngFor="let location of dashboard.locations;" (click)="moveTo(dashboard.id, location)">
+          <span class="material-icons">
+            location_on
+          </span>
+          {{location}}
+        </span>
+      </div>
     </mat-card-actions>
   </mat-card>
 
@@ -123,6 +131,7 @@
   <li (click)='SendReapeatRequest(+10)'>10 days</li>
   <li (click)='SendReapeatRequest(+14)'>fortnightly</li>
   <li (click)='SendReapeatRequest(+30)'>monthly</li>
+  <li (click)='SendReapeatRequest(-1)'>Test only :)</li>
 </ol>
 
 <hr />
@@ -164,3 +173,5 @@
 </button>
 
 <pre>{{selected|json}}</pre>
+
+<pre>{{cats|json}}</pre>

@@ -142,4 +142,11 @@ export class AppComponent implements OnInit {
     event.stopPropagation();
     return false;
   }
+
+  moveTo(member: string, location: string) {
+    var content = { Member: member, Location: location };
+    var url = "https://localhost:5001/Gateway/Location";
+    var body = { action: "setCurrentLocation", key: member, content: JSON.stringify(content) };
+    this.SendRequestCore(url, body);
+  }
 }

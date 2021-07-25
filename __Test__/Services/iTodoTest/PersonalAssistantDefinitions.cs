@@ -17,7 +17,6 @@ namespace SpecFlowDemo.Steps
         [Then(@"I should see the following board for '(.*)':")]
         public void ThenIShouldSeeTheFollowingBoard(string groupKey, Table table)
         {
-            System.Threading.Thread.Sleep(1000);
             dynamic[] dashboards = null;
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 
@@ -34,6 +36,12 @@ namespace SpecFlowDemo.Steps
 
         public static dynamic[] MakeAGetRequest(string url)
         {
+            return MakeAGetRequestAsync(url).Result;
+        }
+
+
+        public static async Task<dynamic[]> MakeAGetRequestAsync(string url)
+        {
             dynamic[] todos = null;
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
@@ -42,18 +50,36 @@ namespace SpecFlowDemo.Steps
             {
                 try
                 {
-                    var response = httpClient.Send(request);
-                    var responseString = response.Content.ReadAsStringAsync().Result;
-                    todos = JsonSerializer.Deserialize<dynamic[]>(responseString);
+                    var data = await httpClient.GetStringAsync(url);
+                    return JsonSerializer.Deserialize<dynamic[]>(data);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
             }
-
             return todos;
         }
+
+        public static void HttpMakeARequestWaitForFeedback(string url, HttpMethod httpMethod, string dataToSend)
+        {
+            const string urlTaskFeedBack = "https://localhost:5001/Gateway/Feedback";
+            const string urlPAFeedBack = "https://localhost:5001/Gateway/PAFeedback";
+
+            var curPaFeedbackCount = RestHelper.MakeAGetRequest(urlPAFeedBack)?.Count() ?? 0;
+            var curTaskFeedbackCount = RestHelper.MakeAGetRequest(urlTaskFeedBack)?.Count() ?? 0;
+            //System.Threading.Thread.Sleep(100);
+            HttpMakeARequest(url, httpMethod, dataToSend);
+
+            System.Threading.Thread.Sleep(1000); // Todo: need to be fixed
+
+            while ((RestHelper.MakeAGetRequest(urlPAFeedBack)?.Count() ?? 0) == curPaFeedbackCount
+                || (RestHelper.MakeAGetRequest(urlTaskFeedBack)?.Count() ?? 0) == curTaskFeedbackCount)
+            {
+                System.Threading.Thread.Sleep(10);
+            }
+        }
+
 
         public static void HttpMakeARequest(string url, HttpMethod httpMethod, string dataToSend)
         {
@@ -69,7 +95,7 @@ namespace SpecFlowDemo.Steps
 
                 var r = httpClient.Send(request);
 
-                //Assert.Null(r.StatusCode);
+                Assert.AreEqual(HttpStatusCode.OK, r.StatusCode);
             }
         }
 

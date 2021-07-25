@@ -25,7 +25,7 @@ namespace SpecFlowDemo.Steps
                 var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
                 var msg = new Msg(action: "newTask", key: row["GroupKey"], content: JsonSerializer.Serialize(content));
                 var dataToSend = JsonSerializer.Serialize(msg);
-                RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+                RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
             }
         }
 
@@ -79,7 +79,7 @@ namespace SpecFlowDemo.Steps
             var msg = new Msg(action: "setDeadline", key: groupKey, content: JsonSerializer.Serialize(content));
 
             var dataToSend = JsonSerializer.Serialize(msg);
-            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+            RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
         }
 
         [When(@"User close selected task for '(.*)'")]
@@ -175,7 +175,6 @@ namespace SpecFlowDemo.Steps
         {
             const string url = "https://localhost:5001/Gateway/Feedback";
 
-            System.Threading.Thread.Sleep(1000);
             var hasExpectedError = RestHelper.MakeAGetRequest(url)?.Any(m => m.ToString() == errorMsg) ?? false;
 
             Assert.True(hasExpectedError);

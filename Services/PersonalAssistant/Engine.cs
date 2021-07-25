@@ -64,7 +64,12 @@ namespace PersonalAssistant
                 default:
                     break;
             }
+
+            SendFeedbackMessage(FeedbackType.Info, "Info", feedback.Key, "Feedback Processed in Personal Assistant!");
         }
+
+        static void SendFeedbackMessage(FeedbackType type, string action, string key, string content)
+            => ProducerHelper.SendAMessage(MessageTopic.PersonalAssistantFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, key: key, content: content))).GetAwaiter().GetResult();
 
         static void ApplyNewGroupAdded(Feedback feedback)
         {

@@ -9,12 +9,14 @@ namespace PotentHelper
         public const string Common = "Common";
         public const string Repeat = "Repeat";
         public const string RepeatFeedback = "RepeatFeedback";
+        public const string PersonalAssistantFeedback = "PAFeedback";
     }
 
     public class FeedbackGroupNames
     {
         public const string Task = "FromTask";
         public const string Repeat = "FromRepeat";
+        public const string PersonalAssistant = "FromPA";
     }
 
     public class KafkaEnviroment

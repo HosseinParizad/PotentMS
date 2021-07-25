@@ -20,7 +20,7 @@ namespace SpecFlowDemo.Steps
         [BeforeStep]
         public virtual void BeforeStep()
         {
-            System.Threading.Thread.Sleep(1000);
+            //System.Threading.Thread.Sleep(1000);
         }
 
         [BeforeScenario]
@@ -57,13 +57,12 @@ namespace SpecFlowDemo.Steps
             var msg = new Msg(action: "newMember", key: groupKey, content: JsonSerializer.Serialize(content));
 
             var dataToSend = JsonSerializer.Serialize(msg);
-            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+            RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
         }
 
         [Then(@"I should see the following groups:")]
         public void ThenIShouldSeeTheFollowingGroups(Table table)
         {
-            System.Threading.Thread.Sleep(1000);
             var url = $"https://localhost:5003/TodoQuery/GroupQuery?groupKey=All";
             var groups = RestHelper.MakeAGetRequest(url);
             var tableColumns = table.Header.ToArray();

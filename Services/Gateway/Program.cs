@@ -24,6 +24,7 @@ namespace Gateway
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, actions), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.PersonalAssistantFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, new Dictionary<string, Action<Feedback>> { { FeedbackGroupNames.PersonalAssistant, GatewayController.PAMessageReceived } } ), AppId),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId)
                 );
         }

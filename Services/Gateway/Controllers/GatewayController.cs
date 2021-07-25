@@ -15,6 +15,7 @@ namespace Gateway.Controllers
     public class GatewayController : ControllerBase
     {
         public static List<string> FeedbackQueue { get; private set; } = new List<string>();
+        public static List<string> PAFeedbackQueue { get; private set; } = new List<string>();
 
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
@@ -66,9 +67,23 @@ namespace Gateway.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("PAFeedback")]
+        public IEnumerable<string> GetPA()
+        {
+            {
+                return PAFeedbackQueue;
+            }
+        }
+
         internal static void MessageReceived(Feedback feedback)
         {
             FeedbackQueue.Add(feedback.Content);
+        }
+
+        internal static void PAMessageReceived(Feedback feedback)
+        {
+            PAFeedbackQueue.Add(feedback.Content);
         }
 
     }

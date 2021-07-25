@@ -14,6 +14,13 @@ namespace SpecFlowDemo.Steps
     {
         public GroupStepDefinitions(ScenarioContext scenarioContext)
         {
+
+        }
+
+        [BeforeStep]
+        public virtual void BeforeStep()
+        {
+            System.Threading.Thread.Sleep(1000);
         }
 
         [BeforeScenario]

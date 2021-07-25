@@ -351,7 +351,11 @@ namespace PersonalAssistant
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
         {
-            foreach (var task in Tasks.Where(t => t.GroupKey == key && t.ParentId == parentId))
+            var items = (parentId == null)
+                   ? Goals.Where(t => t.GroupKey == key && t.ParentId == parentId)
+                   : Tasks.Union(Goals).Where(t => t.GroupKey == key && t.ParentId == parentId);
+
+            foreach (var task in items)
             {
                 var addSteps = new
                 {

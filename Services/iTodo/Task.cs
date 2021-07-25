@@ -146,6 +146,10 @@ namespace iTodo
                 var dataToSend = JsonSerializer.Serialize(new { Id = id });
                 SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, key: groupKey, content: dataToSend);
             }
+            else
+            {
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, key: groupKey, content: "Cannot find Todo item to close task!");
+            }
         }
 
         #endregion

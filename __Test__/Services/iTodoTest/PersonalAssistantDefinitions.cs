@@ -84,7 +84,7 @@ namespace SpecFlowDemo.Steps
         }
 
         static string DefaultBadgeItem(string item, int isLocation)
-            => "{" + $"\"text\":\"{item.Replace("\"", "")}\",\"linkItems\":null,\"type\":{isLocation},\"count\":0" + ",\"items\":[]}";
+            => "{\"id\":null," + $"\"text\":\"{item.Replace("\"", "")}\",\"parentId\":null,\"linkItems\":null,\"type\":{isLocation},\"count\":0" + ",\"items\":[],\"info\":null,\"status\":0}";
 
 
         [Then(@"I should see the following board deallines:")]

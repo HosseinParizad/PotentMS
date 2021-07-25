@@ -162,7 +162,6 @@ namespace SpecFlowDemo.Steps
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
-
             foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
             {
                 var url = $"https://localhost:5003/TodoQuery?groupKey={row.Key}";

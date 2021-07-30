@@ -26,7 +26,7 @@ namespace RepeatManager
                 _logger.LogInformation("Worker running at: {time}", Now);
                 await Task.Delay(10000, stoppingToken);
 
-                foreach (var item in Engine.Repeat.Where(r => r.LastGeneratedTime.AddDays(r.Days) < Now).ToArray())
+                foreach (var item in Engine.Repeat.Where(r => r.NextGeneratedTime < Now).ToArray())
                 {
                     if (item.ReferenceName == "Task")
                     {

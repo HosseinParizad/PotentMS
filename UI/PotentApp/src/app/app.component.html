@@ -126,12 +126,12 @@
 <label (click)="text = 'Quit Your Job'">Quit Your Job</label> <br>
  -->
 <ol class="list-inline">
-  <li (click)='SendReapeatRequest(+1)'>every day</li>
-  <li (click)='SendReapeatRequest(+7)'>weekly</li>
-  <li (click)='SendReapeatRequest(+10)'>10 days</li>
-  <li (click)='SendReapeatRequest(+14)'>fortnightly</li>
-  <li (click)='SendReapeatRequest(+30)'>monthly</li>
-  <li (click)='SendReapeatRequest(-1)'>Test only :)</li>
+  <li (click)='SendReapeatRequest(frequency.daily)'>every day</li>
+  <li (click)='SendReapeatRequest(frequency.weekly)'>weekly</li>
+  <li (click)='SendReapeatRequest(frequency.days10)'>10 days</li>
+  <li (click)='SendReapeatRequest(frequency.fortnightly)'>fortnightly</li>
+  <li (click)='SendReapeatRequest(frequency.monthly)'>monthly</li>
+  <li (click)='SendReapeatRequest(frequency.test)'>Test only :)</li>
 </ol>
 
 <hr />

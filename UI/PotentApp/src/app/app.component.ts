@@ -18,6 +18,14 @@ export class AppComponent implements OnInit {
   selected: any = {};
   sent = {};
   inputdate: any;
+  frequency: any = {
+    daily: 'D1',
+    weekly: 'D7',
+    days10: 'D10',
+    fortnightly: 'D14',
+    monthly: 'M1',
+    test: 'T0'
+  }
 
   constructor(private http: HttpClient) { }
 
@@ -87,8 +95,8 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  SendReapeatRequest(days: number) {
-    var body = { Action: 'registerRepeat', Key: this.selected.group, Content: JSON.stringify({ ReferenceId: this.selected.badge.id, Days: days, ReferenceName: "Task" }) };
+  SendReapeatRequest(frequency: number) {
+    var body = { Action: 'registerRepeat', Key: this.selected.group, Content: JSON.stringify({ ReferenceId: this.selected.badge.id, Frequency: frequency, ReferenceName: "Task" }) };
     this.sent = this.SendRequestCore("/Repeat", body);
     return false;
   }

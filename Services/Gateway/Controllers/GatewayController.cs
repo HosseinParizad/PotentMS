@@ -76,6 +76,20 @@ namespace Gateway.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("DeleteTopics")]
+        public IActionResult DeleteTopics()
+        {
+            var topicNameList = new List<string> { "Repeat", "PAFeedback", "Task", "Location", "Common", "RepeatFeedback" };
+            //foreach (var item in topicNameList.ToArray())
+            //{
+            //    topicNameList.Add(KafkaEnviroment.preFix + item);
+            //}
+            ConsumerHelper.deleteTopics(topicNameList);
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+
         internal static void MessageReceived(Feedback feedback)
         {
             FeedbackQueue.Add(feedback.Content);
@@ -85,6 +99,7 @@ namespace Gateway.Controllers
         {
             PAFeedbackQueue.Add(feedback.Content);
         }
+
 
     }
 }

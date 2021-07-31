@@ -26,6 +26,8 @@ namespace SpecFlowDemo.Steps
         [BeforeScenario]
         public virtual void BeforeScenario()
         {
+            KafkaEnviroment.TempPrefix = "";
+
             const string url = "https://localhost:5001/Gateway/Common";
             var httpMethod = HttpMethod.Post;
 

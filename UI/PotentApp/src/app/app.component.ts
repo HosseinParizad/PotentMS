@@ -107,6 +107,12 @@ export class AppComponent implements OnInit {
     this.SendRequestCore(url, body);
   }
 
+  DeleteAll() {
+    var url = "https://localhost:5001/Gateway/DeleteTopics";
+    var body = {};
+    this.SendRequestCore(url, body);
+  }
+
   SendRequest(body: any) {
     return this.SendRequestCore("", body)
   }

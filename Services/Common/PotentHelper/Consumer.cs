@@ -1,11 +1,7 @@
-using System;
-using System.Threading;
 using Confluent.Kafka;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-
+using System.Threading;
 
 namespace PotentHelper
 {
@@ -165,5 +161,21 @@ namespace PotentHelper
         string GroupId { get; }
 
         #endregion
+
+
+        public static void deleteTopics(IEnumerable<string> topicNameList)
+        {
+            using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "localhost:9092" }).Build())
+            {
+                try
+                {
+                    adminClient.DeleteTopicsAsync(topicNameList).Wait();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+        }
     }
 }

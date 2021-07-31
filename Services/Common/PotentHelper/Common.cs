@@ -21,8 +21,9 @@ namespace PotentHelper
 
     public class KafkaEnviroment
     {
-        //public const string preFix = "Production.";
-        public const string preFix = "";
+        public static string preFix => TempPrefix ?? "Production.Me."; // test feature
+
+        public static string TempPrefix { get; set; }
     }
 
     public static class MapAction
@@ -36,7 +37,7 @@ namespace PotentHelper
         {
             public const string RepeatTask = "repeatTask";
         }
-        
+
         public static class Location
         {
             public const string SetCurrentLocation = "setCurrentLocation";

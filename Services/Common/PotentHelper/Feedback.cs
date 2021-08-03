@@ -4,20 +4,20 @@ namespace PotentHelper
 {
     public class Feedback : IMessageContract
     {
-        public Feedback(FeedbackType type, string name, string action, string key, string content)
+        public Feedback(FeedbackType type, string name, string action, dynamic metadata, dynamic content)
         {
             Type = type;
             Action = action;
-            Key = key;
+            Metadata = metadata;
             Content = content;
             Name = name;
         }
 
         public FeedbackType Type { get; set; }
-        public string Key { get; set; }
-        public string Content { get; set; }
         public string Action { get; set; }
         public string Name { get; set; }
+        public dynamic Metadata { get; set; }
+        public dynamic Content { get; set; }
     }
 
     public enum FeedbackType

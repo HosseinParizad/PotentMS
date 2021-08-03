@@ -19,7 +19,7 @@ namespace iTodo
             #region  actions
 
             var taskActions =
-                new Dictionary<string, Action<string, string>> {
+                new Dictionary<string, Action<dynamic, dynamic>> {
                     { "newTask", Engine.CreateNewTask },
                     { "newGoal", Engine.CreateNewGoal },
                     { "updateDescription", Engine.UpdateDescription },
@@ -37,9 +37,9 @@ namespace iTodo
 
             #endregion
 
-            var locationActions = new Dictionary<string, Action<string, string>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
+            var locationActions = new Dictionary<string, Action<dynamic, dynamic>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
 
-            var commonActions = new Dictionary<string, Action<string, string>> { { "reset", Engine.Reset }, };
+            var commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
 
             var repeatActions = new Dictionary<string, Action<Feedback>> { { MapAction.Task.RepeatTask, Engine.RepeatTask } };
 

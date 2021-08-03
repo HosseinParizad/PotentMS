@@ -25,16 +25,16 @@ namespace Gateway.Controllers
             return StatusCode(StatusCodes.Status200OK);
         }
 
-        internal static void Reset(string arg1, string arg2)
+        internal static void Reset(dynamic arg1, dynamic arg2)
         {
-            throw new NotImplementedException();
+
         }
 
         [HttpPost]
         [Route("Location")]
         public IActionResult PostLocation([FromBody] Msg msg)
         {
-            Console.WriteLine("||||||||||||||||||||||||||||||||||||||2|3|4|5|6|7|8|9|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+            //Console.WriteLine("|||||||||||||||||||||||||||||||||||||1|2|3|4|5|6|7|8|9|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
             var task = ProducerHelper.SendAMessage(MessageTopic.Location, JsonSerializer.Serialize(msg));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -80,11 +80,24 @@ namespace Gateway.Controllers
         [Route("DeleteTopics")]
         public IActionResult DeleteTopics()
         {
-            var topicNameList = new List<string> { "Repeat", "PAFeedback", "Task", "Location", "Common", "RepeatFeedback" };
-            //foreach (var item in topicNameList.ToArray())
-            //{
-            //    topicNameList.Add(KafkaEnviroment.preFix + item);
-            //}
+            var topicNameList = new List<string> { "Repeat", "PAFeedback", "Task", "Location", "Common", "RepeatFeedback", "TaskFeedback" };
+            foreach (var item in topicNameList.ToArray())
+            {
+                topicNameList.Add(KafkaEnviroment.preFix + item);
+            }
+            ConsumerHelper.deleteTopics(topicNameList);
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+        [HttpPost]
+        [Route("DeleteFeedback")]
+        public IActionResult DeleteFeedback()
+        {
+            var topicNameList = new List<string> { "PAFeedback", "RepeatFeedback", "TaskFeedback" };
+            foreach (var item in topicNameList.ToArray())
+            {
+                topicNameList.Add(KafkaEnviroment.preFix + item);
+            }
             ConsumerHelper.deleteTopics(topicNameList);
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -92,12 +105,12 @@ namespace Gateway.Controllers
 
         internal static void MessageReceived(Feedback feedback)
         {
-            FeedbackQueue.Add(feedback.Content);
+            FeedbackQueue.Add(JsonSerializer.Serialize(feedback.Content));
         }
 
         internal static void PAMessageReceived(Feedback feedback)
         {
-            PAFeedbackQueue.Add(feedback.Content);
+            PAFeedbackQueue.Add(JsonSerializer.Serialize(feedback.Content));
         }
 
 

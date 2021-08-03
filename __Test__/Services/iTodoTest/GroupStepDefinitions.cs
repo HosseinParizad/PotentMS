@@ -31,7 +31,7 @@ namespace SpecFlowDemo.Steps
             const string url = "https://localhost:5001/Gateway/Common";
             var httpMethod = HttpMethod.Post;
 
-            var msg = new Msg(action: "reset", key: "Do not care", content: null);
+            var msg = new Msg(action: "reset", metadata: new { Test="Test"}, content: new { Test="Test"});
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -44,7 +44,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { GroupKey = groupKey };
-            var msg = new Msg(action: "newGroup", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "newGroup", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -56,7 +56,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { NewMember = member };
-            var msg = new Msg(action: "newMember", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "newMember", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);

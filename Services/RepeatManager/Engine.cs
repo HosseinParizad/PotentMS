@@ -6,7 +6,7 @@ namespace RepeatManager
 {
     internal class Engine
     {
-        public static void RegisterRepeat(string key, string content)
+        public static void RegisterRepeat(dynamic key, dynamic content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var name = data.GetProperty("ReferenceName").ToString();
@@ -24,7 +24,7 @@ namespace RepeatManager
             });
         }
 
-        internal static void Reset(string a, string b) => Repeat = new List<RepeatItem>();
+        internal static void Reset(dynamic a, dynamic b) => Repeat = new List<RepeatItem>();
 
         public static List<RepeatItem> Repeat = new List<RepeatItem>();
 

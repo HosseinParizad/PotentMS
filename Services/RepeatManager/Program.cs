@@ -16,13 +16,13 @@ namespace RepeatManager
         public static void Main(string[] args)
         {
             var repeatActions =
-                new Dictionary<string, Action<string, string>>
+                new Dictionary<string, Action<dynamic, dynamic>>
                 {
                     { MapAction.Repeat.RegisterRepeat, Engine.RegisterRepeat },
                 };
 
             var commonActions =
-                new Dictionary<string, Action<string, string>> {
+                new Dictionary<string, Action<dynamic, dynamic>> {
                     { "reset", Engine.Reset },
                 };
 

@@ -6,7 +6,7 @@ namespace PotentHelper
 {
     public class MessageProcessor
     {
-        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<string, string>> actions)
+        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<dynamic, dynamic>> actions)
         {
             try
             {
@@ -16,7 +16,7 @@ namespace PotentHelper
                 {
                     try
                     {
-                        action(msg.Key, msg.Content);
+                        action(msg.Metadata, msg.Content);
                     }
                     catch (Exception ex)
                     {

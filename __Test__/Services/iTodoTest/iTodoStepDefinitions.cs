@@ -23,7 +23,7 @@ namespace SpecFlowDemo.Steps
             foreach (var row in table.Rows)
             {
                 var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
-                var msg = new Msg(action: "newTask", key: row["GroupKey"], content: JsonSerializer.Serialize(content));
+                var msg = new Msg(action: "newTask", metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
                 var dataToSend = JsonSerializer.Serialize(msg);
                 RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
             }
@@ -39,7 +39,7 @@ namespace SpecFlowDemo.Steps
             foreach (var row in table.Rows)
             {
                 var content = new iTodo() { Description = row["Goal"], ParentId = selectedId };
-                var msg = new Msg(action: "newGoal", key: row["GroupKey"], content: JsonSerializer.Serialize(content));
+                var msg = new Msg(action: "newGoal", metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
                 var dataToSend = JsonSerializer.Serialize(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }
@@ -64,7 +64,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Description = newDescription };
-            var msg = new Msg(action: "updateDescription", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "updateDescription", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -76,7 +76,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Deadline = newDeadline };
-            var msg = new Msg(action: "setDeadline", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "setDeadline", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
@@ -89,7 +89,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId };
-            var msg = new Msg(action: "closeTask", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "closeTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -102,7 +102,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, AssignTo = assignTo };
-            var msg = new Msg(action: "assignTask", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "assignTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -115,7 +115,8 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, TagKey = tagKey, Tag = newTag };
-            var msg = new Msg(action: "setTag", key: groupKey, content: JsonSerializer.Serialize(content));
+
+            var msg = new Msg(action: "setTag", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -128,7 +129,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Location = location };
-            var msg = new Msg(action: "setLocation", key: groupKey, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "setLocation", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -140,7 +141,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Member = member, Location = currentLocation };
-            var msg = new Msg(action: "setCurrentLocation", key: member, content: JsonSerializer.Serialize(content));
+            var msg = new Msg(action: "setCurrentLocation", metadata: Helper.GetMetadataByGroupKey(member), content: content);
 
             var dataToSend = JsonSerializer.Serialize(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -174,8 +175,7 @@ namespace SpecFlowDemo.Steps
         public void ThenIShouldSeeValidationError(string errorMsg)
         {
             const string url = "https://localhost:5001/Gateway/Feedback";
-
-            var hasExpectedError = RestHelper.MakeAGetRequest(url)?.Any(m => m.ToString() == errorMsg) ?? false;
+            var hasExpectedError = RestHelper.MakeAGetRequest(url)?.Any(m => m.ToString().IndexOf(errorMsg) > -1) ?? false;
 
             Assert.True(hasExpectedError);
         }

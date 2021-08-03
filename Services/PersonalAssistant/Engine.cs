@@ -65,15 +65,17 @@ namespace PersonalAssistant
                     break;
             }
 
-            SendFeedbackMessage(FeedbackType.Info, "Info", feedback.Key, "Feedback Processed in Personal Assistant!");
+            SendFeedbackMessage(FeedbackType.Info, "Info", Helper.GetMetadataByGroupKey(feedback.Metadata.GetProperty("GroupKey").ToString()), "Feedback Processed in Personal Assistant!");
         }
 
-        static void SendFeedbackMessage(FeedbackType type, string action, string key, string content)
-            => ProducerHelper.SendAMessage(MessageTopic.PersonalAssistantFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, key: key, content: content))).GetAwaiter().GetResult();
+        static void SendFeedbackMessage(FeedbackType type, string action, dynamic metadata, dynamic content)
+            => ProducerHelper.SendAMessage(MessageTopic.PersonalAssistantFeedback, JsonSerializer.Serialize(
+                new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content))).GetAwaiter().GetResult();
 
         static void ApplyNewGroupAdded(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var metadata = feedback.Metadata;
             var memberKey = data.GetProperty("MemberKey").ToString();
             var groupKey = data.GetProperty("GroupKey").ToString();
 
@@ -90,47 +92,50 @@ namespace PersonalAssistant
 
         static void ApplyNewGoalAdded(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             var goal = data.GetProperty(GoalSectionKey).ToString();
-            var item = new TodoItem { Text = goal, Id = id, GroupKey = feedback.Key };
+            var item = new TodoItem { Text = goal, Id = id, GroupKey = groupKey };
             Goals.Add(item);
             Tasks.Add(item);
-            var key = feedback.Key;
-            GetDashboardSections(feedback.Key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
+            GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(groupKey, null).ToList();
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             var text = data.GetProperty("Text").ToString();
+
             var parentId = data.GetProperty("ParentId").ToString();
             parentId = parentId == "" ? null : parentId;
-            var item = new TodoItem { Text = text, Id = id, GroupKey = feedback.Key, ParentId = parentId };
+            var item = new TodoItem { Text = text, Id = id, GroupKey = groupKey, ParentId = parentId };
             Tasks.Add(item);
             var parent = Tasks.SingleOrDefault(d => d.Id == parentId);
             if (parent != null)
             {
                 parent.IsParent = true;
             }
-            OnTaskChanged(feedback.Key);
+            OnTaskChanged(groupKey);
         }
 
         static void ApplyUpdateTaskDescription(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             var text = data.GetProperty("Description").ToString();
             Tasks.Single(d => d.Id == id).Text = text;
-            var key = feedback.Key;
-            OnTaskChanged(feedback.Key);
+            OnTaskChanged(groupKey);
         }
 
 
         static void ApplyTaskAssginedToMember(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            //var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             var member = data.GetProperty("MemberKey").ToString();
             TodoItem goal = Goals.SingleOrDefault(t => t.Id == id);
@@ -147,8 +152,9 @@ namespace PersonalAssistant
 
         static void ApplyNewTagAdded(Feedback feedback)
         {
-            var newTag = feedback.Content;
-            List<BadgeItem> badges = GetDashboardSectionBadges(feedback.Key, "Tag");
+            var newTag = feedback.Content.ToString();
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
+            List<BadgeItem> badges = GetDashboardSectionBadges(groupKey, "Tag");
             if (!badges.Any(b => b.Text == newTag))
             {
                 badges.Add(new BadgeItem { Text = newTag });
@@ -157,8 +163,9 @@ namespace PersonalAssistant
 
         static void ApplyLocationAdded(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-            var key = feedback.Key;
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
+            var key = groupKey;
             var location = data.GetProperty("Location").ToString();
             List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
 
@@ -179,7 +186,8 @@ namespace PersonalAssistant
 
         static void ApplyDeadlineUpdated(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
             var task = Tasks.Single(t => t.Id == id);
@@ -187,12 +195,13 @@ namespace PersonalAssistant
             {
                 task.Deadline = deadline;
             }
-            OnTaskChanged(feedback.Key);
+            OnTaskChanged(groupKey);
         }
 
         static void ApplyTaskDeleted(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             TodoItem task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
@@ -206,44 +215,45 @@ namespace PersonalAssistant
                         parent.IsParent = false;
                     }
                 }
-                OnTaskChanged(feedback.Key);
+                OnTaskChanged(groupKey);
             }
         }
 
         static void ApplyGoalDeleted(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             var goal = Goals.SingleOrDefault(t => t.Id == id);
             if (goal != null)
             {
                 Goals.Remove(goal);
-                GetDashboardSections(feedback.Key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(feedback.Key, null).ToList();
+                GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal.BadgesInternal = Engine.GetBadgesByGoal(groupKey, null).ToList();
             }
             var task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
             {
                 Tasks.Remove(goal);
-                GetDashboardSections(feedback.Key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(feedback.Key, null).ToList();
+                GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal.BadgesInternal = Engine.GetBadgesTasks(groupKey, null).ToList();
             }
         }
 
         static void ApplyStartTask(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             Tasks.Single(d => d.Id == id).Status = TodoStatus.start;
-            var key = feedback.Key;
-            OnTaskChanged(feedback.Key);
+            OnTaskChanged(groupKey);
         }
 
         static void ApplyPauseTask(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
             var id = data.GetProperty("Id").ToString();
             Tasks.Single(d => d.Id == id).Status = TodoStatus.pause;
-            var key = feedback.Key;
-            OnTaskChanged(feedback.Key);
+            OnTaskChanged(groupKey);
         }
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
@@ -289,7 +299,7 @@ namespace PersonalAssistant
 
         #region Common Action
 
-        internal static void Reset(string arg1, string arg2)
+        internal static void Reset(dynamic arg1, dynamic arg2)
         {
             Dashboards = new List<Dashboard>();
             Groups = new Dictionary<string, HashSet<string>>();
@@ -303,7 +313,7 @@ namespace PersonalAssistant
 
         #region Location actions 
 
-        public static void SetCurrentLocation(string groupKey, string content)
+        public static void SetCurrentLocation(dynamic groupKey, dynamic content)
         {
             var data = JsonSerializer.Deserialize<dynamic>(content);
             var key = data.GetProperty("Member").ToString();
@@ -316,7 +326,7 @@ namespace PersonalAssistant
 
         //#region Location actions 
 
-        //public static void SetUsedLocation(string groupKey, string content)
+        //public static void SetUsedLocation(dynamic metadata, dynamic content)
         //{
         //    var data = JsonSerializer.Deserialize<dynamic>(content);
         //    var key = data.GetProperty("Member").ToString();

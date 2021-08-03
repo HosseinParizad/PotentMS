@@ -25,12 +25,12 @@ namespace PersonalAssistant
                 };
 
             var commonActions =
-                new Dictionary<string, Action<string, string>> {
+                new Dictionary<string, Action<dynamic, dynamic>> {
                     { "reset", Engine.Reset },
                 };
 
             var locationActions =
-                new Dictionary<string, Action<string, string>> {
+                new Dictionary<string, Action<dynamic, dynamic>> {
                     { "setCurrentLocation", Engine.SetCurrentLocation },
                 };
 

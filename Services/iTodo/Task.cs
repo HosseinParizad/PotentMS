@@ -10,19 +10,24 @@ namespace iTodo
     {
         #region CreateNewTask 
 
-        public static void CreateNewTask(string groupKey, string content)
+        public static void CreateNewTask(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var description = data.GetProperty("Description").ToString();
-            var parentId = data.GetProperty("ParentId").ToString();
-            CreateGroupIfNotExists(groupKey);
-            AddTask(groupKey, description, parentId);
+            var description = content.GetProperty("Description").ToString();
+            var parentId = content.GetProperty("ParentId").ToString();
+            var id = metadata.GetProperty("ReferenceKey").ToString();
+            CreateGroupIfNotExists(GetValue(metadata, "GroupKey"));
+            AddTask(id, GetValue(metadata, "GroupKey"), description, parentId);
         }
 
-        static void AddTask(string groupKey, dynamic description, dynamic parentId)
+        public static string GetValue(dynamic metadata,string prop)
+        {
+            return metadata.GetProperty(prop).ToString();
+        }
+
+        static void AddTask(string id, string groupKey, dynamic description, dynamic parentId)
         {
             var newItem = new TodoItem();
-            newItem.Id = Guid.NewGuid().ToString();
+            newItem.Id = id;
             newItem.GroupKey = groupKey;
             newItem.Sequence = Todos.Count;
             newItem.Description = description;
@@ -38,73 +43,69 @@ namespace iTodo
         {
             Todos.Add(newItem);
 
-            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Text = newItem.Description, ParentId = newItem.ParentId });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, key: newItem.GroupKey, content: dataToSend);
+            var dataToSend = new { Id = newItem.Id, Text = newItem.Description, ParentId = newItem.ParentId };
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, groupkey: newItem.GroupKey, content: dataToSend);
         }
 
-        public static void CreateNewGoal(string groupKey, string content)
+        public static void CreateNewGoal(dynamic metadata, dynamic content)
         {
             var newItem = new TodoItem();
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            newItem.Id = Guid.NewGuid().ToString();
-            newItem.Description = data.GetProperty("Description").ToString();
-            newItem.GroupKey = groupKey;
+            newItem.Id = metadata.GetProperty("ReferenceKey").ToString();
+            newItem.Description = content.GetProperty("Description").ToString();
+            newItem.GroupKey = GetValue(metadata, "GroupKey");
             newItem.Sequence = Todos.Count;
             newItem.Kind = TodoType.Goal;
             Todos.Add(newItem);
-            var dataToSend = JsonSerializer.Serialize(new { Id = newItem.Id, Goal = newItem.Description });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGoalAdded, key: groupKey, content: dataToSend);
-            CreateGroupIfNotExists(groupKey);
+            var dataToSend = new { Id = newItem.Id, Goal = newItem.Description };
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGoalAdded, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+            CreateGroupIfNotExists(GetValue(metadata, "GroupKey"));
         }
 
         #endregion
 
         #region UpdateDescription 
 
-        public static void UpdateDescription(string groupKey, string content)
+        public static void UpdateDescription(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var description = data.GetProperty("Description").ToString();
-            FindById(groupKey, id).Description = description;
-            var dataToSend = JsonSerializer.Serialize(new { Id = id, Description = description });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.updateTaskDescription, key: groupKey, content: dataToSend);
+            var id = content.GetProperty("Id").ToString();
+            var description = content.GetProperty("Description").ToString();
+            FindById(GetValue(metadata, "GroupKey"), id).Description = description;
+            var dataToSend = new { Id = id, Description = description };
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.updateTaskDescription, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
         }
 
         #endregion
 
         #region SetDeadline 
 
-        public static void SetDeadline(string groupKey, string content)
+        public static void SetDeadline(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
-            TodoItem todo = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var deadline = content.GetProperty("Deadline").GetDateTimeOffset();
+            TodoItem todo = FindById(GetValue(metadata, "GroupKey"), id);
             todo.Deadline = deadline;
-            var dataToSend = JsonSerializer.Serialize(new { Id = id, Text = todo.Description, Deadline = deadline });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, key: groupKey, content: dataToSend);
+            var dataToSend = new { Id = id, Text = todo.Description, Deadline = deadline };
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
         }
 
         #endregion
 
         #region SetTag 
 
-        public static void SetTag(string groupKey, string content)
+        public static void SetTag(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var tag = data.GetProperty("Tag").ToString();
-            var tagKey = data.GetProperty("TagKey").ToString();
-            var todo = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var tag = content.GetProperty("Tag").ToString();
+            var tagKey = content.GetProperty("TagKey").ToString();
+            var todo = FindById(GetValue(metadata, "GroupKey"), id);
             if (todo == null)
             {
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, key: groupKey, content: "Cannot find Todo item to assgin tag!");
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, groupkey: GetValue(metadata, "GroupKey"), content: "Cannot find Todo item to assgin tag!");
             }
             else
             {
                 Console.WriteLine(tag);
-                UpdateTags(todo, groupKey, tag, tagKey);
+                UpdateTags(todo, GetValue(metadata, "GroupKey"), tag, tagKey);
             }
         }
 
@@ -125,7 +126,7 @@ namespace iTodo
                 if (!parent.Value.Contains(tag))
                 {
                     parent.Value.Add(tag);
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTagAdded, key: groupKey, content: tag);
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTagAdded, groupkey: groupKey, content: tag);
                 }
             }
         }
@@ -135,20 +136,19 @@ namespace iTodo
 
         #region CloseTask 
 
-        public static void CloseTask(string groupKey, string content)
+        public static void CloseTask(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var task = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var task = FindById(GetValue(metadata, "GroupKey"), id);
             if (task != null)
             {
                 task.Status = TodoStatus.Close;
-                var dataToSend = JsonSerializer.Serialize(new { Id = id });
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, key: groupKey, content: dataToSend);
+                var dataToSend = new { Id = id };
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, key: groupKey, content: "Cannot find Todo item to close task!");
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, groupkey: GetValue(metadata, "GroupKey"), content: "Cannot find Todo item to close task!");
             }
         }
 
@@ -156,24 +156,24 @@ namespace iTodo
 
         #region StartTask
 
-        public static void StartTask(string groupKey, string content)
+        public static void StartTask(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var task = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var task = FindById(GetValue(metadata, "GroupKey"), id);
             if (task != null)
             {
-                var startingtask = FindFirstByCondition(groupKey, (t) => { return t.Status == TodoStatus.start; });
+                Func<TodoItem, bool> condition = (t) => { return t.Status == TodoStatus.start; };
+                var startingtask = FindFirstByCondition(GetValue(metadata, "GroupKey"), condition);
                 if (startingtask != null)
                 {
-                    PauseTask(groupKey, startingtask.Id, startingtask);
+                    PauseTask(GetValue(metadata, "GroupKey"), startingtask.Id, startingtask);
                 }
 
                 task.Status = TodoStatus.start;
                 TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Start });
 
-                var dataToSend = JsonSerializer.Serialize(new { Id = id });
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskStarted, key: groupKey, content: dataToSend);
+                var dataToSend = new { Id = id };
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskStarted, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
             }
         }
 
@@ -181,14 +181,13 @@ namespace iTodo
 
         #region PauseTask
 
-        public static void PauseTask(string groupKey, string content)
+        public static void PauseTask(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var task = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var task = FindById(GetValue(metadata, "GroupKey"), id);
             if (task != null && task.Status == TodoStatus.start)
             {
-                PauseTask(groupKey, id, task);
+                PauseTask(GetValue(metadata, "GroupKey"), id, task);
             }
         }
 
@@ -196,31 +195,30 @@ namespace iTodo
         {
             task.Status = TodoStatus.pause;
             TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Pause });
-            var dataToSend = JsonSerializer.Serialize(new { Id = id });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskPaused, key: groupKey, content: dataToSend);
+            var dataToSend = new { Id = id };
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskPaused, groupkey: groupKey, content: dataToSend);
         }
 
         #endregion
 
         #region DeleteTask 
 
-        public static void DeleteTask(string groupKey, string content)
+        public static void DeleteTask(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var task = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var task = FindById(GetValue(metadata, "GroupKey"), id);
             if (task != null)
             {
                 Todos.Remove(task);
 
-                var dataToSend = JsonSerializer.Serialize(new { Id = id });
+                var dataToSend = new { Id = id };
                 if (task.Kind == TodoType.Task)
                 {
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, key: groupKey, content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
                 }
                 else if (task.Kind == TodoType.Goal)
                 {
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, key: groupKey, content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
                 }
             }
             else
@@ -233,30 +231,28 @@ namespace iTodo
 
         #region AssignTask
 
-        public static void AssignTask(string groupKey, string content)
+        public static void AssignTask(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            var assignTo = data.GetProperty("AssignTo").ToString();
-            TodoItem task = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            var assignTo = content.GetProperty("AssignTo").ToString();
+            TodoItem task = FindById(GetValue(metadata, "GroupKey"), id);
             if (task != null)
             {
                 task.AssignedTo = assignTo;
             }
-            var dataToSend = JsonSerializer.Serialize(new { Id = id, MemberKey = assignTo });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskAssginedToMember, key: groupKey, content: dataToSend);
+            var dataToSend = new { Id = id, MemberKey = assignTo };
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskAssginedToMember, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
         }
 
         #endregion
 
         #region SetLocation 
 
-        public static void SetLocation(string groupKey, string content)
+        public static void SetLocation(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var id = data.GetProperty("Id").ToString();
-            string location = data.GetProperty("Location").ToString();
-            TodoItem todo = FindById(groupKey, id);
+            var id = content.GetProperty("Id").ToString();
+            string location = content.GetProperty("Location").ToString();
+            TodoItem todo = FindById(GetValue(metadata, "GroupKey"), id);
             if (todo == null)
             {
                 //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find!", originalRequest: "SetLocation");
@@ -264,8 +260,8 @@ namespace iTodo
             else
             {
                 todo.Locations.AddRange(location.Split(","));
-                var dataToSend = JsonSerializer.Serialize(new { Id = id, Location = location });
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, key: groupKey, content: dataToSend);
+                var dataToSend = new { Id = id, Location = location };
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
 
             }
         }
@@ -274,8 +270,9 @@ namespace iTodo
 
         #region NewGroup 
 
-        public static void NewGroup(string groupKey, string content)
+        public static void NewGroup(dynamic metadata, dynamic content)
         {
+            var groupKey = GetValue(metadata, "GroupKey");
             Groups.Add(CreateNewGroup(groupKey, groupKey));
         }
 
@@ -283,8 +280,10 @@ namespace iTodo
 
         static GroupItem CreateNewGroup(string groupKey, string member)
         {
-            var dataToSend = JsonSerializer.Serialize(new { GroupKey = groupKey, MemberKey = member });
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, key: groupKey, content: dataToSend);
+            var dataToSend = new { GroupKey = groupKey, MemberKey = member };
+            Console.WriteLine("******8****************88888888888888888************************");
+            Console.WriteLine(dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, groupkey: groupKey, content: dataToSend);
             return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
         }
 
@@ -292,15 +291,14 @@ namespace iTodo
 
         #region NewMember 
 
-        public static void NewMember(string groupKey, string content)
+        public static void NewMember(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var newMember = data.GetProperty("NewMember").ToString();
+            var newMember = content.GetProperty("NewMember").ToString();
             CreateGroupIfNotExists(newMember);
-            Groups.Add(CreateNewGroup(groupKey, newMember));
+            Groups.Add(CreateNewGroup(GetValue(metadata, "GroupKey"), newMember));
         }
 
-        static void CreateGroupIfNotExists(dynamic groupKey)
+        static void CreateGroupIfNotExists(string groupKey)
         {
             if (!Groups.Any(g => g.Group == groupKey))
             {
@@ -314,27 +312,29 @@ namespace iTodo
 
         public static void RepeatTask(Feedback feedback)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(feedback.Content);
-            var id = data.GetProperty("Id").ToString();
-            var date = DateTimeOffset.Parse(data.GetProperty("LastGeneratedTime").ToString());
+            var id = feedback.Content.GetProperty("Id").ToString();
+            var date = DateTimeOffset.Parse(feedback.Content.GetProperty("LastGeneratedTime").ToString());
+            var hours = int.Parse(feedback.Content.GetProperty("Hours").ToString());
             var dateStr = " (" + date.Date.ToShortDateString() + ")";
 
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                AddTaskAndChildren(task, task.ParentId, dateStr);
+                AddTaskAndChildren(task, task.ParentId, dateStr, hours);
             }
         }
 
-        static void AddTaskAndChildren(TodoItem task, string parentId, string date)
+        static void AddTaskAndChildren(TodoItem task, string parentId, string date, int hours)
         {
             var ctask = task.Clone();
             ctask.ParentId = parentId;
             ctask.Description += date;
+            ctask.Deadline = task.Deadline?.AddHours(hours);
+            ctask.Status = TodoStatus.Active;
             AddTask(ctask);
             foreach (var child in Todos.Where(t => t.ParentId == task.Id).ToArray())
             {
-                AddTaskAndChildren(child, ctask.Id, date);
+                AddTaskAndChildren(child, ctask.Id, date, hours);
             }
         }
 
@@ -387,8 +387,14 @@ namespace iTodo
 
         #region Implement
 
-        static void SendFeedbackMessage(FeedbackType type, string action, string key, string content)
-            => ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, key: key, content: content))).GetAwaiter().GetResult();
+
+        static void SendFeedbackMessage(FeedbackType type, string action, string groupkey, dynamic content)
+        {
+            Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
+            ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(
+                new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
+                )).GetAwaiter().GetResult();
+        }
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
         static TodoItem FindFirstByCondition(string groupKey, Func<TodoItem, bool> condition) => Todos.FirstOrDefault(t => t.GroupKey == groupKey && condition(t));
@@ -407,11 +413,10 @@ namespace iTodo
 
         #region Location actions 
 
-        public static void SetCurrentLocation(string groupKey, string content)
+        public static void SetCurrentLocation(dynamic metadata, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var member = data.GetProperty("Member").ToString();
-            string location = data.GetProperty("Location").ToString();
+            var member = content.GetProperty("Member").ToString();
+            string location = content.GetProperty("Location").ToString();
             if (MemberCurrentLocation.TryGetValue(member, out string locations))
             {
                 MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
@@ -426,7 +431,7 @@ namespace iTodo
 
         #region Common actions
 
-        public static void Reset(string groupKey, string content)
+        public static void Reset(dynamic metadata, dynamic content)
         {
             Todos = new List<TodoItem>();
             Groups = new List<GroupItem>();

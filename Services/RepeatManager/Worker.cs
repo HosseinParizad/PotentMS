@@ -31,16 +31,16 @@ namespace RepeatManager
                     if (item.ReferenceName == "Task")
                     {
                         var now = Now;
-                        var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now };
+                        var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now , Hours = (now - item.LastGeneratedTime).Hours };
                         item.LastGeneratedTime = now;
-                        SendAMessage(type: FeedbackType.Apply, action: MapAction.Task.RepeatTask, content: JsonSerializer.Serialize(dataToSend));
+                        SendAMessage(type: FeedbackType.Apply, action: MapAction.Task.RepeatTask, content: dataToSend);
                     }
                 }
             }
         }
 
-        static void SendAMessage(FeedbackType type, string action, string content)
-            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: action, action: action, key: "", content: content))).GetAwaiter().GetResult();
+        static void SendAMessage(FeedbackType type, string action, dynamic content)
+            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: action, action: action, metadata: "", content: content))).GetAwaiter().GetResult();
 
     }
 }

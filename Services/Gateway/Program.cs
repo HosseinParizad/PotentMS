@@ -16,7 +16,7 @@ namespace Gateway
         public static void Main(string[] args)
         {
             var commonActions =
-                new Dictionary<string, Action<string, string>> {
+                new Dictionary<string, Action<dynamic, dynamic>> {
                     { "reset", GatewayController.Reset },
                 };
 

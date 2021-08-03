@@ -23,7 +23,7 @@ namespace PotentHelper
     {
         public static string preFix => TempPrefix ?? "Production.Me."; // test feature
 
-        public static string TempPrefix { get; set; }
+        public static string TempPrefix { get; set; } = "";
     }
 
     public static class MapAction

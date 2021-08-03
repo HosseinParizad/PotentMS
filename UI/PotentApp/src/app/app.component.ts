@@ -103,12 +103,18 @@ export class AppComponent implements OnInit {
 
   Reset() {
     var url = "https://localhost:5001/Gateway/Common";
-    var body = { action: "reset", key: "Do not care", content: null };
+    var body = { action: "reset", key: "Do not care", content: {} };
     this.SendRequestCore(url, body);
   }
 
   DeleteAll() {
     var url = "https://localhost:5001/Gateway/DeleteTopics";
+    var body = {};
+    this.SendRequestCore(url, body);
+  }
+
+  DeleteFeedback() {
+    var url = "https://localhost:5001/Gateway/DeleteFeedback";
     var body = {};
     this.SendRequestCore(url, body);
   }

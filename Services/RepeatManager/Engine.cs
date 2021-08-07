@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using PotentHelper;
 
 namespace RepeatManager
 {
@@ -8,10 +8,10 @@ namespace RepeatManager
     {
         public static void RegisterRepeat(dynamic key, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var name = data.GetProperty("ReferenceName").ToString();
-            var id = data.GetProperty("ReferenceId").ToString();
-            var frequency = data.GetProperty("Frequency").ToString();
+            var data = Helper.Deserialize(content);
+            var name = data.ReferenceName.ToString();
+            var id = data.ReferenceId.ToString();
+            var frequency = data.Frequency.ToString();
 
             Repeat.Add(new RepeatItem
             {

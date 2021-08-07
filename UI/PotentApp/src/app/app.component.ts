@@ -65,8 +65,13 @@ export class AppComponent implements OnInit {
     }
   }
 
+  BodyMaker(action: string, groupKey: string, content: any) {
+    var referenceKey = "[id]";
+    return { Action: action, Metadata: { GroupKey: groupKey, ReferenceKey: referenceKey }, Content: content };
+  }
+
   SendTaskRequest() {
-    var body = { Action: 'newTask', Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    var body = this.BodyMaker('newTask', this.selected.group, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }
@@ -74,29 +79,30 @@ export class AppComponent implements OnInit {
   SendTaskRequestSpe(body: string) {
     body = body.replace('[text]', this.text)
     body = body.replace('[date]', this.inputdate)
+    alert(JSON.stringify(JSON.parse(body)));
     this.sent = this.SendRequest(JSON.parse(body));
   }
 
   SendGoalRequest() {
-    var body = { Action: 'newGoal', Key: this.selected.group, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    var body = this.BodyMaker('newGoal', this.selected.group, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }
 
   SendGroupRequest() {
-    var body = { Action: 'newGroup', Key: this.text, Content: JSON.stringify({ Description: this.text, ParentId: "" }) };
+    var body = this.BodyMaker('newGroup', this.selected.group, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }
 
   SendMemberRequest() {
-    var body = { Action: 'newMember', Key: this.selected.group, Content: JSON.stringify({ NewMember: this.text }) };
+    var body = this.BodyMaker('newMember', this.selected.group, { NewMember: this.text });
     this.sent = this.SendRequest(body);
     return false;
   }
 
   SendReapeatRequest(frequency: number) {
-    var body = { Action: 'registerRepeat', Key: this.selected.group, Content: JSON.stringify({ ReferenceId: this.selected.badge.id, Frequency: frequency, ReferenceName: "Task" }) };
+    var body = this.BodyMaker('registerRepeat', this.selected.group, { ReferenceId: this.selected.badge.id, Frequency: frequency, ReferenceName: "Task" });
     this.sent = this.SendRequestCore("/Repeat", body);
     return false;
   }

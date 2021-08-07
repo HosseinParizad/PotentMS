@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using PotentHelper;
 using TechTalk.SpecFlow;
@@ -24,7 +24,7 @@ namespace SpecFlowDemo.Steps
             {
                 var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
                 var msg = new Msg(action: "newTask", metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
-                var dataToSend = JsonSerializer.Serialize(msg);
+                var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
             }
         }
@@ -40,7 +40,7 @@ namespace SpecFlowDemo.Steps
             {
                 var content = new iTodo() { Description = row["Goal"], ParentId = selectedId };
                 var msg = new Msg(action: "newGoal", metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
-                var dataToSend = JsonSerializer.Serialize(msg);
+                var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }
         }
@@ -53,7 +53,7 @@ namespace SpecFlowDemo.Steps
             var todos = RestHelper.MakeAGetRequest(url);
             if (todos.Count() >= i)
             {
-                selectedId = todos.Skip(i - 1).Take(1).Single().GetProperty("id").ToString();
+                selectedId = todos.Skip(i - 1).Take(1).Single().id.ToString();
             }
         }
 
@@ -65,7 +65,7 @@ namespace SpecFlowDemo.Steps
 
             var content = new { Id = selectedId, Description = newDescription };
             var msg = new Msg(action: "updateDescription", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -78,7 +78,7 @@ namespace SpecFlowDemo.Steps
             var content = new { Id = selectedId, Deadline = newDeadline };
             var msg = new Msg(action: "setDeadline", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
         }
 
@@ -91,7 +91,7 @@ namespace SpecFlowDemo.Steps
             var content = new { Id = selectedId };
             var msg = new Msg(action: "closeTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -104,7 +104,7 @@ namespace SpecFlowDemo.Steps
             var content = new { Id = selectedId, AssignTo = assignTo };
             var msg = new Msg(action: "assignTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -118,7 +118,7 @@ namespace SpecFlowDemo.Steps
 
             var msg = new Msg(action: "setTag", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -130,7 +130,7 @@ namespace SpecFlowDemo.Steps
 
             var content = new { Id = selectedId, Location = location };
             var msg = new Msg(action: "setLocation", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -143,7 +143,7 @@ namespace SpecFlowDemo.Steps
             var content = new { Member = member, Location = currentLocation };
             var msg = new Msg(action: "setCurrentLocation", metadata: Helper.GetMetadataByGroupKey(member), content: content);
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 

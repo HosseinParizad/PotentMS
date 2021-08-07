@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -40,7 +40,7 @@ namespace RepeatManager
         }
 
         static void SendAMessage(FeedbackType type, string action, dynamic content)
-            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonSerializer.Serialize(new Feedback(type: type, name: action, action: action, metadata: "", content: content))).GetAwaiter().GetResult();
+            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonConvert.SerializeObject(new Feedback(type: type, name: action, action: action, metadata: "", content: content))).GetAwaiter().GetResult();
 
     }
 }

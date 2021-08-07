@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using PotentHelper;
 using TechTalk.SpecFlow;
@@ -33,7 +33,7 @@ namespace SpecFlowDemo.Steps
 
             var msg = new Msg(action: "reset", metadata: new { Test="Test"}, content: new { Test="Test"});
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -45,7 +45,7 @@ namespace SpecFlowDemo.Steps
 
             var content = new { GroupKey = groupKey };
             var msg = new Msg(action: "newGroup", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
@@ -58,7 +58,7 @@ namespace SpecFlowDemo.Steps
             var content = new { NewMember = member };
             var msg = new Msg(action: "newMember", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
-            var dataToSend = JsonSerializer.Serialize(msg);
+            var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
         }
 

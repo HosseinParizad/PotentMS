@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using PotentHelper;
 using Microsoft.AspNetCore.Http;
-using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using PotentHelper;
+using System.Collections.Generic;
 
 namespace Gateway.Controllers
 {
@@ -20,7 +16,9 @@ namespace Gateway.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
         {
-            var task = ProducerHelper.SendAMessage(MessageTopic.Task, JsonSerializer.Serialize(msg));
+            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
+
+            var task = ProducerHelper.SendAMessage(MessageTopic.Task, JsonConvert.SerializeObject(msgT));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -34,8 +32,9 @@ namespace Gateway.Controllers
         [Route("Location")]
         public IActionResult PostLocation([FromBody] Msg msg)
         {
-            //Console.WriteLine("|||||||||||||||||||||||||||||||||||||1|2|3|4|5|6|7|8|9|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
-            var task = ProducerHelper.SendAMessage(MessageTopic.Location, JsonSerializer.Serialize(msg));
+            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
+
+            var task = ProducerHelper.SendAMessage(MessageTopic.Location, JsonConvert.SerializeObject(msgT));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -44,7 +43,9 @@ namespace Gateway.Controllers
         [Route("Repeat")]
         public IActionResult PostRepeat([FromBody] Msg msg)
         {
-            var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, JsonSerializer.Serialize(msg));
+            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
+
+            var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, JsonConvert.SerializeObject(msgT));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -53,7 +54,9 @@ namespace Gateway.Controllers
         [Route("Common")]
         public IActionResult PostCommon([FromBody] Msg msg)
         {
-            var task = ProducerHelper.SendAMessage(MessageTopic.Common, JsonSerializer.Serialize(msg));
+            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
+
+            var task = ProducerHelper.SendAMessage(MessageTopic.Common, JsonConvert.SerializeObject(msgT));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -105,12 +108,12 @@ namespace Gateway.Controllers
 
         internal static void MessageReceived(Feedback feedback)
         {
-            FeedbackQueue.Add(JsonSerializer.Serialize(feedback.Content));
+            FeedbackQueue.Add(JsonConvert.SerializeObject(feedback.Content));
         }
 
         internal static void PAMessageReceived(Feedback feedback)
         {
-            PAFeedbackQueue.Add(JsonSerializer.Serialize(feedback.Content));
+            PAFeedbackQueue.Add(JsonConvert.SerializeObject(feedback.Content));
         }
 
 

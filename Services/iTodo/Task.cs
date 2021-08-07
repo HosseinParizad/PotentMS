@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json;
 using PotentHelper;
 
 namespace iTodo
@@ -12,19 +12,14 @@ namespace iTodo
 
         public static void CreateNewTask(dynamic metadata, dynamic content)
         {
-            var description = content.GetProperty("Description").ToString();
-            var parentId = content.GetProperty("ParentId").ToString();
-            var id = metadata.GetProperty("ReferenceKey").ToString();
-            CreateGroupIfNotExists(GetValue(metadata, "GroupKey"));
-            AddTask(id, GetValue(metadata, "GroupKey"), description, parentId);
+            var description = content.Description.ToString();
+            var parentId = content.ParentId.ToString();
+            var id = metadata.ReferenceKey.ToString();
+            CreateGroupIfNotExists(metadata.GroupKey.ToString());
+            AddTask(id, metadata.GroupKey.ToString(), description, parentId);
         }
 
-        public static string GetValue(dynamic metadata,string prop)
-        {
-            return metadata.GetProperty(prop).ToString();
-        }
-
-        static void AddTask(string id, string groupKey, dynamic description, dynamic parentId)
+        static void AddTask(string id, string groupKey, string description, string parentId)
         {
             var newItem = new TodoItem();
             newItem.Id = id;
@@ -50,15 +45,15 @@ namespace iTodo
         public static void CreateNewGoal(dynamic metadata, dynamic content)
         {
             var newItem = new TodoItem();
-            newItem.Id = metadata.GetProperty("ReferenceKey").ToString();
-            newItem.Description = content.GetProperty("Description").ToString();
-            newItem.GroupKey = GetValue(metadata, "GroupKey");
+            newItem.Id = metadata.ReferenceKey.ToString();
+            newItem.Description = content.Description.ToString();
+            newItem.GroupKey = metadata.GroupKey.ToString();
             newItem.Sequence = Todos.Count;
             newItem.Kind = TodoType.Goal;
             Todos.Add(newItem);
             var dataToSend = new { Id = newItem.Id, Goal = newItem.Description };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGoalAdded, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
-            CreateGroupIfNotExists(GetValue(metadata, "GroupKey"));
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGoalAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            CreateGroupIfNotExists(metadata.GroupKey.ToString());
         }
 
         #endregion
@@ -67,11 +62,11 @@ namespace iTodo
 
         public static void UpdateDescription(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var description = content.GetProperty("Description").ToString();
-            FindById(GetValue(metadata, "GroupKey"), id).Description = description;
+            var id = content.Id.ToString();
+            var description = content.Description.ToString();
+            FindById(metadata.GroupKey.ToString(), id).Description = description;
             var dataToSend = new { Id = id, Description = description };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.updateTaskDescription, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.updateTaskDescription, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -80,12 +75,12 @@ namespace iTodo
 
         public static void SetDeadline(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var deadline = content.GetProperty("Deadline").GetDateTimeOffset();
-            TodoItem todo = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var deadline = content.Deadline;
+            TodoItem todo = FindById(metadata.GroupKey.ToString(), id);
             todo.Deadline = deadline;
             var dataToSend = new { Id = id, Text = todo.Description, Deadline = deadline };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -94,18 +89,18 @@ namespace iTodo
 
         public static void SetTag(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var tag = content.GetProperty("Tag").ToString();
-            var tagKey = content.GetProperty("TagKey").ToString();
-            var todo = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var tag = content.Tag.ToString();
+            var tagKey = content.TagKey.ToString();
+            var todo = FindById(metadata.GroupKey.ToString(), id);
             if (todo == null)
             {
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, groupkey: GetValue(metadata, "GroupKey"), content: "Cannot find Todo item to assgin tag!");
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to assgin tag!");
             }
             else
             {
                 Console.WriteLine(tag);
-                UpdateTags(todo, GetValue(metadata, "GroupKey"), tag, tagKey);
+                UpdateTags(todo, metadata.GroupKey.ToString(), tag, tagKey);
             }
         }
 
@@ -138,17 +133,17 @@ namespace iTodo
 
         public static void CloseTask(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var task = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var task = FindById(metadata.GroupKey.ToString(), id);
             if (task != null)
             {
                 task.Status = TodoStatus.Close;
                 var dataToSend = new { Id = id };
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, groupkey: GetValue(metadata, "GroupKey"), content: "Cannot find Todo item to close task!");
+                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to close task!");
             }
         }
 
@@ -158,22 +153,22 @@ namespace iTodo
 
         public static void StartTask(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var task = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var task = FindById(metadata.GroupKey.ToString(), id);
             if (task != null)
             {
                 Func<TodoItem, bool> condition = (t) => { return t.Status == TodoStatus.start; };
-                var startingtask = FindFirstByCondition(GetValue(metadata, "GroupKey"), condition);
+                var startingtask = FindFirstByCondition(metadata.GroupKey.ToString(), condition);
                 if (startingtask != null)
                 {
-                    PauseTask(GetValue(metadata, "GroupKey"), startingtask.Id, startingtask);
+                    PauseTask(metadata.GroupKey.ToString(), startingtask.Id, startingtask);
                 }
 
                 task.Status = TodoStatus.start;
                 TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Start });
 
                 var dataToSend = new { Id = id };
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskStarted, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskStarted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
             }
         }
 
@@ -183,11 +178,11 @@ namespace iTodo
 
         public static void PauseTask(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var task = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var task = FindById(metadata.GroupKey.ToString(), id);
             if (task != null && task.Status == TodoStatus.start)
             {
-                PauseTask(GetValue(metadata, "GroupKey"), id, task);
+                PauseTask(metadata.GroupKey.ToString(), id, task);
             }
         }
 
@@ -205,8 +200,8 @@ namespace iTodo
 
         public static void DeleteTask(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var task = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var task = FindById(metadata.GroupKey.ToString(), id);
             if (task != null)
             {
                 Todos.Remove(task);
@@ -214,11 +209,11 @@ namespace iTodo
                 var dataToSend = new { Id = id };
                 if (task.Kind == TodoType.Task)
                 {
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
                 else if (task.Kind == TodoType.Goal)
                 {
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
             }
             else
@@ -233,15 +228,15 @@ namespace iTodo
 
         public static void AssignTask(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            var assignTo = content.GetProperty("AssignTo").ToString();
-            TodoItem task = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            var assignTo = content.AssignTo.ToString();
+            TodoItem task = FindById(metadata.GroupKey.ToString(), id);
             if (task != null)
             {
                 task.AssignedTo = assignTo;
             }
             var dataToSend = new { Id = id, MemberKey = assignTo };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskAssginedToMember, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskAssginedToMember, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -250,19 +245,26 @@ namespace iTodo
 
         public static void SetLocation(dynamic metadata, dynamic content)
         {
-            var id = content.GetProperty("Id").ToString();
-            string location = content.GetProperty("Location").ToString();
-            TodoItem todo = FindById(GetValue(metadata, "GroupKey"), id);
+            var id = content.Id.ToString();
+            string location = content.Location.ToString();
+            TodoItem todo = FindById(metadata.GroupKey.ToString(), id);
             if (todo == null)
             {
                 //SendFeedbackMessage(type: FeedbackType.Error, groupKey: groupKey, id: id, content: "Cannot find!", originalRequest: "SetLocation");
             }
             else
             {
-                todo.Locations.AddRange(location.Split(","));
-                var dataToSend = new { Id = id, Location = location };
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, groupkey: GetValue(metadata, "GroupKey"), content: dataToSend);
+                var locations = location.Split(",");
+                todo.Locations.AddRange(locations);
+                foreach (var item in locations)
+                {
+                    var dataToSend = new { Id = id, Location = item };
+                    Console.WriteLine("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
+                    Console.WriteLine(item);
+                    Console.WriteLine("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
 
+                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                }
             }
         }
 
@@ -272,7 +274,7 @@ namespace iTodo
 
         public static void NewGroup(dynamic metadata, dynamic content)
         {
-            var groupKey = GetValue(metadata, "GroupKey");
+            var groupKey = metadata.GroupKey.ToString();
             Groups.Add(CreateNewGroup(groupKey, groupKey));
         }
 
@@ -293,9 +295,9 @@ namespace iTodo
 
         public static void NewMember(dynamic metadata, dynamic content)
         {
-            var newMember = content.GetProperty("NewMember").ToString();
+            var newMember = content.NewMember.ToString();
             CreateGroupIfNotExists(newMember);
-            Groups.Add(CreateNewGroup(GetValue(metadata, "GroupKey"), newMember));
+            Groups.Add(CreateNewGroup(metadata.GroupKey.ToString(), newMember));
         }
 
         static void CreateGroupIfNotExists(string groupKey)
@@ -312,9 +314,9 @@ namespace iTodo
 
         public static void RepeatTask(Feedback feedback)
         {
-            var id = feedback.Content.GetProperty("Id").ToString();
-            var date = DateTimeOffset.Parse(feedback.Content.GetProperty("LastGeneratedTime").ToString());
-            var hours = int.Parse(feedback.Content.GetProperty("Hours").ToString());
+            var id = feedback.Content.Id.ToString();
+            var date = DateTimeOffset.Parse(feedback.Content.LastGeneratedTime.ToString());
+            var hours = int.Parse(feedback.Content.Hours.ToString());
             var dateStr = " (" + date.Date.ToShortDateString() + ")";
 
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
@@ -391,7 +393,7 @@ namespace iTodo
         static void SendFeedbackMessage(FeedbackType type, string action, string groupkey, dynamic content)
         {
             Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
-            ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonSerializer.Serialize(
+            ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonConvert.SerializeObject(
                 new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
                 )).GetAwaiter().GetResult();
         }
@@ -415,8 +417,8 @@ namespace iTodo
 
         public static void SetCurrentLocation(dynamic metadata, dynamic content)
         {
-            var member = content.GetProperty("Member").ToString();
-            string location = content.GetProperty("Location").ToString();
+            var member = content.Member.ToString();
+            string location = content.Location.ToString();
             if (MemberCurrentLocation.TryGetValue(member, out string locations))
             {
                 MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());

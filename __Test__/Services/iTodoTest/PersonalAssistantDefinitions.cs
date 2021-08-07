@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using NUnit.Framework;
+using Newtonsoft.Json;
+using PotentHelper;
 using TechTalk.SpecFlow;
 
 namespace SpecFlowDemo.Steps
@@ -29,12 +29,13 @@ namespace SpecFlowDemo.Steps
 
             var url = $"https://localhost:5007/PersonalAssistant/{groupKey}";
             dashboards = RestHelper.MakeAGetRequest(url);
-            Dictionary<String, string> replaceValues = new Dictionary<string, string>();
+            var replaceValues = new Dictionary<string, string>();
             if (tableColumns.Contains("Badges"))
             {
                 foreach (var row in table.Rows)
                 {
-                    var badges = JsonSerializer.Deserialize<List<string>>(row["Badges"]);
+                    //var badges = Helper.Deserialize(row["Badges"], typeof(List<string>));
+                    var badges = Helper.DeserializeObject<List<string>>(row["Badges"]);
                     int isLocation = row["Text"] == "UsedLocations" ? 1 : 0;
                     foreach (var item in badges)
                     {
@@ -43,7 +44,7 @@ namespace SpecFlowDemo.Steps
 
                 }
             }
-            var t2 = dashboards[0].GetProperty("parts");
+            var t2 = dashboards[0].parts;
             var c = new List<dynamic>();
             //foreach (var item in t2)
             //{

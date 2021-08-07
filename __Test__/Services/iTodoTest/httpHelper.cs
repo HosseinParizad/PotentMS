@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
+using PotentHelper;
+using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace SpecFlowDemo.Steps
 {
@@ -51,7 +53,8 @@ namespace SpecFlowDemo.Steps
                 try
                 {
                     var data = await httpClient.GetStringAsync(url);
-                    return JsonSerializer.Deserialize<dynamic[]>(data);
+                    //return Helper.Deserialize(data, typeof(dynamic[]));
+                    return Helper.DeserializeObject<dynamic[]>(data);
                 }
                 catch (Exception ex)
                 {
@@ -71,7 +74,7 @@ namespace SpecFlowDemo.Steps
             //System.Threading.Thread.Sleep(100);
             HttpMakeARequest(url, httpMethod, dataToSend);
 
-            System.Threading.Thread.Sleep(1000); // Todo: need to be fixed
+            System.Threading.Thread.Sleep(100); // Todo: need to be fixed
 
             while ((RestHelper.MakeAGetRequest(urlPAFeedBack)?.Count() ?? 0) == curPaFeedbackCount
                 || (RestHelper.MakeAGetRequest(urlTaskFeedBack)?.Count() ?? 0) == curTaskFeedbackCount)
@@ -100,8 +103,8 @@ namespace SpecFlowDemo.Steps
         }
 
 
-        public static string Joine(this string[] s) => string.Join(",", s);
-        public static string Joine(this IEnumerable<string> s) => string.Join(",", s);
+        public static string Joine(this string[] s) => string.Join(",", s).Replace("\r", "").Replace("\n", "").Replace("    ", "").Replace("   ", "").Replace("  ", "").Replace(" ", ""); //Todo: Remove
+        public static string Joine(this IEnumerable<string> s) => string.Join(",", s).Replace("\r", "").Replace("\n", "").Replace("    ", "").Replace("   ", "").Replace("  ", "").Replace(" ", ""); //Todo: Remove
         public static string Joine(this IEnumerable<string> s, Dictionary<string, string> replaceValues)
         {
             var result = string.Join(",", s);
@@ -117,6 +120,6 @@ namespace SpecFlowDemo.Steps
         public static string[] ToList(this Table table, string[] columns, Dictionary<string, string> replaceValues) => table.Rows.ToList(columns, replaceValues);
         public static string[] ToList(this IEnumerable<TableRow> rows, string[] columns) => rows.Select(r => columns.Select(e => r[e]).Joine()).ToArray();
         public static string[] ToList(this IEnumerable<TableRow> rows, string[] columns, Dictionary<string, string> replaceValues) => rows.Select(r => columns.Select(e => r[e]).Joine(replaceValues)).ToArray();
-        public static string[] DynamicToList(dynamic[] dynamicArray, string[] columns) => dynamicArray.Select(l => columns.Select(n => l.GetProperty(n)).Joine()).Cast<string>().ToArray();
+        public static string[] DynamicToList(dynamic[] dynamicArray, string[] columns) => dynamicArray.Select(l => columns.Select(n => l.GetValue(n)).Joine()).Cast<string>().ToArray();
     }
 }

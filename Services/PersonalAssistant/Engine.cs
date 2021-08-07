@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json;
 using PotentHelper;
 
 namespace PersonalAssistant
@@ -65,19 +65,19 @@ namespace PersonalAssistant
                     break;
             }
 
-            SendFeedbackMessage(FeedbackType.Info, "Info", Helper.GetMetadataByGroupKey(feedback.Metadata.GetProperty("GroupKey").ToString()), "Feedback Processed in Personal Assistant!");
+            SendFeedbackMessage(FeedbackType.Info, "Info", Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
         }
 
         static void SendFeedbackMessage(FeedbackType type, string action, dynamic metadata, dynamic content)
-            => ProducerHelper.SendAMessage(MessageTopic.PersonalAssistantFeedback, JsonSerializer.Serialize(
+            => ProducerHelper.SendAMessage(MessageTopic.PersonalAssistantFeedback, JsonConvert.SerializeObject(
                 new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content))).GetAwaiter().GetResult();
 
         static void ApplyNewGroupAdded(Feedback feedback)
         {
             var data = feedback.Content;
             var metadata = feedback.Metadata;
-            var memberKey = data.GetProperty("MemberKey").ToString();
-            var groupKey = data.GetProperty("GroupKey").ToString();
+            var memberKey = data.MemberKey.ToString();
+            var groupKey = data.GroupKey.ToString();
 
             var members = new HashSet<string>();
             if (Groups.TryGetValue(groupKey, out members))
@@ -93,8 +93,8 @@ namespace PersonalAssistant
         static void ApplyNewGoalAdded(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
             var goal = data.GetProperty(GoalSectionKey).ToString();
             var item = new TodoItem { Text = goal, Id = id, GroupKey = groupKey };
             Goals.Add(item);
@@ -105,11 +105,11 @@ namespace PersonalAssistant
         static void ApplyNewTaskAdded(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
-            var text = data.GetProperty("Text").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
+            var text = data.Text.ToString();
 
-            var parentId = data.GetProperty("ParentId").ToString();
+            var parentId = data.ParentId.ToString();
             parentId = parentId == "" ? null : parentId;
             var item = new TodoItem { Text = text, Id = id, GroupKey = groupKey, ParentId = parentId };
             Tasks.Add(item);
@@ -124,9 +124,9 @@ namespace PersonalAssistant
         static void ApplyUpdateTaskDescription(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
-            var text = data.GetProperty("Description").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
+            var text = data.Description.ToString();
             Tasks.Single(d => d.Id == id).Text = text;
             OnTaskChanged(groupKey);
         }
@@ -135,9 +135,9 @@ namespace PersonalAssistant
         static void ApplyTaskAssginedToMember(Feedback feedback)
         {
             var data = feedback.Content;
-            //var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
-            var member = data.GetProperty("MemberKey").ToString();
+            //var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
+            var member = data.MemberKey.ToString();
             TodoItem goal = Goals.SingleOrDefault(t => t.Id == id);
             if (goal != null)
             {
@@ -153,7 +153,7 @@ namespace PersonalAssistant
         static void ApplyNewTagAdded(Feedback feedback)
         {
             var newTag = feedback.Content.ToString();
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
             List<BadgeItem> badges = GetDashboardSectionBadges(groupKey, "Tag");
             if (!badges.Any(b => b.Text == newTag))
             {
@@ -164,9 +164,9 @@ namespace PersonalAssistant
         static void ApplyLocationAdded(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
             var key = groupKey;
-            var location = data.GetProperty("Location").ToString();
+            var location = data.Location.ToString();
             List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
 
             if (!badges.Any(b => b.Text == location))
@@ -187,9 +187,9 @@ namespace PersonalAssistant
         static void ApplyDeadlineUpdated(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
-            var deadline = data.GetProperty("Deadline").GetDateTimeOffset();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
+            var deadline = data.Deadline;
             var task = Tasks.Single(t => t.Id == id);
             if (task != null)
             {
@@ -201,8 +201,8 @@ namespace PersonalAssistant
         static void ApplyTaskDeleted(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
             TodoItem task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
             {
@@ -222,8 +222,8 @@ namespace PersonalAssistant
         static void ApplyGoalDeleted(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
             var goal = Goals.SingleOrDefault(t => t.Id == id);
             if (goal != null)
             {
@@ -241,8 +241,8 @@ namespace PersonalAssistant
         static void ApplyStartTask(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
             Tasks.Single(d => d.Id == id).Status = TodoStatus.start;
             OnTaskChanged(groupKey);
         }
@@ -250,8 +250,8 @@ namespace PersonalAssistant
         static void ApplyPauseTask(Feedback feedback)
         {
             var data = feedback.Content;
-            var groupKey = feedback.Metadata.GetProperty("GroupKey").ToString();
-            var id = data.GetProperty("Id").ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
             Tasks.Single(d => d.Id == id).Status = TodoStatus.pause;
             OnTaskChanged(groupKey);
         }
@@ -315,9 +315,9 @@ namespace PersonalAssistant
 
         public static void SetCurrentLocation(dynamic groupKey, dynamic content)
         {
-            var data = JsonSerializer.Deserialize<dynamic>(content);
-            var key = data.GetProperty("Member").ToString();
-            string location = data.GetProperty("Location").ToString();
+            var data = Helper.Deserialize(content);
+            var key = data.Member.ToString();
+            string location = data.Location.ToString();
             Dashboard dashbord = GetDashboard(key);
             dashbord.CurrentLocation = location;
         }
@@ -329,8 +329,8 @@ namespace PersonalAssistant
         //public static void SetUsedLocation(dynamic metadata, dynamic content)
         //{
         //    var data = JsonSerializer.Deserialize<dynamic>(content);
-        //    var key = data.GetProperty("Member").ToString();
-        //    string location = data.GetProperty("Location").ToString();
+        //    var key = data.Member.ToString();
+        //    string location = data.Location.ToString();
         //    IEnumerable<DashboardPart> dashbord = Dashboards.Single(d => d.Id == groupKey).Parts;
         //    var locations = dashbord.Single(d => d.Text == "UsedLocations").BadgesInternal;
         //    if (!locations.Any(l => l.Text == location))
@@ -376,14 +376,14 @@ namespace PersonalAssistant
                 {
                     Action = "newTask",
                     Key = key,
-                    Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = task.Id })
+                    Content = JsonConvert.SerializeObject(new { Description = "[text]", ParentId = task.Id })
                 };
 
                 var delete = new
                 {
                     Action = "delTask",
                     Key = key,
-                    Content = JsonSerializer.Serialize(new { Id = task.Id })
+                    Content = JsonConvert.SerializeObject(new { Id = task.Id })
                 };
 
                 yield return new BadgeItem
@@ -391,8 +391,8 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     LinkItems = new List<LinkItem> {
-                        new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" },
-                        new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" },
+                        new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" },
+                        new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" },
                     },
                     Items = GetBadgesDuesTree(key, task.Id).ToList()
                 };
@@ -425,7 +425,7 @@ namespace PersonalAssistant
                     ParentId = task.ParentId,
                     LinkItems = GetLinkItems(task, key).ToList(),
                     Items = new List<BadgeItem>(),
-                    Info = JsonSerializer.Serialize(task)
+                    Info = JsonConvert.SerializeObject(task)
                 };
             }
         }
@@ -442,7 +442,7 @@ namespace PersonalAssistant
                     Status = task.Status,
                     LinkItems = GetLinkItems(task, key).ToList(),
                     Items = GetBadgesTasks(key, task.Id).ToList(),
-                    Info = JsonSerializer.Serialize(task)
+                    Info = JsonConvert.SerializeObject(task)
                 };
             }
         }
@@ -459,7 +459,7 @@ namespace PersonalAssistant
                     Status = task.Status,
                     LinkItems = GetLinkItems(task, key).ToList(),
                     Items = GetBadgesOrdered(key, task.Id).ToList(),
-                    Info = JsonSerializer.Serialize(task)
+                    Info = JsonConvert.SerializeObject(task)
                 };
             }
         }
@@ -470,75 +470,75 @@ namespace PersonalAssistant
             var addSteps = new
             {
                 Action = "newTask",
-                Key = key,
-                Content = JsonSerializer.Serialize(new { Description = "[text]", ParentId = id })
+                Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
+                Content = new { Description = "[text]", ParentId = id }
             };
             var delete = new
             {
                 Action = "delTask",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Id = id })
+                Content = new { Id = id }
             };
             var update = new
             {
                 Action = "updateDescription",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Description = "[text]", Id = id })
+                Content = new { Description = "[text]", Id = id }
             };
             var setLocation = new
             {
                 Action = "setLocation",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Location = "[text]", Id = id })
+                Content = new { Location = "[text]", Id = id }
             };
             var setTag = new
             {
                 Action = "setTag",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Tag = "[text]", TagKey = 0, Id = id })
+                Content = new { Tag = "[text]", TagKey = 0, Id = id }
             };
             var setDeadline = new
             {
                 Action = "setDeadline",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Deadline = "[date]", Id = id })
+                Content = new { Deadline = "[date]", Id = id }
             };
             var close = new
             {
                 Action = "closeTask",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Id = id })
+                Content = new { Id = id }
             };
             var start = new
             {
                 Action = "startTask",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Id = id })
+                Content = new { Id = id }
             };
             var pause = new
             {
                 Action = "pauseTask",
                 Key = key,
-                Content = JsonSerializer.Serialize(new { Id = id })
+                Content = new { Id = id }
             };
 
-            yield return new LinkItem { Link = JsonSerializer.Serialize(addSteps), Text = "Steps" };
-            yield return new LinkItem { Link = JsonSerializer.Serialize(delete), Text = "Delete" };
-            yield return new LinkItem { Link = JsonSerializer.Serialize(update), Text = "Update" };
-            yield return new LinkItem { Link = JsonSerializer.Serialize(setLocation), Text = "Location" };
-            yield return new LinkItem { Link = JsonSerializer.Serialize(setTag), Text = "Tag" };
-            yield return new LinkItem { Link = JsonSerializer.Serialize(setDeadline), Text = "Deadline" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(update), Text = "Update" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(setTag), Text = "Tag" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
 
             if (!task.IsParent)
             {
-                yield return new LinkItem { Link = JsonSerializer.Serialize(close), Text = "close" };
+                yield return new LinkItem { Link = JsonConvert.SerializeObject(close), Text = "close" };
                 if (task.Status == TodoStatus.start)
                 {
-                    yield return new LinkItem { Link = JsonSerializer.Serialize(pause), Text = "pause" };
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(pause), Text = "pause" };
                 }
                 else
                 {
-                    yield return new LinkItem { Link = JsonSerializer.Serialize(start), Text = "start" };
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(start), Text = "start" };
                 }
             }
         }

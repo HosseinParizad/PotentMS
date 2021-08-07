@@ -6,12 +6,11 @@ namespace RepeatManager
 {
     internal class Engine
     {
-        public static void RegisterRepeat(dynamic key, dynamic content)
+        public static void RegisterRepeat(dynamic metadata, dynamic content)
         {
-            var data = Helper.Deserialize(content);
-            var name = data.ReferenceName.ToString();
-            var id = data.ReferenceId.ToString();
-            var frequency = data.Frequency.ToString();
+            var name = content.ReferenceName.ToString();
+            var id = content.ReferenceId.ToString();
+            var frequency = content.Frequency.ToString();
 
             Repeat.Add(new RepeatItem
             {

@@ -66,8 +66,7 @@ export class AppComponent implements OnInit {
   }
 
   BodyMaker(action: string, groupKey: string, content: any) {
-    var referenceKey = "[id]";
-    return { Action: action, Metadata: { GroupKey: groupKey, ReferenceKey: referenceKey }, Content: content };
+    return { Action: action, Metadata: { GroupKey: groupKey }, Content: content };
   }
 
   SendTaskRequest() {
@@ -79,7 +78,6 @@ export class AppComponent implements OnInit {
   SendTaskRequestSpe(body: string) {
     body = body.replace('[text]', this.text)
     body = body.replace('[date]', this.inputdate)
-    alert(JSON.stringify(JSON.parse(body)));
     this.sent = this.SendRequest(JSON.parse(body));
   }
 

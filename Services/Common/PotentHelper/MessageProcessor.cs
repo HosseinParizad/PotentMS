@@ -10,9 +10,7 @@ namespace PotentHelper
         {
             try
             {
-                //var msg = (IMessageContract)Helper.Deserialize(message, typeof(Msg));
                 var msg = Helper.DeserializeObject<Msg>(message);
-                //Console.WriteLine($"-------------------{msg.Action}------{string.Join("|", actions.Keys)}-----------");
                 if (actions.TryGetValue(msg.Action, out var action))
                 {
                     try
@@ -41,9 +39,7 @@ namespace PotentHelper
         {
             try
             {
-                //var msg = (Feedback)Helper.Deserialize(message, typeof(Feedback));
                 var msg = Helper.DeserializeObject<Feedback>(message);
-                //Console.WriteLine($"-------------------{msg.Name}------{string.Join("|", actions.Keys)}-----------");
                 if (actions.TryGetValue(msg.Name, out var action))
                 {
                     try

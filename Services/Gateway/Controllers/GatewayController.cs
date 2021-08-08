@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PotentHelper;
+using System;
 using System.Collections.Generic;
 
 namespace Gateway.Controllers
@@ -17,7 +18,7 @@ namespace Gateway.Controllers
         public IActionResult Post([FromBody] Msg msg)
         {
             var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
-
+            msgT.Metadata.ReferenceKey = Guid.NewGuid().ToString();
             var task = ProducerHelper.SendAMessage(MessageTopic.Task, JsonConvert.SerializeObject(msgT));
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);

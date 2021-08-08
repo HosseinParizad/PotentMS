@@ -33,7 +33,7 @@ Feature: PersonalAssistant.Group
 			| Hossein |
 			| Mania   |
 			| Yasmin  |
-		Then I should see the following groups:
+		Then I should see the following group 'All'
 			| Group   | Member  |
 			| family  | family  |
 			| family  | Hossein |

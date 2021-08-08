@@ -62,10 +62,23 @@ namespace SpecFlowDemo.Steps
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
         }
 
+        [Given(@"Wait (.*)")]
+        public void GivenWait(int n)
+        {
+            System.Threading.Thread.Sleep(n);
+        }
+
         [Then(@"I should see the following groups:")]
         public void ThenIShouldSeeTheFollowingGroups(Table table)
         {
-            var url = $"https://localhost:5003/TodoQuery/GroupQuery?groupKey=All";
+            ThenIShouldSeeTheFollowingGroup(table.Rows[0]["Group"], table);
+        }
+
+
+        [Then(@"I should see the following group '(.*)'")]
+        public void ThenIShouldSeeTheFollowingGroup(string group, Table table)
+        {
+            var url = $"https://localhost:5003/TodoQuery/GroupQuery?groupKey=" + group;
             var groups = RestHelper.MakeAGetRequest(url);
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
@@ -79,18 +92,14 @@ namespace SpecFlowDemo.Steps
             {
                 var expect = table.ToList(tableColumns);
                 var result = RestHelper.DynamicToList(groups, expectedColums);
-                //Assert.Multiple(() =>
-                //{
-                //    Assert.IsTrue(expect.All(result.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
-                //    Assert.IsTrue(result.All(expect.Contains), String.Join(",", expect) + " -(o)- " + String.Join(",", result));
-                //});
 
                 var set1 = new HashSet<string>(expect);
                 var set2 = new HashSet<string>(result);
                 Assert.Multiple(() =>
                 {
-                    Assert.IsFalse(expect.Except(result).Any(), String.Join(",", expect.Except(result)));
-                    Assert.IsFalse(result.Except(expect).Any(), String.Join(",", expect.Except(expect)));
+                    //Assert.IsFalse(expect.Except(result).Any(), String.Join(",", expect.Except(result)));
+                    //Assert.IsFalse(result.Except(expect).Any(), String.Join(",", expect.Except(expect)));
+                    Assert.IsTrue(set1.SetEquals(set2));
                 });
 
             }

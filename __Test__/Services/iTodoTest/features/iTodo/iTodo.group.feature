@@ -1,7 +1,7 @@
 Feature: Group
 
 	Scenario: Adding group
-		Given  Send an email '@me' to create group
+		Given Send an email '@me' to create group
 		Then I should see the following groups:
 			| Group | Member |
 			| @me   | @me    |
@@ -10,7 +10,7 @@ Feature: Group
 		Given Send an email '@me' to create group
 		Given Send an email '@family' to create group
 		Given Add '@me' as member of '@family'
-		Then I should see the following groups:
+		Then I should see the following group 'All'
 			| Group   | Member  |
 			| @me     | @me     |
 			| @family | @family |
@@ -18,9 +18,12 @@ Feature: Group
 
 	Scenario: Group can have more than one member
 		Given Send an email '@family' to create group
-		Given Add '@me' as member of '@family'
-		Given Add '@you' as member of '@family'
-		Then I should see the following groups:
+		And Wait 1000
+		And Add '@me' as member of '@family'
+		And Wait 1000
+		And Add '@you' as member of '@family'
+		And Wait 1000
+		Then I should see the following group 'All'
 			| Group   | Member  |
 			| @family | @family |
 			| @family | @me     |
@@ -47,7 +50,7 @@ Feature: Group
 			| TaskDesc            | GroupKey |
 			| Watch somthing      | @me      |
 			| Watch somthing else | @you     |
-		Then I should see the following groups:
+		Then I should see the following group 'All'
 			| Group | Member |
 			| @me   | @me    |
 			| @you  | @you   |

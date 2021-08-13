@@ -8,21 +8,24 @@ FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5006"`) DO taskkill /F
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5007"`) DO taskkill /F /PID %%i
 
 
- 
+ @echo off
+set "p=%1"
+if "%p%"=="" set /p "p=Enter Value: " || set "p=Test"
+echo %p%
  
 echo "Starting"
 
 cd Services/Gateway/
-start /B dotnet run
+start /B dotnet run %p%
 
 cd ../../Services/iTodo/  
-start /B dotnet run
+start /B dotnet run %p%
 
 cd ../../Services/PersonalAssistant/  
-start /B dotnet run
+start /B dotnet run %p%
 
 cd ../../Services/RepeatManager/  
-start /B dotnet run
+start /B dotnet run %p%
 
 call :wait
 

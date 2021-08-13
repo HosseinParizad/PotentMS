@@ -11,10 +11,12 @@ namespace Gateway
     public class Program
     {
         const string AppGroupId = "Gateway";
-        static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
         public static void Main(string[] args)
         {
+            KafkaEnviroment.TempPrefix = args[0];
+            var AppId = KafkaEnviroment.preFix + AppGroupId;
+
             var commonActions =
                 new Dictionary<string, Action<dynamic, dynamic>> {
                     { "reset", GatewayController.Reset },
@@ -24,7 +26,7 @@ namespace Gateway
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, actions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.PersonalAssistantFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, new Dictionary<string, Action<Feedback>> { { FeedbackGroupNames.PersonalAssistant, GatewayController.PAMessageReceived } } ), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.PersonalAssistantFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, new Dictionary<string, Action<Feedback>> { { FeedbackGroupNames.PersonalAssistant, GatewayController.PAMessageReceived } }), AppId),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId)
                 );
         }

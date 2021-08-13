@@ -14,10 +14,12 @@ namespace PersonalAssistant
     public class Program
     {
         const string AppGroupId = "PersonalAssistant";
-        static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
         public static void Main(string[] args)
         {
+            KafkaEnviroment.TempPrefix = args[0];
+            var AppId = KafkaEnviroment.preFix + AppGroupId;
+
             var taskFeedbackActions =
                 new Dictionary<string, Action<Feedback>>
                 {

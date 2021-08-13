@@ -11,10 +11,12 @@ namespace RepeatManager
     public class Program
     {
         const string AppGroupId = "RepeatManager";
-        static string AppId = AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
         public static void Main(string[] args)
         {
+            KafkaEnviroment.TempPrefix = args[0];
+            var AppId = KafkaEnviroment.preFix + AppGroupId;
+
             var repeatActions =
                 new Dictionary<string, Action<dynamic, dynamic>>
                 {

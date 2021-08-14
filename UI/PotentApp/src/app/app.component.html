@@ -132,6 +132,10 @@
   <li (click)='SendReapeatRequest(frequency.fortnightly)'>fortnightly</li>
   <li (click)='SendReapeatRequest(frequency.monthly)'>monthly</li>
   <li (click)='SendReapeatRequest(frequency.test)'>Test only :)</li>
+  <div>
+    <input type="checkbox" id="repeatIfAllClosed" name="interest" [(ngModel)]="repeatIfAllClosed">
+    <label for="repeatIfAllClosed">Only if not closed</label>
+  </div>
 </ol>
 
 <hr />
@@ -178,4 +182,4 @@
   Delete feedback
 </button>
 
-<pre>{{selected|json}}</pre>
+<pre>{{repeatIfAllClosed|json}}</pre>

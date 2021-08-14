@@ -15,7 +15,7 @@ namespace Gateway
         public static void Main(string[] args)
         {
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
+            var AppId = KafkaEnviroment.preFix + AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
             var commonActions =
                 new Dictionary<string, Action<dynamic, dynamic>> {

@@ -18,7 +18,7 @@ namespace PersonalAssistant
         public static void Main(string[] args)
         {
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
+            var AppId = KafkaEnviroment.preFix + AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 
             var taskFeedbackActions =
                 new Dictionary<string, Action<Feedback>>

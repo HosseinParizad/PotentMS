@@ -95,11 +95,11 @@ namespace PersonalAssistant
             var data = feedback.Content;
             var groupKey = feedback.Metadata.GroupKey.ToString();
             var id = data.Id.ToString();
-            var goal = data.GetProperty(GoalSectionKey).ToString();
+            var goal = data.Goal.ToString();
             var item = new TodoItem { Text = goal, Id = id, GroupKey = groupKey };
             Goals.Add(item);
             Tasks.Add(item);
-            GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(groupKey, null).ToList();
+            //GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(groupKey, null).ToList();
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
@@ -467,60 +467,23 @@ namespace PersonalAssistant
         static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key)
         {
             var id = task.Id;
-            var addSteps = new
-            {
-                Action = "newTask",
-                Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
-                Content = new { Description = "[text]", ParentId = id }
-            };
-            var delete = new
-            {
-                Action = "delTask",
-                Key = key,
-                Content = new { Id = id }
-            };
-            var update = new
-            {
-                Action = "updateDescription",
-                Key = key,
-                Content = new { Description = "[text]", Id = id }
-            };
-            var setLocation = new
-            {
-                Action = "setLocation",
-                Key = key,
-                Content = new { Location = "[text]", Id = id }
-            };
-            var setTag = new
-            {
-                Action = "setTag",
-                Key = key,
-                Content = new { Tag = "[text]", TagKey = 0, Id = id }
-            };
-            var setDeadline = new
-            {
-                Action = "setDeadline",
-                Key = key,
-                Content = new { Deadline = "[date]", Id = id }
-            };
-            var close = new
-            {
-                Action = "closeTask",
-                Key = key,
-                Content = new { Id = id }
-            };
-            var start = new
-            {
-                Action = "startTask",
-                Key = key,
-                Content = new { Id = id }
-            };
-            var pause = new
-            {
-                Action = "pauseTask",
-                Key = key,
-                Content = new { Id = id }
-            };
+            Func<string, dynamic, dynamic> createStep = (action, content) =>
+           new
+           {
+               Action = action,
+               Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
+               Content = content
+           };
+
+            var addSteps = createStep("newTask", new { Description = "[text]", ParentId = id });
+            var delete = createStep("delTask", new { Id = id });
+            var update = createStep("updateDescription", new { Description = "[text]", Id = id });
+            var setLocation = createStep("setLocation", new { Location = "[text]", Id = id });
+            var setTag = createStep("setTag", new { Tag = "[text]", TagKey = 0, Id = id });
+            var setDeadline = createStep("setDeadline", new { Deadline = "[date]", Id = id });
+            var close = createStep("closeTask", new { Id = id });
+            var start = createStep("startTask", new { Id = id });
+            var pause = createStep("pauseTask", new { Id = id });
 
             yield return new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" };
             yield return new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" };

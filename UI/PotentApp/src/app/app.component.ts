@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
   selected: any = {};
   sent = {};
   inputdate: any;
+  repeatIfAllClosed: boolean = false;
   frequency: any = {
     daily: 'D1',
     weekly: 'D7',
@@ -30,7 +31,8 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.http.get<any>('https://localhost:5007/PersonalAssistant/AllofUs')
+    //this.http.get<any>('https://localhost:5007/PersonalAssistant/AllofUs')
+    this.http.get<any>('https://localhost:5007/PersonalAssistant/Family')
       .subscribe(data => {
         this.selected.badge = {};
         this.cats = [];
@@ -100,7 +102,7 @@ export class AppComponent implements OnInit {
   }
 
   SendReapeatRequest(frequency: number) {
-    var body = this.BodyMaker('registerRepeat', this.selected.group, { ReferenceId: this.selected.badge.id, Frequency: frequency, ReferenceName: "Task" });
+    var body = this.BodyMaker('registerRepeat', this.selected.group, { ReferenceId: this.selected.badge.id, Frequency: frequency, ReferenceName: "Task", RepeatIfAllClosed: this.repeatIfAllClosed });
     this.sent = this.SendRequestCore("/Repeat", body);
     return false;
   }

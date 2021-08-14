@@ -31,7 +31,7 @@ namespace RepeatManager
                     if (item.ReferenceName == "Task")
                     {
                         var now = Now;
-                        var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now , Hours = (now - item.LastGeneratedTime).Hours };
+                        var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now, Hours = (now - item.LastGeneratedTime).Hours, RepeatIfAllClosed = item.RepeatIfAllClosed };
                         item.LastGeneratedTime = now;
                         SendAMessage(type: FeedbackType.Apply, action: MapAction.Task.RepeatTask, content: dataToSend);
                     }
@@ -40,7 +40,7 @@ namespace RepeatManager
         }
 
         static void SendAMessage(FeedbackType type, string action, dynamic content)
-            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonConvert.SerializeObject(new Feedback(type: type, name: action, action: action, metadata: "", content: content))).GetAwaiter().GetResult();
+            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonConvert.SerializeObject(new Feedback(type: type, name: action, action: action, metadata: new { GroupKey = "", ReferenceKey = Guid.NewGuid().ToString() }, content: content))).GetAwaiter().GetResult();
 
     }
 }

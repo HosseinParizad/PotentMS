@@ -11,6 +11,7 @@ namespace RepeatManager
             var name = content.ReferenceName.ToString();
             var id = content.ReferenceId.ToString();
             var frequency = content.Frequency.ToString();
+            var repeatIfAllClosed = bool.Parse(content.RepeatIfAllClosed?.ToString() ?? "false");
 
             Repeat.Add(new RepeatItem
             {
@@ -18,6 +19,7 @@ namespace RepeatManager
                 ReferenceName = name,
                 ReferenceId = id,
                 Frequency = frequency,
+                RepeatIfAllClosed = repeatIfAllClosed,
                 StartTime = DateTimeOffset.Now,
                 LastGeneratedTime = DateTimeOffset.Now
             });
@@ -32,6 +34,7 @@ namespace RepeatManager
             public string Id { get; set; }
             public string ReferenceName { get; set; }
             public string ReferenceId { get; set; }
+            public bool RepeatIfAllClosed { get; set; }
 
             private string frequency;
 

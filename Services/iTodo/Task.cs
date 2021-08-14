@@ -259,9 +259,6 @@ namespace iTodo
                 foreach (var item in locations)
                 {
                     var dataToSend = new { Id = id, Location = item };
-                    Console.WriteLine("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
-                    Console.WriteLine(item);
-                    Console.WriteLine("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
 
                     SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
@@ -283,8 +280,6 @@ namespace iTodo
         static GroupItem CreateNewGroup(string groupKey, string member)
         {
             var dataToSend = new { GroupKey = groupKey, MemberKey = member };
-            Console.WriteLine("******8****************88888888888888888************************");
-            Console.WriteLine(dataToSend);
             SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, groupkey: groupKey, content: dataToSend);
             return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
         }
@@ -315,6 +310,7 @@ namespace iTodo
         public static void RepeatTask(Feedback feedback)
         {
             var id = feedback.Content.Id.ToString();
+            var repeatIfAllClosed = bool.Parse(feedback.Content.RepeatIfAllClosed?.ToString() ?? "false");
             var date = DateTimeOffset.Parse(feedback.Content.LastGeneratedTime.ToString());
             var hours = int.Parse(feedback.Content.Hours.ToString());
             var dateStr = " (" + date.Date.ToShortDateString() + ")";
@@ -322,21 +318,26 @@ namespace iTodo
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                AddTaskAndChildren(task, task.ParentId, dateStr, hours);
+                var shouldRepeat = !repeatIfAllClosed || !Todos.Where(t => (t.OriginalRepeatId == id || t.Id == id) && t.Status != TodoStatus.Close).Any();
+                if (shouldRepeat)
+                {
+                    AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id);
+                }
             }
         }
 
-        static void AddTaskAndChildren(TodoItem task, string parentId, string date, int hours)
+        static void AddTaskAndChildrenRepeat(TodoItem task, string parentId, string date, int hours, string originalRepeatId)
         {
             var ctask = task.Clone();
             ctask.ParentId = parentId;
             ctask.Description += date;
             ctask.Deadline = task.Deadline?.AddHours(hours);
             ctask.Status = TodoStatus.Active;
+            ctask.OriginalRepeatId = originalRepeatId;
             AddTask(ctask);
             foreach (var child in Todos.Where(t => t.ParentId == task.Id).ToArray())
             {
-                AddTaskAndChildren(child, ctask.Id, date, hours);
+                AddTaskAndChildrenRepeat(child, ctask.Id, date, hours, originalRepeatId);
             }
         }
 
@@ -459,6 +460,7 @@ namespace iTodo
         public TodoStatus Status { get; set; }
         public string ParentId { get; set; }
         public TodoType Kind { get; set; }
+        public string OriginalRepeatId { get; set; }
         public List<TodoItem> TodoItems
         {
             get => todoItems ??= new List<TodoItem>();

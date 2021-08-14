@@ -2,6 +2,7 @@ Feature: Group
 
 	Scenario: Adding group
 		Given Send an email '@me' to create group
+		And Wait 1000
 		Then I should see the following groups:
 			| Group | Member |
 			| @me   | @me    |
@@ -18,9 +19,7 @@ Feature: Group
 
 	Scenario: Group can have more than one member
 		Given Send an email '@family' to create group
-		And Wait 1000
 		And Add '@me' as member of '@family'
-		And Wait 1000
 		And Add '@you' as member of '@family'
 		And Wait 1000
 		Then I should see the following group 'All'

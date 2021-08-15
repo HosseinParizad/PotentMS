@@ -40,7 +40,7 @@ Feature: Add
 		When User set deadline '2021-01-07T00:00:00Z' on selected task for 'Ali'
 		Then I should see the following todo list:
 			| TaskDesc                            | GroupKey | Deadline           |
-			| Watch cat videos on YouTube all day | Ali      | 1/7/202111:00:00AM |
+			| Watch cat videos on YouTube all day | Ali      | 1/7/202112:00:00AM |
 
 	Scenario: Should be able to send validation error
 		Given  I send the following task:

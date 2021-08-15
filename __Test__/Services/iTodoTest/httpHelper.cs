@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 using PotentHelper;
-using Newtonsoft.Json;
-using Newtonsoft.Json;
 
 namespace SpecFlowDemo.Steps
 {

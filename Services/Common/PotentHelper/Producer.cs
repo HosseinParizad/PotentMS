@@ -1,13 +1,36 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Newtonsoft.Json;
 
 namespace PotentHelper
 {
     public class ProducerHelper
     {
-        public static async Task SendAMessage(string topic, string msg)
+        public static async Task SendAMessage(string topic, Msg obj)
         {
+            var xxx = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
+            await SendMessageCore(topic, xxx);
+        }
+
+        public static async Task SendAMessage(string topic, Feedback obj)
+        {
+            var xxx = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
+            await SendMessageCore(topic, xxx);
+        }
+
+        static async Task SendMessageCore(string topic, dynamic obj)
+        {
+            var metadata = obj.Metadata;
+            if (metadata.ReferenceKey == null)
+            {
+                metadata.ReferenceKey = Guid.NewGuid().ToString();
+            }
+            if (metadata.CreateDate == null)
+            {
+                metadata.CreateDate = DateTimeOffset.Now;
+            }
+            var msg = JsonConvert.SerializeObject(obj);
             var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 
             // If serializers are not specified, default serializers from

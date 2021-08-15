@@ -69,8 +69,11 @@ namespace PersonalAssistant
         }
 
         static void SendFeedbackMessage(FeedbackType type, string action, dynamic metadata, dynamic content)
-            => ProducerHelper.SendAMessage(MessageTopic.PersonalAssistantFeedback, JsonConvert.SerializeObject(
-                new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content))).GetAwaiter().GetResult();
+            => ProducerHelper.SendAMessage(
+                    MessageTopic.PersonalAssistantFeedback,
+                    new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content)
+                   )
+                .GetAwaiter().GetResult();
 
         static void ApplyNewGroupAdded(Feedback feedback)
         {

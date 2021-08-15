@@ -17,9 +17,7 @@ namespace Gateway.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
         {
-            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
-            msgT.Metadata.ReferenceKey = Guid.NewGuid().ToString();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Task, JsonConvert.SerializeObject(msgT));
+            var task = ProducerHelper.SendAMessage(MessageTopic.Task, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -33,9 +31,7 @@ namespace Gateway.Controllers
         [Route("Location")]
         public IActionResult PostLocation([FromBody] Msg msg)
         {
-            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
-
-            var task = ProducerHelper.SendAMessage(MessageTopic.Location, JsonConvert.SerializeObject(msgT));
+            var task = ProducerHelper.SendAMessage(MessageTopic.Location, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -44,9 +40,7 @@ namespace Gateway.Controllers
         [Route("Repeat")]
         public IActionResult PostRepeat([FromBody] Msg msg)
         {
-            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
-
-            var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, JsonConvert.SerializeObject(msgT));
+            var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -55,9 +49,7 @@ namespace Gateway.Controllers
         [Route("Common")]
         public IActionResult PostCommon([FromBody] Msg msg)
         {
-            var msgT = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(msg)); //Todo:remove
-
-            var task = ProducerHelper.SendAMessage(MessageTopic.Common, JsonConvert.SerializeObject(msgT));
+            var task = ProducerHelper.SendAMessage(MessageTopic.Common, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }

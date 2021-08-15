@@ -40,7 +40,7 @@ namespace RepeatManager
         }
 
         static void SendAMessage(FeedbackType type, string action, dynamic content)
-            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, JsonConvert.SerializeObject(new Feedback(type: type, name: action, action: action, metadata: new { GroupKey = "", ReferenceKey = Guid.NewGuid().ToString() }, content: content))).GetAwaiter().GetResult();
+            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, new Feedback(type: type, name: action, action: action, metadata: new { GroupKey = "", ReferenceKey = Guid.NewGuid().ToString() }, content: content)).GetAwaiter().GetResult();
 
     }
 }

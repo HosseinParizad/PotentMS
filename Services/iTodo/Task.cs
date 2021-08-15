@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
 using PotentHelper;
@@ -76,10 +77,11 @@ namespace iTodo
         public static void SetDeadline(dynamic metadata, dynamic content)
         {
             var id = content.Id.ToString();
-            var deadline = content.Deadline;
+            var deadline = DateTimeOffset.Parse(content.Deadline.ToString(), null, DateTimeStyles.AdjustToUniversal);
             TodoItem todo = FindById(metadata.GroupKey.ToString(), id);
             todo.Deadline = deadline;
             var dataToSend = new { Id = id, Text = todo.Description, Deadline = deadline };
+
             SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
@@ -394,9 +396,11 @@ namespace iTodo
         static void SendFeedbackMessage(FeedbackType type, string action, string groupkey, dynamic content)
         {
             Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
-            ProducerHelper.SendAMessage(MessageTopic.TaskFeedback, JsonConvert.SerializeObject(
-                new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                )).GetAwaiter().GetResult();
+            ProducerHelper.SendAMessage(
+                    MessageTopic.TaskFeedback,
+                    new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
+                    )
+                .GetAwaiter().GetResult();
         }
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);

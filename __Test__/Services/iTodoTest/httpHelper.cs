@@ -39,7 +39,6 @@ namespace SpecFlowDemo.Steps
             return MakeAGetRequestAsync(url).Result;
         }
 
-
         public static async Task<dynamic[]> MakeAGetRequestAsync(string url)
         {
             dynamic[] todos = null;

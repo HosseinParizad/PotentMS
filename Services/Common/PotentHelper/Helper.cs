@@ -19,4 +19,25 @@ namespace PotentHelper
                 , new IsoDateTimeConverter { DateTimeFormat = "yyyy/MM/dd" });
 
     }
+
+	// public class DisposableAction : IDisposable
+	// {
+	// 	public DisposableAction(Action dispose)
+	// 	{
+	// 		this.dispose = dispose;
+	// 	}
+
+	// 	public DisposableAction(Action initialise, Action dispose)
+	// 		: this(dispose)
+	// 	{
+	// 		initialise?.Invoke();
+	// 	}
+
+	// 	readonly Action dispose;
+
+	// 	public void Dispose()
+	// 	{
+	// 		dispose();
+	// 	}
+	// }
 }

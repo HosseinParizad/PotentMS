@@ -65,15 +65,26 @@ namespace PersonalAssistant
                     break;
             }
 
-            SendFeedbackMessage(FeedbackType.Info, "Info", Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
+            SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
         }
 
-        static void SendFeedbackMessage(FeedbackType type, string action, dynamic metadata, dynamic content)
-            => ProducerHelper.SendAMessage(
-                    MessageTopic.PersonalAssistantFeedback,
-                    new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content)
-                   )
-                .GetAwaiter().GetResult();
+        static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
+        {
+            Console.WriteLine("++++++++++++++++++++++++++++++++++++++");
+            Console.WriteLine(Program.StartingTimeApp);
+            Console.WriteLine(actionTime);
+            Console.WriteLine(Program.StartingTimeApp < actionTime);
+            Console.WriteLine("++++++++++++++++++++++++++++++++++++++");
+            if (Program.StartingTimeApp < actionTime)
+            {
+
+                ProducerHelper.SendAMessage(
+                               MessageTopic.PersonalAssistantFeedback,
+                               new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content)
+                              )
+                           .GetAwaiter().GetResult();
+            }
+        }
 
         static void ApplyNewGroupAdded(Feedback feedback)
         {
@@ -101,8 +112,9 @@ namespace PersonalAssistant
             var goal = data.Goal.ToString();
             var item = new TodoItem { Text = goal, Id = id, GroupKey = groupKey };
             Goals.Add(item);
-            Tasks.Add(item);
-            //GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(groupKey, null).ToList();
+            //Tasks.Add(item);
+            List<BadgeItem> badges = GetDashboardSectionBadges(groupKey, GoalSectionKey);
+            badges = Engine.GetBadgesByGoal(groupKey, null)?.ToList();
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)

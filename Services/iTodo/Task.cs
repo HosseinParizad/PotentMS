@@ -16,11 +16,18 @@ namespace iTodo
             var description = content.Description.ToString();
             var parentId = content.ParentId.ToString();
             var id = metadata.ReferenceKey.ToString();
-            CreateGroupIfNotExists(metadata.GroupKey.ToString());
-            AddTask(id, metadata.GroupKey.ToString(), description, parentId);
+            if (!Todos.Any(t => t.Id == id || (t.ParentId == parentId && t.Description == description)))
+            {
+                CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
+                AddTask(id, metadata.GroupKey.ToString(), description, parentId, GetCreateDate(metadata));
+            }
+            else
+            {
+                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddTask, groupkey: metadata.GroupKey.ToString(), content: "Cannot add task id or description are duplicated!");
+            }
         }
 
-        static void AddTask(string id, string groupKey, string description, string parentId)
+        static void AddTask(string id, string groupKey, string description, string parentId, DateTimeOffset actionTime)
         {
             var newItem = new TodoItem();
             newItem.Id = id;
@@ -32,15 +39,15 @@ namespace iTodo
             {
                 newItem.ParentId = parentId;
             }
-            AddTask(newItem);
+            AddTask(newItem, actionTime);
         }
 
-        static void AddTask(TodoItem newItem)
+        static void AddTask(TodoItem newItem, DateTimeOffset actionTime)
         {
             Todos.Add(newItem);
 
             var dataToSend = new { Id = newItem.Id, Text = newItem.Description, ParentId = newItem.ParentId };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTaskAdded, groupkey: newItem.GroupKey, content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewTaskAdded, groupkey: newItem.GroupKey, content: dataToSend);
         }
 
         public static void CreateNewGoal(dynamic metadata, dynamic content)
@@ -53,8 +60,8 @@ namespace iTodo
             newItem.Kind = TodoType.Goal;
             Todos.Add(newItem);
             var dataToSend = new { Id = newItem.Id, Goal = newItem.Description };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGoalAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
-            CreateGroupIfNotExists(metadata.GroupKey.ToString());
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewGoalAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
         }
 
         #endregion
@@ -67,7 +74,7 @@ namespace iTodo
             var description = content.Description.ToString();
             FindById(metadata.GroupKey.ToString(), id).Description = description;
             var dataToSend = new { Id = id, Description = description };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.updateTaskDescription, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.updateTaskDescription, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -82,7 +89,7 @@ namespace iTodo
             todo.Deadline = deadline;
             var dataToSend = new { Id = id, Text = todo.Description, Deadline = deadline };
 
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.DeadlineUpdated, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.DeadlineUpdated, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -97,12 +104,12 @@ namespace iTodo
             var todo = FindById(metadata.GroupKey.ToString(), id);
             if (todo == null)
             {
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotSetTag, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to assgin tag!");
+                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotSetTag, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to assgin tag!");
             }
             else
             {
                 Console.WriteLine(tag);
-                UpdateTags(todo, metadata.GroupKey.ToString(), tag, tagKey);
+                UpdateTags(todo, metadata.GroupKey.ToString(), tag, tagKey, GetCreateDate(metadata));
             }
         }
 
@@ -110,7 +117,7 @@ namespace iTodo
 
         #region UpdateTags
 
-        static void UpdateTags(TodoItem todo, string groupKey, string allTag, string tagKey)
+        static void UpdateTags(TodoItem todo, string groupKey, string allTag, string tagKey, DateTimeOffset actionTime)
         {
             var parent = todo.Tags.SingleOrDefault(t => t.TagParentKey == tagKey);
             if (parent == null)
@@ -123,11 +130,10 @@ namespace iTodo
                 if (!parent.Value.Contains(tag))
                 {
                     parent.Value.Add(tag);
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewTagAdded, groupkey: groupKey, content: tag);
+                    SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewTagAdded, groupkey: groupKey, content: tag);
                 }
             }
         }
-
 
         #endregion
 
@@ -141,11 +147,11 @@ namespace iTodo
             {
                 task.Status = TodoStatus.Close;
                 var dataToSend = new { Id = id };
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskClosed, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskClosed, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, action: FeedbackActions.CannotCloseTask, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to close task!");
+                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotCloseTask, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to close task!");
             }
         }
 
@@ -163,14 +169,14 @@ namespace iTodo
                 var startingtask = FindFirstByCondition(metadata.GroupKey.ToString(), condition);
                 if (startingtask != null)
                 {
-                    PauseTask(metadata.GroupKey.ToString(), startingtask.Id, startingtask);
+                    PauseTask(metadata.GroupKey.ToString(), startingtask.Id, startingtask, actionTime: GetCreateDate(metadata));
                 }
 
                 task.Status = TodoStatus.start;
                 TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Start });
 
                 var dataToSend = new { Id = id };
-                SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskStarted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskStarted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
             }
         }
 
@@ -184,16 +190,16 @@ namespace iTodo
             var task = FindById(metadata.GroupKey.ToString(), id);
             if (task != null && task.Status == TodoStatus.start)
             {
-                PauseTask(metadata.GroupKey.ToString(), id, task);
+                PauseTask(metadata.GroupKey.ToString(), id, task, actionTime: GetCreateDate(metadata));
             }
         }
 
-        static void PauseTask(string groupKey, dynamic id, dynamic task)
+        static void PauseTask(string groupKey, dynamic id, dynamic task, DateTimeOffset actionTime)
         {
             task.Status = TodoStatus.pause;
             TimeLog.Add(new TimeItem { Id = Guid.NewGuid().ToString(), ActionTime = DateTimeOffset.Now, TodoId = id, Status = TimeActionStatus.Pause });
             var dataToSend = new { Id = id };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskPaused, groupkey: groupKey, content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.TaskPaused, groupkey: groupKey, content: dataToSend);
         }
 
         #endregion
@@ -211,11 +217,11 @@ namespace iTodo
                 var dataToSend = new { Id = id };
                 if (task.Kind == TodoType.Task)
                 {
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
                 else if (task.Kind == TodoType.Goal)
                 {
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.GoalDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GoalDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
             }
             else
@@ -238,7 +244,7 @@ namespace iTodo
                 task.AssignedTo = assignTo;
             }
             var dataToSend = new { Id = id, MemberKey = assignTo };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.TaskAssginedToMember, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskAssginedToMember, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -262,7 +268,7 @@ namespace iTodo
                 {
                     var dataToSend = new { Id = id, Location = item };
 
-                    SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewLocationAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                    SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewLocationAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
             }
         }
@@ -274,15 +280,15 @@ namespace iTodo
         public static void NewGroup(dynamic metadata, dynamic content)
         {
             var groupKey = metadata.GroupKey.ToString();
-            Groups.Add(CreateNewGroup(groupKey, groupKey));
+            Groups.Add(CreateNewGroup(groupKey, groupKey, actionTime: GetCreateDate(metadata)));
         }
 
         //static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
 
-        static GroupItem CreateNewGroup(string groupKey, string member)
+        static GroupItem CreateNewGroup(string groupKey, string member, DateTimeOffset actionTime)
         {
             var dataToSend = new { GroupKey = groupKey, MemberKey = member };
-            SendFeedbackMessage(type: FeedbackType.Success, action: FeedbackActions.NewGroupAdded, groupkey: groupKey, content: dataToSend);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewGroupAdded, groupkey: groupKey, content: dataToSend);
             return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
         }
 
@@ -293,15 +299,15 @@ namespace iTodo
         public static void NewMember(dynamic metadata, dynamic content)
         {
             var newMember = content.NewMember.ToString();
-            CreateGroupIfNotExists(newMember);
-            Groups.Add(CreateNewGroup(metadata.GroupKey.ToString(), newMember));
+            CreateGroupIfNotExists(newMember, actionTime: GetCreateDate(metadata));
+            Groups.Add(CreateNewGroup(metadata.GroupKey.ToString(), newMember, actionTime: GetCreateDate(metadata)));
         }
 
-        static void CreateGroupIfNotExists(string groupKey)
+        static void CreateGroupIfNotExists(string groupKey, DateTimeOffset actionTime)
         {
             if (!Groups.Any(g => g.Group == groupKey))
             {
-                Groups.Add(CreateNewGroup(groupKey, groupKey));
+                Groups.Add(CreateNewGroup(groupKey, groupKey, actionTime: actionTime));
             }
         }
 
@@ -323,12 +329,12 @@ namespace iTodo
                 var shouldRepeat = !repeatIfAllClosed || !Todos.Where(t => (t.OriginalRepeatId == id || t.Id == id) && t.Status != TodoStatus.Close).Any();
                 if (shouldRepeat)
                 {
-                    AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id);
+                    AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id, actionTime: GetCreateDate(feedback.Metadata));
                 }
             }
         }
 
-        static void AddTaskAndChildrenRepeat(TodoItem task, string parentId, string date, int hours, string originalRepeatId)
+        static void AddTaskAndChildrenRepeat(TodoItem task, string parentId, string date, int hours, string originalRepeatId, DateTimeOffset actionTime)
         {
             var ctask = task.Clone();
             ctask.ParentId = parentId;
@@ -336,10 +342,10 @@ namespace iTodo
             ctask.Deadline = task.Deadline?.AddHours(hours);
             ctask.Status = TodoStatus.Active;
             ctask.OriginalRepeatId = originalRepeatId;
-            AddTask(ctask);
+            AddTask(ctask, actionTime: actionTime);
             foreach (var child in Todos.Where(t => t.ParentId == task.Id).ToArray())
             {
-                AddTaskAndChildrenRepeat(child, ctask.Id, date, hours, originalRepeatId);
+                AddTaskAndChildrenRepeat(child, ctask.Id, date, hours, originalRepeatId, actionTime);
             }
         }
 
@@ -392,15 +398,17 @@ namespace iTodo
 
         #region Implement
 
-
-        static void SendFeedbackMessage(FeedbackType type, string action, string groupkey, dynamic content)
+        static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
         {
-            Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
-            ProducerHelper.SendAMessage(
-                    MessageTopic.TaskFeedback,
-                    new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                    )
-                .GetAwaiter().GetResult();
+            if (Program.StartingTimeApp < actionTime)
+            {
+                //Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
+                ProducerHelper.SendAMessage(
+                        MessageTopic.TaskFeedback,
+                        new Feedback(type: type, name: FeedbackGroupNames.Task, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
+                        )
+                    .GetAwaiter().GetResult();
+            }
         }
 
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
@@ -415,6 +423,11 @@ namespace iTodo
 
         public static string GetSort => Sort;
         static string Sort = "";
+
+        static DateTimeOffset GetCreateDate(dynamic metadata)
+        {
+            return DateTimeOffset.Parse(metadata.CreateDate.ToString());
+        }
 
         #endregion
 
@@ -465,6 +478,7 @@ namespace iTodo
         public string ParentId { get; set; }
         public TodoType Kind { get; set; }
         public string OriginalRepeatId { get; set; }
+
         public List<TodoItem> TodoItems
         {
             get => todoItems ??= new List<TodoItem>();

@@ -11,9 +11,11 @@ namespace RepeatManager
     public class Program
     {
         const string AppGroupId = "RepeatManager";
+        public static DateTimeOffset StartingTimeApp;
 
         public static void Main(string[] args)
         {
+            StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
             var AppId = KafkaEnviroment.preFix + AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
 

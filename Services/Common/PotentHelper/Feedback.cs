@@ -46,5 +46,6 @@ namespace PotentHelper
         public const string TaskStarted = "Task has been started";
         public const string TaskPaused = "Task has been paused";
         public const string RepeatTask = "Repeat task";
+        public const string CannotAddTask = "Error: cannot add task";
     }
 }

@@ -70,11 +70,6 @@ namespace PersonalAssistant
 
         static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
         {
-            Console.WriteLine("++++++++++++++++++++++++++++++++++++++");
-            Console.WriteLine(Program.StartingTimeApp);
-            Console.WriteLine(actionTime);
-            Console.WriteLine(Program.StartingTimeApp < actionTime);
-            Console.WriteLine("++++++++++++++++++++++++++++++++++++++");
             if (Program.StartingTimeApp < actionTime)
             {
 
@@ -114,7 +109,7 @@ namespace PersonalAssistant
             Goals.Add(item);
             //Tasks.Add(item);
             List<BadgeItem> badges = GetDashboardSectionBadges(groupKey, GoalSectionKey);
-            badges = Engine.GetBadgesByGoal(groupKey, null)?.ToList();
+            //badges = Engine.GetBadgesByGoal(groupKey, null)?.ToList();
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)

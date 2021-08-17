@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,12 +14,13 @@ namespace iTodo
     {
         const string AppGroupId = "iTodo";
         public static DateTimeOffset StartingTimeApp;
+        static DbText db = new();
 
         public static void Main(string[] args)
         {
             StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
+            var AppId = KafkaEnviroment.preFix + AppGroupId;
 
             #region  actions
 
@@ -47,16 +49,36 @@ namespace iTodo
 
             var repeatActions = new Dictionary<string, Action<Feedback>> { { MapAction.Task.RepeatTask, Engine.RepeatTask } };
 
+            db.Initial(AppId + "DB.txt");
+            db.OnDbNewDataEvent += Db_DbNewDataEvent;
+
+            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+            {
+                MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions, true);
+                MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
+                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
+                MessageProcessor.MapFeedbackToAction(AppId, e.Text, repeatActions, true);
+            }
+
+            db.ReplayAll();
+
             var source = new CancellationTokenSource();
             var token = source.Token;
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(AppId, m, taskActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, locationActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.RepeatFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, repeatActions), AppId)
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(AppId, m, taskActions), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, locationActions), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.RepeatFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, repeatActions), AppId)
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                    , ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                    , ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                    , ConsumerHelper.MapTopicToMethod(MessageTopic.RepeatFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
                 );
+
+
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

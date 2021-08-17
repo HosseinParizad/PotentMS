@@ -15,12 +15,13 @@ namespace PersonalAssistant
     {
         const string AppGroupId = "PersonalAssistant";
         public static DateTimeOffset StartingTimeApp;
+        static DbText db = new();
 
         public static void Main(string[] args)
         {
             StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
+            var AppId = KafkaEnviroment.preFix + AppGroupId;
 
             var taskFeedbackActions =
                 new Dictionary<string, Action<Feedback>>
@@ -38,11 +39,23 @@ namespace PersonalAssistant
                     { "setCurrentLocation", Engine.SetCurrentLocation },
                 };
 
+            db.Initial(AppId + "DB.txt");
+            db.OnDbNewDataEvent += Db_DbNewDataEvent;
+
+            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+            {
+                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
+                MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
+                MessageProcessor.MapFeedbackToAction(AppId, e.Text, taskFeedbackActions, true);
+            }
+
+            db.ReplayAll();
+
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, taskFeedbackActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, locationActions), AppId)
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
                 );
         }
 

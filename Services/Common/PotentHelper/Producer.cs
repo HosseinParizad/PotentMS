@@ -30,6 +30,10 @@ namespace PotentHelper
             {
                 metadata.CreateDate = DateTimeOffset.Now;
             }
+            if (metadata.Version == null)
+            {
+                metadata.Version = "V0.0";
+            }
             var msg = JsonConvert.SerializeObject(obj);
             var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 

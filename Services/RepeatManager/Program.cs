@@ -12,12 +12,13 @@ namespace RepeatManager
     {
         const string AppGroupId = "RepeatManager";
         public static DateTimeOffset StartingTimeApp;
+        static DbText db = new();
 
         public static void Main(string[] args)
         {
             StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId + (KafkaEnviroment.preFix == "" ? "" : Guid.NewGuid().ToString());
+            var AppId = KafkaEnviroment.preFix + AppGroupId;
 
             var repeatActions =
                 new Dictionary<string, Action<dynamic, dynamic>>
@@ -30,10 +31,21 @@ namespace RepeatManager
                     { "reset", Engine.Reset },
                 };
 
+            db.Initial(AppId + "DB.txt");
+            db.OnDbNewDataEvent += Db_DbNewDataEvent;
+
+            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+            {
+                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
+                MessageProcessor.MapMessageToAction(AppId, e.Text, repeatActions, true);
+            }
+
+            db.ReplayAll();
+
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.Repeat, (m) => MessageProcessor.MapMessageToAction(AppId, m, repeatActions), AppId),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId)
+                ConsumerHelper.MapTopicToMethod(MessageTopic.Repeat, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
             );
 
         }

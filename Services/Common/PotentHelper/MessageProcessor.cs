@@ -6,7 +6,7 @@ namespace PotentHelper
 {
     public class MessageProcessor
     {
-        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<dynamic, dynamic>> actions)
+        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<dynamic, dynamic>> actions, bool ignoreMissingAction = false)
         {
             try
             {
@@ -23,7 +23,7 @@ namespace PotentHelper
                         Console.WriteLine($"<><><><> {appId} <><><><> cannot run action. {message}");
                     }
                 }
-                else
+                else if (!ignoreMissingAction)
                 {
                     Console.WriteLine($"<><><><> {appId} <><><><> action is not specified. {message}");
                 }
@@ -35,12 +35,12 @@ namespace PotentHelper
             }
         }
 
-        public static void MapFeedbackToAction(string appId, string message, Dictionary<string, Action<Feedback>> actions)
+        public static void MapFeedbackToAction(string appId, string message, Dictionary<string, Action<Feedback>> actions, bool ignoreMissingAction = true)
         {
             try
             {
                 var msg = Helper.DeserializeObject<Feedback>(message);
-                if (actions.TryGetValue(msg.Name, out var action))
+                if (actions.TryGetValue(msg.Name ?? msg.Action, out var action))
                 {
                     try
                     {
@@ -52,15 +52,28 @@ namespace PotentHelper
                         Console.WriteLine($"*{appId}%%%%%% Feedback %%%%% cannot run action. {message}");
                     }
                 }
-                //else
-                //{
-                //    Console.WriteLine($%%%%% Feedback %%%%% action is not specified. {message}");
-                //}
+                else if (!ignoreMissingAction)
+                {
+                    Console.WriteLine($"*{appId}%%%%%% Feedback is not specified. {message}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine($"*{appId}%%%%% Feedback %%%%% format is wrong. {message}");
+            }
+        }
+
+        public static void MapMessageToAction(string appId, string message, Action<string> action)
+        {
+            try
+            {
+                action(message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"|||||| {appId} ||||| cannot run action. {message}");
             }
         }
     }

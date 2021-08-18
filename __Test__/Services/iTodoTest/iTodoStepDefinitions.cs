@@ -17,18 +17,28 @@ namespace SpecFlowDemo.Steps
         [Given("I send the following task:")]
         public void WhenISendFllowingTasks(Table table)
         {
+            WhenISendFllowingTodos(table, "newTask");
+        }
+
+        [Given("I send the following memory:")]
+        public void WhenISendFllowingMemoriess(Table table)
+        {
+            WhenISendFllowingTodos(table, "newMemory");
+        }
+
+        void WhenISendFllowingTodos(Table table, string action)
+        {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             foreach (var row in table.Rows)
             {
                 var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
-                var msg = new Msg(action: "newTask", metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
+                var msg = new Msg(action: action, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
                 var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
             }
         }
-
 
         [Given("I send the following goals:")]
         public void WhenISendFllowingGoals(Table table)

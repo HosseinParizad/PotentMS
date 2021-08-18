@@ -78,6 +78,12 @@ export class AppComponent implements OnInit {
     return false;
   }
 
+  SendMemoryRequest() {
+    var body = this.BodyMaker('newMemory', this.selected.group, { Description: this.text, ParentId: "" });
+    this.sent = this.SendRequest(body);
+    return false;
+  }
+
   SendTaskRequestSpe(body: string) {
     body = body.replace('[text]', this.text)
     body = body.replace('[date]', this.inputdate)

@@ -39,6 +39,7 @@ namespace iTodo
                     { "delTask", Engine.DeleteTask },
                     { "startTask", Engine.StartTask },
                     { "pauseTask", Engine.PauseTask },
+                    { "newMemory", Engine.CreateNewMemory },
                 };
 
             #endregion

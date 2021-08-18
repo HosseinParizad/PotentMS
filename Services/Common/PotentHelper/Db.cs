@@ -36,6 +36,11 @@ namespace PotentHelper
             {
                 File.CreateText(name).Dispose();
             }
+            else if (name.Substring(0, 4) == "Test")
+            {
+                File.Delete(name);
+                File.CreateText(name).Dispose();
+            }
         }
 
         public async Task<string[]> GetAllAsync()

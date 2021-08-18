@@ -9,14 +9,14 @@ namespace PotentHelper
     {
         public static async Task SendAMessage(string topic, Msg obj)
         {
-            var xxx = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
-            await SendMessageCore(topic, xxx);
+            var dyn = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
+            await SendMessageCore(topic, dyn);
         }
 
         public static async Task SendAMessage(string topic, Feedback obj)
         {
-            var xxx = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
-            await SendMessageCore(topic, xxx);
+            var dyn = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
+            await SendMessageCore(topic, dyn);
         }
 
         static async Task SendMessageCore(string topic, dynamic obj)

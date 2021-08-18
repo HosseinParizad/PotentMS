@@ -96,6 +96,9 @@
   <button id="basic" type="button" class="bttn" mat-button (click)="SendMemberRequest()">
     Add Member
   </button>
+  <button id="basic" type="button" class="bttn" mat-button (click)="SendMemoryRequest()">
+    Add memory item
+  </button>
   <mat-chip-list aria-label="????" class="tagtag">
     <p *ngFor="let lit of selected.badge?.linkItems;">
       <mat-chip (click)="SendTaskRequestSpe(lit.link)" mat-raised-button>
@@ -182,4 +185,4 @@
   Delete feedback
 </button>
 
-<pre>{{repeatIfAllClosed|json}}</pre>
+<pre>{{cats|json}}</pre>

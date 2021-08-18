@@ -37,6 +37,10 @@ namespace PersonalAssistant
                     ApplyNewTaskAdded(feedback);
                     break;
 
+                case FeedbackActions.NewMemoryAdded:
+                    ApplyNewMemoryAdded(feedback);
+                    break;
+
                 case FeedbackActions.TaskAssginedToMember:
                     ApplyTaskAssginedToMember(feedback);
                     break;
@@ -112,6 +116,31 @@ namespace PersonalAssistant
 
         static void ApplyNewTaskAdded(Feedback feedback)
         {
+            //var data = feedback.Content;
+            //var groupKey = feedback.Metadata.GroupKey.ToString();
+            //var id = data.Id.ToString();
+            //var text = data.Text.ToString();
+
+            //var parentId = data.ParentId.ToString();
+            //parentId = parentId == "" ? null : parentId;
+            //var item = new TodoItem { Text = text, Id = id, GroupKey = groupKey, ParentId = parentId };
+            //Tasks.Add(item);
+            //var parent = Tasks.SingleOrDefault(d => d.Id == parentId);
+            //if (parent != null)
+            //{
+            //    parent.IsParent = true;
+            //}
+            //OnTaskChanged(groupKey);
+            ApplyNewItemAdded(feedback, Tasks, OnTaskChanged);
+        }
+
+        static void ApplyNewMemoryAdded(Feedback feedback)
+        {
+            ApplyNewItemAdded(feedback, Memorizes, OnMemoryChanged);
+        }
+
+        static void ApplyNewItemAdded(Feedback feedback, List<TodoItem> list, Action<string> OnListChange)
+        {
             var data = feedback.Content;
             var groupKey = feedback.Metadata.GroupKey.ToString();
             var id = data.Id.ToString();
@@ -120,13 +149,13 @@ namespace PersonalAssistant
             var parentId = data.ParentId.ToString();
             parentId = parentId == "" ? null : parentId;
             var item = new TodoItem { Text = text, Id = id, GroupKey = groupKey, ParentId = parentId };
-            Tasks.Add(item);
-            var parent = Tasks.SingleOrDefault(d => d.Id == parentId);
+            list.Add(item);
+            var parent = list.SingleOrDefault(d => d.Id == parentId);
             if (parent != null)
             {
                 parent.IsParent = true;
             }
-            OnTaskChanged(groupKey);
+            OnListChange(groupKey);
         }
 
         static void ApplyUpdateTaskDescription(Feedback feedback)
@@ -313,6 +342,7 @@ namespace PersonalAssistant
             Groups = new Dictionary<string, HashSet<string>>();
             Goals = new List<TodoItem>();
             Tasks = new List<TodoItem>();
+            Memorizes = new List<TodoItem>();
             Locations = new Dictionary<string, HashSet<string>>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
@@ -355,6 +385,7 @@ namespace PersonalAssistant
         const string DueSectionKey = "Due";
         const string TaskSectionKey = "Task";
         const string OrderedSectionKey = "Ordered";
+        const string MemorizesSectionKey = "Memorizes";
 
         static void OnTaskChanged(string key)
         {
@@ -369,6 +400,11 @@ namespace PersonalAssistant
             GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
         }
 
+        static void OnMemoryChanged(string key)
+        {
+            GetDashboardSections(key).Single(d => d.Text == MemorizesSectionKey).BadgesInternal = Engine.GetBadgesMemorizes(key, null).ToList();
+        }
+
 
         static List<Dashboard> Dashboards = new List<Dashboard>();
         public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
@@ -376,6 +412,7 @@ namespace PersonalAssistant
         static List<TodoItem> Goals = new List<TodoItem>();
         //static List<TodoItem> Dues = new List<TodoItem>();
         static List<TodoItem> Tasks = new List<TodoItem>();
+        static List<TodoItem> Memorizes = new List<TodoItem>();
         public static Dictionary<string, HashSet<string>> Locations = new Dictionary<string, HashSet<string>>();
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
@@ -391,7 +428,7 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     ParentId = task.ParentId,
-                    LinkItems = GetLinkItems(task, key).ToList(),
+                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = GetBadgesDuesTree(key, task.Id).ToList(),
                     Info = JsonConvert.SerializeObject(task)
                 };
@@ -407,7 +444,7 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     ParentId = task.ParentId,
-                    LinkItems = GetLinkItems(task, key).ToList(),
+                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = GetBadgesDuesTree(key, task.Id).ToList()
                 };
             }
@@ -422,7 +459,7 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     ParentId = task.ParentId,
-                    LinkItems = GetLinkItems(task, key).ToList(),
+                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = new List<BadgeItem>(),
                     Info = JsonConvert.SerializeObject(task)
                 };
@@ -439,7 +476,7 @@ namespace PersonalAssistant
                     Text = task.Text,
                     ParentId = task.ParentId,
                     Status = task.Status,
-                    LinkItems = GetLinkItems(task, key).ToList(),
+                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = GetBadgesTasks(key, task.Id).ToList(),
                     Info = JsonConvert.SerializeObject(task)
                 };
@@ -456,26 +493,43 @@ namespace PersonalAssistant
                     Text = task.Text,
                     ParentId = task.ParentId,
                     Status = task.Status,
-                    LinkItems = GetLinkItems(task, key).ToList(),
+                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = GetBadgesOrdered(key, task.Id).ToList(),
                     Info = JsonConvert.SerializeObject(task)
                 };
             }
         }
 
-        static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key, bool shortList = false)
+        public static IEnumerable<BadgeItem> GetBadgesMemorizes(string key, string parentId)
+        {
+            foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId).Take(10))
+            {
+                yield return new BadgeItem
+                {
+                    Id = task.Id,
+                    Text = task.Text,
+                    ParentId = task.ParentId,
+                    Status = task.Status,
+                    LinkItems = GetLinkItems(task, key, "Memory").ToList(),
+                    Items = GetBadgesMemorizes(key, task.Id).ToList(),
+                    Info = JsonConvert.SerializeObject(task)
+                };
+            }
+        }
+
+        static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key, string kind, bool shortList = false)
         {
             var id = task.Id;
             Func<string, dynamic, dynamic> createStep = (action, content) =>
-           new
-           {
-               Action = action,
-               Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
-               Content = content
-           };
+               new
+               {
+                   Action = action,
+                   Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
+                   Content = content
+               };
 
-            var addSteps = createStep("newTask", new { Description = "[text]", ParentId = id });
-            var delete = createStep("delTask", new { Id = id });
+            var addSteps = createStep("new" + kind, new { Description = "[text]", ParentId = id });
+            var delete = createStep("del" + kind, new { Id = id });
             var update = createStep("updateDescription", new { Description = "[text]", Id = id });
             var setLocation = createStep("setLocation", new { Location = "[text]", Id = id });
             var setTag = createStep("setTag", new { Tag = "[text]", TagKey = 0, Id = id });

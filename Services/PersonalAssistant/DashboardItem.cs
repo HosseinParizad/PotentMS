@@ -37,6 +37,7 @@ namespace PersonalAssistant
             Parts.Add(DashboardItemDue());
             Parts.Add(DashboardItemTask());
             Parts.Add(DashboardItemOrdered());
+            Parts.Add(DashboardItemMemory());
         }
 
         DashboardPart DashboardItemGoal()
@@ -56,6 +57,9 @@ namespace PersonalAssistant
 
         DashboardPart DashboardItemOrdered()
             => new DashboardPart { Text = "Ordered", Description = "Ordered", Sequence = 5, BadgesInternal = Engine.GetBadgesOrdered(AssistantKey, null).ToList() };
+
+        DashboardPart DashboardItemMemory()
+            => new DashboardPart { Text = "Memorizes", Description = "Memorizes", Sequence = 6, BadgesInternal = Engine.GetBadgesMemorizes(AssistantKey, null).ToList() };
 
         #endregion
     }

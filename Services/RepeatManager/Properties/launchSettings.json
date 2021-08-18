@@ -1,11 +1,12 @@
-﻿{
+{
   "profiles": {
     "RepeatManager": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "commandLineArgs": "test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": "true"
     }
   }
 }

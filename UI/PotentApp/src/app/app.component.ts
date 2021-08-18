@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
   totalAngularPackages: string = '';
   hidden = false;
   text: string = "";
+  group: string = "Family";
   selected: any = {};
   sent = {};
   inputdate: any;
@@ -32,7 +33,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     //this.http.get<any>('https://localhost:5007/PersonalAssistant/AllofUs')
-    this.http.get<any>('https://localhost:5007/PersonalAssistant/Family')
+    this.http.get<any>('https://localhost:5007/PersonalAssistant/' + this.group)
       .subscribe(data => {
         this.selected.badge = {};
         this.cats = [];
@@ -96,7 +97,7 @@ export class AppComponent implements OnInit {
   }
 
   SendMemberRequest() {
-    var body = this.BodyMaker('newMember', this.selected.group, { NewMember: this.text });
+    var body = this.BodyMaker('newMember', this.group, { NewMember: this.text });
     this.sent = this.SendRequest(body);
     return false;
   }
@@ -145,7 +146,7 @@ export class AppComponent implements OnInit {
         this.text = '';
         setTimeout(() => {
           this.ngOnInit();
-        }, 100);
+        }, 1000);
       },
       error: error => {
         alert(error.message);

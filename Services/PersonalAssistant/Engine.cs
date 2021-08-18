@@ -107,9 +107,7 @@ namespace PersonalAssistant
             var goal = data.Goal.ToString();
             var item = new TodoItem { Text = goal, Id = id, GroupKey = groupKey };
             Goals.Add(item);
-            //Tasks.Add(item);
-            List<BadgeItem> badges = GetDashboardSectionBadges(groupKey, GoalSectionKey);
-            //badges = Engine.GetBadgesByGoal(groupKey, null)?.ToList();
+            OnGoalChanged(groupKey);
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
@@ -363,6 +361,12 @@ namespace PersonalAssistant
             GetDashboardSections(key).Single(d => d.Text == DueSectionKey).BadgesInternal = Engine.GetBadgesDues(key).ToList();
             GetDashboardSections(key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(key, null).ToList();
             GetDashboardSections(key).Single(d => d.Text == OrderedSectionKey).BadgesInternal = Engine.GetBadgesOrdered(key, null).ToList();
+            GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
+        }
+
+        static void OnGoalChanged(string key)
+        {
+            GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
         }
 
 
@@ -382,29 +386,14 @@ namespace PersonalAssistant
 
             foreach (var task in items)
             {
-                var addSteps = new
-                {
-                    Action = "newTask",
-                    Key = key,
-                    Content = JsonConvert.SerializeObject(new { Description = "[text]", ParentId = task.Id })
-                };
-
-                var delete = new
-                {
-                    Action = "delTask",
-                    Key = key,
-                    Content = JsonConvert.SerializeObject(new { Id = task.Id })
-                };
-
                 yield return new BadgeItem
                 {
                     Id = task.Id,
                     Text = task.Text,
-                    LinkItems = new List<LinkItem> {
-                        new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" },
-                        new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" },
-                    },
-                    Items = GetBadgesDuesTree(key, task.Id).ToList()
+                    ParentId = task.ParentId,
+                    LinkItems = GetLinkItems(task, key).ToList(),
+                    Items = GetBadgesDuesTree(key, task.Id).ToList(),
+                    Info = JsonConvert.SerializeObject(task)
                 };
             }
         }
@@ -474,7 +463,7 @@ namespace PersonalAssistant
             }
         }
 
-        static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key)
+        static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key, bool shortList = false)
         {
             var id = task.Id;
             Func<string, dynamic, dynamic> createStep = (action, content) =>
@@ -497,21 +486,24 @@ namespace PersonalAssistant
 
             yield return new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" };
             yield return new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" };
-            yield return new LinkItem { Link = JsonConvert.SerializeObject(update), Text = "Update" };
-            yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
-            yield return new LinkItem { Link = JsonConvert.SerializeObject(setTag), Text = "Tag" };
-            yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
-
-            if (!task.IsParent)
+            if (!shortList)
             {
-                yield return new LinkItem { Link = JsonConvert.SerializeObject(close), Text = "close" };
-                if (task.Status == TodoStatus.start)
+                yield return new LinkItem { Link = JsonConvert.SerializeObject(update), Text = "Update" };
+                yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
+                yield return new LinkItem { Link = JsonConvert.SerializeObject(setTag), Text = "Tag" };
+                yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
+
+                if (!task.IsParent)
                 {
-                    yield return new LinkItem { Link = JsonConvert.SerializeObject(pause), Text = "pause" };
-                }
-                else
-                {
-                    yield return new LinkItem { Link = JsonConvert.SerializeObject(start), Text = "start" };
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(close), Text = "close" };
+                    if (task.Status == TodoStatus.start)
+                    {
+                        yield return new LinkItem { Link = JsonConvert.SerializeObject(pause), Text = "pause" };
+                    }
+                    else
+                    {
+                        yield return new LinkItem { Link = JsonConvert.SerializeObject(start), Text = "start" };
+                    }
                 }
             }
         }

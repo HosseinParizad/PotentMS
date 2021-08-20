@@ -59,6 +59,8 @@
   <li *ngFor="let badge of list">
     <span [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part"
       (click)="selectbadgepart($event, part.text, badge)">
+      <mat-icon *ngIf="badge.type != 3">attach_file</mat-icon>
+      <mat-icon *ngIf="badge.type == 3">folder_open</mat-icon>
       {{badge.text}}
       <mat-icon *ngIf="badge.status == 2">pause</mat-icon>
       <mat-icon *ngIf="badge.status == 1">play_arrow</mat-icon>
@@ -137,7 +139,7 @@
   <li (click)='SendReapeatRequest(frequency.test)'>Test only :)</li>
   <div>
     <input type="checkbox" id="repeatIfAllClosed" name="interest" [(ngModel)]="repeatIfAllClosed">
-    <label for="repeatIfAllClosed">Only if not closed</label>
+    <label for="repeatIfAllClosed">Only if all closed</label>
   </div>
 </ol>
 
@@ -185,4 +187,4 @@
   Delete feedback
 </button>
 
-<pre>{{cats|json}}</pre>
+<pre>{{repeatIfAllClosed|json}}</pre>

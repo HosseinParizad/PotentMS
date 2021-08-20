@@ -65,6 +65,10 @@ namespace PersonalAssistant
                     ApplyPauseTask(feedback);
                     break;
 
+                case FeedbackActions.TaskClosed:
+                    ApplyCloseTask(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -131,15 +135,16 @@ namespace PersonalAssistant
             //    parent.IsParent = true;
             //}
             //OnTaskChanged(groupKey);
-            ApplyNewItemAdded(feedback, Tasks, OnTaskChanged);
+            ApplyNewItemAdded(feedback, Tasks, OnTaskChanged, () => new TodoItem());
         }
 
         static void ApplyNewMemoryAdded(Feedback feedback)
         {
-            ApplyNewItemAdded(feedback, Memorizes, OnMemoryChanged);
+            ApplyNewItemAdded(feedback, Memorizes, OnMemoryChanged, () => new MemoryItem());
         }
 
-        static void ApplyNewItemAdded(Feedback feedback, List<TodoItem> list, Action<string> OnListChange)
+        static void ApplyNewItemAdded<T>(Feedback feedback, List<T> list, Action<string> OnListChange, Func<T> GetNewItem)
+            where T : TodoItem
         {
             var data = feedback.Content;
             var groupKey = feedback.Metadata.GroupKey.ToString();
@@ -148,7 +153,12 @@ namespace PersonalAssistant
 
             var parentId = data.ParentId.ToString();
             parentId = parentId == "" ? null : parentId;
-            var item = new TodoItem { Text = text, Id = id, GroupKey = groupKey, ParentId = parentId };
+            var item = GetNewItem();
+            item.Text = text;
+            item.Id = id;
+            item.GroupKey = groupKey;
+            item.ParentId = parentId;
+
             list.Add(item);
             var parent = list.SingleOrDefault(d => d.Id == parentId);
             if (parent != null)
@@ -293,6 +303,50 @@ namespace PersonalAssistant
             OnTaskChanged(groupKey);
         }
 
+        static void ApplyCloseTask(Feedback feedback)
+        {
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
+            var memoryItem = Memorizes.Single(d => d.Id == id);
+            if (memoryItem != null)
+            {
+                var nextdate = DateTimeOffset.Now.AddDays(1);
+                var stage = memoryItem.Stage;
+                switch (memoryItem.Stage)
+                {
+                    case MemoryStage.Stage1:
+                        nextdate = DateTimeOffset.Now.AddDays(1);
+                        stage = MemoryStage.Stage2;
+                        break;
+                    case MemoryStage.Stage2:
+                        nextdate = DateTimeOffset.Now.AddDays(3);
+                        stage = MemoryStage.Stage3;
+                        break;
+                    case MemoryStage.Stage3:
+                        nextdate = DateTimeOffset.Now.AddDays(7);
+                        stage = MemoryStage.Stage4;
+                        break;
+                    case MemoryStage.Stage4:
+                        nextdate = DateTimeOffset.Now.AddDays(14);
+                        stage = MemoryStage.Stage5;
+                        break;
+                    case MemoryStage.Stage5:
+                        nextdate = DateTimeOffset.Now.AddDays(30);
+                        stage = MemoryStage.Stage6;
+                        break;
+                    case MemoryStage.Stage6:
+                        nextdate = DateTimeOffset.MaxValue;
+                        break;
+                    default:
+                        break;
+                }
+                memoryItem.NextMemorizeDate = nextdate;
+                memoryItem.Stage = stage;
+            }
+            OnMemoryChanged(groupKey);
+        }
+
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;
 
@@ -342,7 +396,7 @@ namespace PersonalAssistant
             Groups = new Dictionary<string, HashSet<string>>();
             Goals = new List<TodoItem>();
             Tasks = new List<TodoItem>();
-            Memorizes = new List<TodoItem>();
+            Memorizes = new List<MemoryItem>();
             Locations = new Dictionary<string, HashSet<string>>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
@@ -412,7 +466,7 @@ namespace PersonalAssistant
         static List<TodoItem> Goals = new List<TodoItem>();
         //static List<TodoItem> Dues = new List<TodoItem>();
         static List<TodoItem> Tasks = new List<TodoItem>();
-        static List<TodoItem> Memorizes = new List<TodoItem>();
+        static List<MemoryItem> Memorizes = new List<MemoryItem>();
         public static Dictionary<string, HashSet<string>> Locations = new Dictionary<string, HashSet<string>>();
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
@@ -502,14 +556,16 @@ namespace PersonalAssistant
 
         public static IEnumerable<BadgeItem> GetBadgesMemorizes(string key, string parentId)
         {
-            foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId).Take(10))
+            //foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId).OrderBy(t => t.Stage))
+            foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId && (t.IsParent || t.NextMemorizeDate <= DateTimeOffset.Now)).OrderBy(t => t.Stage))
             {
                 yield return new BadgeItem
                 {
                     Id = task.Id,
-                    Text = task.Text,
+                    Text = $"{task.Text} ({task.Stage})",
                     ParentId = task.ParentId,
                     Status = task.Status,
+                    Type = task.IsParent ? BadgeType.Catogory : BadgeType.None,
                     LinkItems = GetLinkItems(task, key, "Memory").ToList(),
                     Items = GetBadgesMemorizes(key, task.Id).ToList(),
                     Info = JsonConvert.SerializeObject(task)

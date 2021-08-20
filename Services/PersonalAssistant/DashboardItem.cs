@@ -96,8 +96,10 @@ namespace PersonalAssistant
 
     public enum BadgeType
     {
+        None,
         Tag,
-        Location
+        Location,
+        Catogory
     }
 
     public class TodoItem
@@ -116,6 +118,26 @@ namespace PersonalAssistant
         none,
         start,
         pause
+    }
+
+    #endregion
+
+    #region MemoryItem
+
+    public class MemoryItem : TodoItem
+    {
+        public DateTimeOffset NextMemorizeDate { get; set; } = DateTimeOffset.MinValue;
+        public MemoryStage Stage { get; set; } = MemoryStage.Stage1;
+    }
+
+    public enum MemoryStage
+    {
+        Stage1,
+        Stage2,
+        Stage3,
+        Stage4,
+        Stage5,
+        Stage6
     }
 
     #endregion

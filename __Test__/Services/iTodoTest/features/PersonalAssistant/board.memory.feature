@@ -14,4 +14,7 @@ Scenario: When user add memory task then should see in
 		| Goal          |
 		| Tag           |
 		| UsedLocations |
+		| Due           |
+		| Task          |
+		| Ordered       |
 		| Memorizes     |

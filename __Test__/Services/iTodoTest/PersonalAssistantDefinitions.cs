@@ -36,7 +36,7 @@ namespace SpecFlowDemo.Steps
                 {
                     //var badges = Helper.Deserialize(row["Badges"], typeof(List<string>));
                     var badges = Helper.DeserializeObject<List<string>>(row["Badges"]);
-                    int isLocation = row["Text"] == "UsedLocations" ? 1 : 0;
+                    int isLocation = row["Text"] == "UsedLocations" ? 2 : 0;
                     foreach (var item in badges)
                     {
                         replaceValues.Add($"\"{item}\"", DefaultBadgeItem(item, isLocation));
@@ -50,9 +50,10 @@ namespace SpecFlowDemo.Steps
             //{
             //    c.Add(item);
             //}
-            c.Add(t2[0]);
-            c.Add(t2[1]);
-            c.Add(t2[2]);
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                c.Add(t2[i]);
+            }
             RestHelper.AreEqual(RestHelper.DynamicToList(c.ToArray(), expectedColums), table.ToList(tableColumns, replaceValues));
         }
 

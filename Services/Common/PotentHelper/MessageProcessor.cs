@@ -10,6 +10,11 @@ namespace PotentHelper
         {
             try
             {
+                if (message.Length < 10)
+                {
+                    return;
+                }
+
                 var msg = Helper.DeserializeObject<Msg>(message);
                 if (actions.TryGetValue(msg.Action, out var action))
                 {
@@ -39,6 +44,11 @@ namespace PotentHelper
         {
             try
             {
+                if (message.Length < 10)
+                {
+                    return;
+                }
+
                 var msg = Helper.DeserializeObject<Feedback>(message);
                 if (actions.TryGetValue(msg.Name ?? msg.Action, out var action))
                 {
@@ -68,6 +78,10 @@ namespace PotentHelper
         {
             try
             {
+                if (message.Length < 10)
+                {
+                    return;
+                }
                 action(message);
             }
             catch (Exception ex)

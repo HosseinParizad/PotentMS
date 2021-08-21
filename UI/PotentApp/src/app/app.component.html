@@ -2,11 +2,11 @@
   (click)="selectgroup(dashboard.id)">
   <mat-card>
     <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
-      <mat-card-title>{{dashboard.id}}</mat-card-title>
+      <div mat-card-avatar></div>
+      <mat-card-title [class.notselectedtitle]="dashboard.id != selected.group">{{dashboard.id}}</mat-card-title>
       <!-- <mat-card-subtitle>{{dashboard | json}}</mat-card-subtitle> -->
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content *ngIf="dashboard.id == selected.group">
       <p>
         <!-- <button *ngFor="let badge of category.badges" mat-raised-button matBadge="7" [matBadgeHidden]="hidden"
        (click)="toggleBadgeVisibility()">
@@ -20,22 +20,14 @@
           </p>
         </mat-chip-list> -->
       </p>
-      <ul>
+      <ul style="list-style-type: none;padding-inline-start: 0px ; ">
         <li *ngFor="let part of dashboard.parts;">
-          <span class="parttext">{{part.text}}</span>
-          <ol>
+          <span class="parttext" [class.selectedgrouppart]="dashboard.id == selected.group"
+            (click)="showDetail(part)">{{part.text}}</span>
+          <ol *ngIf="part.badges?.length != null && part.badges?.length > 0">
             <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: part.badges, part:part }">
             </ng-container>
-            <!-- <li *ngFor="let badge of part.badges;">
-              <span class="badgetext" [class.selectedbadge]="badge.id === selected.taskid && part.text == selected.part"
-                (click)="selectbadgepart($event, part.text, badge)">
-                {{badge.text}}
-                <ul>
-                  <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.items, part:part }">
-                  </ng-container>
-                </ul>
-              </span>
-            </li> -->
+
           </ol>
         </li>
       </ul>
@@ -56,27 +48,24 @@
 
 
 <ng-template #recursiveListTmpl let-list="list" let-part="part">
-  <li *ngFor="let badge of list">
-    <span [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part"
+  <span *ngFor="let badge of list">
+    <li [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part" *ngIf="badge.status != 3"
       (click)="selectbadgepart($event, part.text, badge)">
       <mat-icon *ngIf="badge.type != 3">attach_file</mat-icon>
       <mat-icon *ngIf="badge.type == 3">folder_open</mat-icon>
       {{badge.text}}
       <mat-icon *ngIf="badge.status == 2">pause</mat-icon>
       <mat-icon *ngIf="badge.status == 1">play_arrow</mat-icon>
-    </span>
 
+    </li>
     <ul *ngIf="badge.items.length > 0">
       <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.items, part:part }"></ng-container>
     </ul>
-  </li>
+  </span>
 </ng-template>
 
-
 <br />
-<br />
-<br />
-<div class="cmdPanel" style="white-space:nowrap;margin: 50px; padding: 20px;">
+<div class="cmdPanel" style="white-space:nowrap;margin: 5px; padding: 20px;">
 
   <span>New: </span>
   <span>
@@ -155,6 +144,24 @@
 </ol>
 
 <hr />
+
+<ul>
+  <div class="newspaper">
+    <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: selectedPart.badges }">
+    </ng-container>
+  </div>
+</ul>
+
+<ng-template #recursiveListTmpl2 let-list="list">
+  <span *ngFor="let item of list" class="showdetail">
+    <li *ngIf="item.items.length == 0" class="" [class.crossfont]="item.status == 3">{{item.text}}</li>
+    <span *ngIf="item.items.length > 0">
+      <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: item.items }"></ng-container>
+    </span>
+  </span>
+</ng-template>
+
+<hr />
 <ol>
   <li (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for Tasks</li><br>
   <li (click)="text = 'The Unicorn Principle'">The Unicorn Principle</li> <br>
@@ -187,4 +194,6 @@
   Delete feedback
 </button>
 
-<pre>{{repeatIfAllClosed|json}}</pre>
+
+
+<!-- <pre>{{selectedPart|json}}</pre> -->

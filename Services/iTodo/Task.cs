@@ -97,6 +97,23 @@ namespace iTodo
 
         #endregion
 
+        #region MoveTask 
+
+        public static void MoveTask(dynamic metadata, dynamic content)
+        {
+            var id = content.Id.ToString();
+            var toid = content.ToParentId.ToString();
+            // Console.WriteLine("**************************************************");
+            // Console.WriteLine(FindById(metadata.GroupKey.ToString(), id).ParentId);
+            FindById(metadata.GroupKey.ToString(), id).ParentId = toid;
+            var dataToSend = new { Id = id, NewParentId = toid };
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.moveTask, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            // Console.WriteLine(FindById(metadata.GroupKey.ToString(), id).ParentId);
+            // Console.WriteLine("**************************************************");
+        }
+
+        #endregion
+
         #region SetDeadline 
 
         public static void SetDeadline(dynamic metadata, dynamic content)
@@ -344,9 +361,11 @@ namespace iTodo
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
+                Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 var shouldRepeat = !repeatIfAllClosed || !Todos.Where(t => (t.OriginalRepeatId == id || t.Id == id) && t.Status != TodoStatus.Close).Any();
                 if (shouldRepeat)
                 {
+                    Console.WriteLine("########################################################");
                     AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id, actionTime: GetCreateDate(feedback.Metadata));
                 }
             }

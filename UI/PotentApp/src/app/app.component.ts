@@ -17,7 +17,9 @@ export class AppComponent implements OnInit {
   text: string = "";
   group: string = "Family";
   selected: any = {};
+  selectedPart: any = {};
   sent = {};
+  isShowdetail: boolean = false;
   inputdate: any;
   repeatIfAllClosed: boolean = false;
   frequency: any = {
@@ -37,13 +39,19 @@ export class AppComponent implements OnInit {
       .subscribe(data => {
         this.selected.badge = {};
         this.cats = [];
+        //data.sort((a: any, b: any) => a.id == this.selected.group ? 0 : 1).forEach((row: any) => {
         data.forEach((row: any) => {
-          this.cats.push(row)
+          this.cats.push(row);
           if (this.selected.group == undefined) {
             this.selected.group = row.id;
           }
         });
-      })
+      });
+  }
+
+  showDetail(part: any) {
+    this.isShowdetail = !this.isShowdetail;
+    this.selectedPart = part;
   }
 
   toggleBadgeVisibility() {

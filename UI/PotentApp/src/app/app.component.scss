@@ -1,7 +1,11 @@
 .groupcard {
   padding: 10px;
   margin: 20px;
-  border: solid #aaa thin;
+
+  border-color: #ddd;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 30px;
 }
 
 .parttext {
@@ -14,6 +18,9 @@
   line-height: 35px;
   border-radius: 5px;
 }
+.selectedgrouppart{
+  background-color: #eee;
+}
 
 .list-inline > li {
 	display: inline-block;
@@ -24,17 +31,43 @@
   border-top-width: 0px;
 }
 
+
+.showdetail{
+  list-style:decimal-leading-zero;
+  font-size: 14px;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.newspaper {
+  column-count: 3;
+}
+
+.showdetail > li {
+  padding: 5px 23px;
+  margin: 3px;
+}
+
 .badgetext {
   // font-style: italic;
   line-height: 24px;
+}
+
+.crossfont
+{
+  text-decoration: line-through;
 }
 
 mat-card-header
 {
   text-align: center;
   vertical-align: middle;
-  border-radius: 10px;
+  border-radius: 0px;
   border-bottom:solid #444 thin;
+}
+
+.notselectedtitle
+{
+    color:#999;
 }
 
 mat-icon {
@@ -84,9 +117,10 @@ mat-icon {
 }
 
 .selectedgroup {
-  border-color: black;
-  border-width: 2px;
+  border-color: #bbb;
+  border-width: 4px;
   border-style: solid;
+  border-radius: 30px;
 }
 
 .selectedbadge {

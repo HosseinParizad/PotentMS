@@ -67,6 +67,27 @@ namespace SpecFlowDemo.Steps
             }
         }
 
+        [When("User select Copy")]
+        public void UserCopyId()
+        {
+            CopyId = selectedId;
+            Console.WriteLine(CopyId);
+        }
+        string CopyId;
+
+        [When("User select Paste to group '(.*)'")]
+        public void PasteTo(string groupKey)
+        {
+            Console.WriteLine(selectedId);
+            const string url = "https://localhost:5001/Gateway/";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = CopyId, ToParentId = selectedId };
+            var msg = new Msg(action: "moveTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var dataToSend = JsonConvert.SerializeObject(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
         [When("User update description to '(.*)' for '(.*)'")]
         public void WhenUserUpdateDescription(string newDescription, string groupKey)
         {

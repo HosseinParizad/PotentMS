@@ -117,7 +117,8 @@ namespace PersonalAssistant
     {
         none,
         start,
-        pause
+        pause,
+        closed
     }
 
     #endregion

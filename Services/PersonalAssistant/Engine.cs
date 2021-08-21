@@ -308,43 +308,52 @@ namespace PersonalAssistant
             var data = feedback.Content;
             var groupKey = feedback.Metadata.GroupKey.ToString();
             var id = data.Id.ToString();
-            var memoryItem = Memorizes.Single(d => d.Id == id);
-            if (memoryItem != null)
+            var task = Tasks.SingleOrDefault(d => d.Id == id);
+            if (task != null)
             {
-                var nextdate = DateTimeOffset.Now.AddDays(1);
-                var stage = memoryItem.Stage;
-                switch (memoryItem.Stage)
-                {
-                    case MemoryStage.Stage1:
-                        nextdate = DateTimeOffset.Now.AddDays(1);
-                        stage = MemoryStage.Stage2;
-                        break;
-                    case MemoryStage.Stage2:
-                        nextdate = DateTimeOffset.Now.AddDays(3);
-                        stage = MemoryStage.Stage3;
-                        break;
-                    case MemoryStage.Stage3:
-                        nextdate = DateTimeOffset.Now.AddDays(7);
-                        stage = MemoryStage.Stage4;
-                        break;
-                    case MemoryStage.Stage4:
-                        nextdate = DateTimeOffset.Now.AddDays(14);
-                        stage = MemoryStage.Stage5;
-                        break;
-                    case MemoryStage.Stage5:
-                        nextdate = DateTimeOffset.Now.AddDays(30);
-                        stage = MemoryStage.Stage6;
-                        break;
-                    case MemoryStage.Stage6:
-                        nextdate = DateTimeOffset.MaxValue;
-                        break;
-                    default:
-                        break;
-                }
-                memoryItem.NextMemorizeDate = nextdate;
-                memoryItem.Stage = stage;
+                task.Status = TodoStatus.closed;
+                OnTaskChanged(groupKey);
             }
-            OnMemoryChanged(groupKey);
+            else
+            {
+                var memoryItem = Memorizes.SingleOrDefault(d => d.Id == id);
+                if (memoryItem != null)
+                {
+                    var nextdate = DateTimeOffset.Now.AddDays(1);
+                    var stage = memoryItem.Stage;
+                    switch (memoryItem.Stage)
+                    {
+                        case MemoryStage.Stage1:
+                            nextdate = DateTimeOffset.Now.AddDays(1);
+                            stage = MemoryStage.Stage2;
+                            break;
+                        case MemoryStage.Stage2:
+                            nextdate = DateTimeOffset.Now.AddDays(3);
+                            stage = MemoryStage.Stage3;
+                            break;
+                        case MemoryStage.Stage3:
+                            nextdate = DateTimeOffset.Now.AddDays(7);
+                            stage = MemoryStage.Stage4;
+                            break;
+                        case MemoryStage.Stage4:
+                            nextdate = DateTimeOffset.Now.AddDays(14);
+                            stage = MemoryStage.Stage5;
+                            break;
+                        case MemoryStage.Stage5:
+                            nextdate = DateTimeOffset.Now.AddDays(30);
+                            stage = MemoryStage.Stage6;
+                            break;
+                        case MemoryStage.Stage6:
+                            nextdate = DateTimeOffset.MaxValue;
+                            break;
+                        default:
+                            break;
+                    }
+                    memoryItem.NextMemorizeDate = nextdate;
+                    memoryItem.Stage = stage;
+                }
+                OnMemoryChanged(groupKey);
+            }
         }
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
@@ -481,6 +490,7 @@ namespace PersonalAssistant
                 {
                     Id = task.Id,
                     Text = task.Text,
+                    Status = task.Status,
                     ParentId = task.ParentId,
                     LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = GetBadgesDuesTree(key, task.Id).ToList(),
@@ -497,6 +507,7 @@ namespace PersonalAssistant
                 {
                     Id = task.Id,
                     Text = task.Text,
+                    Status = task.Status,
                     ParentId = task.ParentId,
                     LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = GetBadgesDuesTree(key, task.Id).ToList()
@@ -513,6 +524,7 @@ namespace PersonalAssistant
                     Id = task.Id,
                     Text = task.Text,
                     ParentId = task.ParentId,
+                    Status = task.Status,
                     LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = new List<BadgeItem>(),
                     Info = JsonConvert.SerializeObject(task)
@@ -599,13 +611,16 @@ namespace PersonalAssistant
             if (!shortList)
             {
                 yield return new LinkItem { Link = JsonConvert.SerializeObject(update), Text = "Update" };
-                yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
                 yield return new LinkItem { Link = JsonConvert.SerializeObject(setTag), Text = "Tag" };
-                yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
+                if (kind == "Task")
+                {
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
+                }
 
                 if (!task.IsParent)
                 {
-                    yield return new LinkItem { Link = JsonConvert.SerializeObject(close), Text = "close" };
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(close), Text = (kind == "Task" ? "close" : "learnt") };
                     if (task.Status == TodoStatus.start)
                     {
                         yield return new LinkItem { Link = JsonConvert.SerializeObject(pause), Text = "pause" };

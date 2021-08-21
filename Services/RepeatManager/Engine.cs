@@ -8,6 +8,7 @@ namespace RepeatManager
     {
         public static void RegisterRepeat(dynamic metadata, dynamic content)
         {
+            var createDate = DateTimeOffset.Parse(metadata.CreateDate.ToString());
             var name = content.ReferenceName.ToString();
             var id = content.ReferenceId.ToString();
             var frequency = content.Frequency.ToString();
@@ -20,8 +21,8 @@ namespace RepeatManager
                 ReferenceId = id,
                 Frequency = frequency,
                 RepeatIfAllClosed = repeatIfAllClosed,
-                StartTime = DateTimeOffset.Now,
-                LastGeneratedTime = DateTimeOffset.Now
+                StartTime = createDate,
+                LastGeneratedTime = createDate
             });
         }
 

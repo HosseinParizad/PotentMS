@@ -361,11 +361,9 @@ namespace iTodo
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 var shouldRepeat = !repeatIfAllClosed || !Todos.Where(t => (t.OriginalRepeatId == id || t.Id == id) && t.Status != TodoStatus.Close).Any();
                 if (shouldRepeat)
                 {
-                    Console.WriteLine("########################################################");
                     AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id, actionTime: GetCreateDate(feedback.Metadata));
                 }
             }

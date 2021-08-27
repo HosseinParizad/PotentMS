@@ -31,6 +31,13 @@
   border-top-width: 0px;
 }
 
+/*
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+*/
 
 .showdetail{
   list-style:decimal-leading-zero;
@@ -63,6 +70,10 @@ mat-card-header
   vertical-align: middle;
   border-radius: 0px;
   border-bottom:solid #444 thin;
+}
+
+.lastnode{
+  font-style: italic;
 }
 
 .notselectedtitle

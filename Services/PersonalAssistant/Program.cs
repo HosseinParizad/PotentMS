@@ -60,12 +60,15 @@ namespace PersonalAssistant
 
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.MemoryFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Memory, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-                );
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.MemoryFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Memory, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    ConsumerHelper.MapTopicToMethod(
+                        new[] { MessageTopic.TaskFeedback, MessageTopic.MemoryFeedback, MessageTopic.Memory, MessageTopic.Common, MessageTopic.Location }
+                        , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                    );
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

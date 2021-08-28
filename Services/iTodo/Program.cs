@@ -67,14 +67,13 @@ namespace iTodo
             var token = source.Token;
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(AppId, m, taskActions), AppId),
-                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, locationActions), AppId),
-                    //ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, commonActions), AppId),
-                    //ConsumerHelper.MapTopicToMethod(MessageTopic.RepeatFeedback, (m) => MessageProcessor.MapFeedbackToAction(AppId, m, repeatActions), AppId)
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Task, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-                    , ConsumerHelper.MapTopicToMethod(MessageTopic.Location, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-                    , ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-                    , ConsumerHelper.MapTopicToMethod(MessageTopic.RepeatFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                    ConsumerHelper.MapTopicToMethod(new[]
+                    {
+                        MessageTopic.Task,
+                        MessageTopic.Location,
+                        MessageTopic.Common,
+                        MessageTopic.RepeatFeedback
+                    }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
                 );
 
 

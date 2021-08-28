@@ -47,8 +47,7 @@ namespace iMemory
 
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.Memory, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Memory, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
             );
 
         }

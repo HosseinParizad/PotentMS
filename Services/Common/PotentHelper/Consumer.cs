@@ -1,5 +1,6 @@
 using Confluent.Kafka;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -7,14 +8,14 @@ namespace PotentHelper
 {
     public class ConsumerHelper
     {
-        public static Action MapTopicToMethod(string topic, Action<string> onMessageReceived, string groupId)
+        public static Action MapTopicToMethod(string[] topics, Action<string> onMessageReceived, string groupId)
         {
             return () =>
             {
                 var source = new CancellationTokenSource();
                 var token = source.Token;
 
-                _ = new ConsumerHelper("localhost:9092", new List<string>() { GetTopic(topic) }, token, onMessageReceived, groupId);
+                _ = new ConsumerHelper("localhost:9092", topics.Select(t => GetTopic(t)).ToList(), token, onMessageReceived, groupId);
             };
         }
 

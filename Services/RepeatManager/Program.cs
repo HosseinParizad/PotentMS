@@ -44,8 +44,7 @@ namespace RepeatManager
 
             Parallel.Invoke(
                 () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.Repeat, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Repeat, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
             );
 
         }

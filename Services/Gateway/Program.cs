@@ -40,10 +40,11 @@ namespace Gateway
 
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.PersonalAssistantFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.MemoryFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
-                    ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
+                    ConsumerHelper.MapTopicToMethod(new[]
+                    {
+                        MessageTopic.TaskFeedback, MessageTopic.PersonalAssistantFeedback, MessageTopic.MemoryFeedback, MessageTopic.Common
+                    }
+                    , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
                 ); ;
         }
 

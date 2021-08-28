@@ -46,6 +46,15 @@ namespace Gateway.Controllers
         }
 
         [HttpPost]
+        [Route("Memory")]
+        public IActionResult PostMemory([FromBody] Msg msg)
+        {
+            var task = ProducerHelper.SendAMessage(MessageTopic.Memory, msg);
+            task.GetAwaiter().GetResult();
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+        [HttpPost]
         [Route("Common")]
         public IActionResult PostCommon([FromBody] Msg msg)
         {
@@ -76,7 +85,7 @@ namespace Gateway.Controllers
         [Route("DeleteTopics")]
         public IActionResult DeleteTopics()
         {
-            var topicNameList = new List<string> { "Repeat", "PAFeedback", "Task", "Location", "Common", "RepeatFeedback", "TaskFeedback" };
+            var topicNameList = new List<string> { "Repeat", "PAFeedback", "Task", "Memory", "Location", "Common", "RepeatFeedback", "TaskFeedback", "MemoryFeedback" };
             foreach (var item in topicNameList.ToArray())
             {
                 topicNameList.Add(KafkaEnviroment.preFix + item);
@@ -89,7 +98,7 @@ namespace Gateway.Controllers
         [Route("DeleteFeedback")]
         public IActionResult DeleteFeedback()
         {
-            var topicNameList = new List<string> { "PAFeedback", "RepeatFeedback", "TaskFeedback" };
+            var topicNameList = new List<string> { "PAFeedback", "RepeatFeedback", "TaskFeedback", "MemoryFeedback" };
             foreach (var item in topicNameList.ToArray())
             {
                 topicNameList.Add(KafkaEnviroment.preFix + item);

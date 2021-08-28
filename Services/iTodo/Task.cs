@@ -57,9 +57,6 @@ namespace iTodo
                 case TodoType.Task:
                     feedbackActions = FeedbackActions.NewTaskAdded;
                     break;
-                case TodoType.Memory:
-                    feedbackActions = FeedbackActions.NewMemoryAdded;
-                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -431,26 +428,6 @@ namespace iTodo
 
         #endregion
 
-        #region CreateNewMemory
-
-        public static void CreateNewMemory(dynamic metadata, dynamic content)
-        {
-            var description = content.Description.ToString();
-            var parentId = content.ParentId.ToString();
-            var id = metadata.ReferenceKey.ToString();
-            if (!Todos.Any(t => t.Id == id || (t.ParentId == parentId && t.Description == description)))
-            {
-                CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
-                AddTask(id, metadata.GroupKey.ToString(), description, parentId, GetCreateDate(metadata), TodoType.Memory);
-            }
-            else
-            {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot add memory id or description are duplicated!");
-            }
-        }
-
-        #endregion
-
         #region Implement
 
         static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
@@ -598,8 +575,7 @@ namespace iTodo
     {
         Goal,
         Category,
-        Task,
-        Memory
+        Task
     }
 
     public enum TimeActionStatus

@@ -13,22 +13,22 @@ Scenario: Setting location
 Scenario: Setting multi locations
 	Given  I send the following task:
 		| TaskDesc                            | GroupKey |
-		| Watch cat videos on YouTube all day | Ali      |
-	When User select item 1 from tasks of 'Ali'
-	When User set location 'Home,Roof' on selected task for 'Ali'
+		| Watch cat videos on YouTube all day | Ali0     |
+	When User select item 1 from tasks of 'Ali0'
+	When User set location 'Home,Roof' on selected task for 'Ali0'
 	Then I should see the following todo list:
 		| TaskDesc                            | GroupKey | Locations       |
-		| Watch cat videos on YouTube all day | Ali      | ["Home","Roof"] |
+		| Watch cat videos on YouTube all day | Ali0     | ["Home","Roof"] |
 
 Scenario: Setting multi locations with sub location
 	Given  I send the following task:
 		| TaskDesc                            | GroupKey |
-		| Watch cat videos on YouTube all day | Ali      |
-	When User select item 1 from tasks of 'Ali'
-	When User set location 'Home,Home -> Yard -> Garden' on selected task for 'Ali'
+		| Watch cat videos on YouTube all day | Ali2     |
+	When User select item 1 from tasks of 'Ali2'
+	When User set location 'Home,Home -> Yard -> Garden' on selected task for 'Ali2'
 	Then I should see the following todo list:
 		| TaskDesc                            | GroupKey | Locations                         |
-		| Watch cat videos on YouTube all day | Ali      | ["Home","Home -> Yard -> Garden"] |
+		| Watch cat videos on YouTube all day | Ali2     | ["Home","Home -> Yard -> Garden"] |
 
 Scenario: Should be able to sort by location
 	Given  I send the following task:

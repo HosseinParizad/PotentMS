@@ -17,18 +17,19 @@ namespace SpecFlowDemo.Steps
         [Given("I send the following task:")]
         public void WhenISendFllowingTasks(Table table)
         {
-            WhenISendFllowingTodos(table, "newTask");
+            string url = "https://localhost:5001/Gateway/";
+            WhenISendFllowingTodos(table, "newTask", url);
         }
 
         [Given("I send the following memory:")]
         public void WhenISendFllowingMemoriess(Table table)
         {
-            WhenISendFllowingTodos(table, "newMemory");
+            string url = "https://localhost:5001/Gateway/Memory";
+            WhenISendFllowingTodos(table, "newMemory", url);
         }
 
-        void WhenISendFllowingTodos(Table table, string action)
+        void WhenISendFllowingTodos(Table table, string action, string url)
         {
-            const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             foreach (var row in table.Rows)
@@ -98,6 +99,27 @@ namespace SpecFlowDemo.Steps
             var msg = new Msg(action: "updateDescription", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
+        }
+
+        [Then("I should see the following memory list:")]
+        public void ThenTheMemoryResultShouldBe(Table table)
+        {
+            dynamic[] todos = null;
+            var tableColumns = table.Header.ToArray();
+            var map = new Dictionary<string, string>
+            {
+                { "TaskDesc", "description" },
+                { "GroupKey", "groupKey" },
+                { "ParentId", "parentId" },
+            };
+            var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
+
+            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            {
+                var url = $"https://localhost:5008/Memory?groupKey={row.Key}";
+                todos = RestHelper.MakeAGetRequest(url);
+                AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", selectedId } }));
+            }
         }
 
         [When("User set deadline '(.*)' on selected task for '(.*)'")]

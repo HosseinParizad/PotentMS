@@ -7,7 +7,9 @@ namespace PotentHelper
         public const string Task = "Task";
         public const string Location = "Location";
         public const string Common = "Common";
+        public const string Memory = "Memory";
         public const string Repeat = "Repeat";
+        public const string MemoryFeedback = "MemoryFeedback";
         public const string TaskFeedback = "TaskFeedback";
         public const string RepeatFeedback = "RepeatFeedback";
         public const string PersonalAssistantFeedback = "PAFeedback";
@@ -17,6 +19,7 @@ namespace PotentHelper
     {
         public const string All = "All";
         public const string Task = "FromTask";
+        public const string Memory = "FromMemory";
         public const string Repeat = "FromRepeat";
         public const string PersonalAssistant = "FromPA";
     }
@@ -43,6 +46,11 @@ namespace PotentHelper
         public static class Location
         {
             public const string SetCurrentLocation = "setCurrentLocation";
+        }
+        public static class Memory
+        {
+            public const string NewMemory = "newMemory";
+            public const string NewMemoryCategory = "newMemoryCategory";
         }
     }
 

@@ -6,6 +6,8 @@ FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5004"`) DO taskkill /F
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5005"`) DO taskkill /F /PID %%i
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5006"`) DO taskkill /F /PID %%i
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5007"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5008"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5009"`) DO taskkill /F /PID %%i
 
 
  @echo off
@@ -25,6 +27,10 @@ cd ../../Services/PersonalAssistant/
 start /B dotnet run %p%
 
 cd ../../Services/RepeatManager/  
+start /B dotnet run %p%
+
+
+cd ../../Services/iMemory/  
 start /B dotnet run %p%
 
 call :wait

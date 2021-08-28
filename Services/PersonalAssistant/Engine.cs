@@ -37,10 +37,6 @@ namespace PersonalAssistant
                     ApplyNewTaskAdded(feedback);
                     break;
 
-                case FeedbackActions.NewMemoryAdded:
-                    ApplyNewMemoryAdded(feedback);
-                    break;
-
                 case FeedbackActions.TaskAssginedToMember:
                     ApplyTaskAssginedToMember(feedback);
                     break;
@@ -67,6 +63,21 @@ namespace PersonalAssistant
 
                 case FeedbackActions.TaskClosed:
                     ApplyCloseTask(feedback);
+                    break;
+
+                default:
+                    break;
+            }
+
+            SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
+        }
+
+        internal static void OnMemoryFeedback(Feedback feedback)
+        {
+            switch (feedback.Action)
+            {
+                case FeedbackActions.NewMemoryAdded:
+                    ApplyNewMemoryAdded(feedback);
                     break;
 
                 default:

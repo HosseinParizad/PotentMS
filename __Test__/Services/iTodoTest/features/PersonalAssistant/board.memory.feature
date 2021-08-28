@@ -6,7 +6,7 @@ Scenario: When user add memory task then should see in
 	Given  I send the following memory:
 		| TaskDesc        | GroupKey |
 		| Remember stupid | Hossein  |
-	Then I should see the following todo list:
+	Then I should see the following memory list:
 		| TaskDesc        | GroupKey |
 		| Remember stupid | Hossein  |
 	Then I should see the following board for 'Hossein':

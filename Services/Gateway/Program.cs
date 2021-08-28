@@ -33,7 +33,7 @@ namespace Gateway
             {
                 MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
                 MessageProcessor.MapFeedbackToAction(AppId, e.Text, actions, true);
-                MessageProcessor.MapFeedbackToAction(AppId, e.Text, new Dictionary<string, Action<Feedback>> { { FeedbackGroupNames.PersonalAssistant, GatewayController.PAMessageReceived } }, true);
+                //MessageProcessor.MapFeedbackToAction(AppId, e.Text, new Dictionary<string, Action<Feedback>> { { FeedbackGroupNames.PersonalAssistant, GatewayController.PAMessageReceived } }, true);
             }
 
             db.ReplayAll();
@@ -42,6 +42,7 @@ namespace Gateway
                     () => CreateHostBuilder(args).Build().Run(),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.TaskFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.PersonalAssistantFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
+                    ConsumerHelper.MapTopicToMethod(MessageTopic.MemoryFeedback, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId),
                     ConsumerHelper.MapTopicToMethod(MessageTopic.Common, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
                 ); ;
         }
@@ -56,6 +57,7 @@ namespace Gateway
         static Dictionary<string, Action<Feedback>> actions =
             new Dictionary<string, Action<Feedback>> {
                 { FeedbackGroupNames.Task, GatewayController.MessageReceived },
+                { FeedbackGroupNames.Memory, GatewayController.MessageReceived },
     };
 
     }

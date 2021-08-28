@@ -63,20 +63,23 @@ namespace SpecFlowDemo.Steps
 
         public static void HttpMakeARequestWaitForFeedback(string url, HttpMethod httpMethod, string dataToSend)
         {
-            const string urlTaskFeedBack = "https://localhost:5001/Gateway/Feedback";
+            const string urlFeedBack = "https://localhost:5001/Gateway/Feedback";
             const string urlPAFeedBack = "https://localhost:5001/Gateway/PAFeedback";
 
             var curPaFeedbackCount = RestHelper.MakeAGetRequest(urlPAFeedBack)?.Count() ?? 0;
-            var curTaskFeedbackCount = RestHelper.MakeAGetRequest(urlTaskFeedBack)?.Count() ?? 0;
+            var curTaskFeedbackCount = RestHelper.MakeAGetRequest(urlFeedBack)?.Count() ?? 0;
             //System.Threading.Thread.Sleep(100);
             HttpMakeARequest(url, httpMethod, dataToSend);
 
             System.Threading.Thread.Sleep(100); // Todo: need to be fixed
 
-            while ((RestHelper.MakeAGetRequest(urlPAFeedBack)?.Count() ?? 0) == curPaFeedbackCount
-                || (RestHelper.MakeAGetRequest(urlTaskFeedBack)?.Count() ?? 0) == curTaskFeedbackCount)
+            var i = 0;
+            while (((RestHelper.MakeAGetRequest(urlPAFeedBack)?.Count() ?? 0) == curPaFeedbackCount
+                || (RestHelper.MakeAGetRequest(urlFeedBack)?.Count() ?? 0) == curTaskFeedbackCount)
+                && i < 3)
             {
                 System.Threading.Thread.Sleep(10);
+                i++;
             }
         }
 

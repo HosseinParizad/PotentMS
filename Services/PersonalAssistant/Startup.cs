@@ -54,7 +54,7 @@ namespace PersonalAssistant
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "iTodo v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PersonalAssistant v1"));
             }
 
             app.UseHttpsRedirection();

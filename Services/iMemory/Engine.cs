@@ -2,6 +2,7 @@ using PotentHelper;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace iMemory
 {
@@ -30,12 +31,14 @@ namespace iMemory
 
         static void NewMemoryItem(dynamic metadata, dynamic content, MemoryType memory)
         {
-            var description = content.Description.ToString();
-            var parentId = "";//content.ParentId.ToString();
+            var text = content.Text.ToString();
+            var parentId = content.ParentId.ToString();
             var id = metadata.ReferenceKey.ToString();
-            if (!Memories.Any(t => t.Id == id || (t.ParentId == parentId && t.Description == description)))
+            var hint = content.Hint.ToString();
+            if (!Memories.Any(t => t.Id == id || (t.ParentId == parentId && t.Text == text)))
             {
-                AddMemoryItem(id, metadata.GroupKey.ToString(), description, parentId, memory);
+
+                AddMemoryItem(id, metadata.GroupKey.ToString(), text, hint, parentId, GetCreateDate(metadata), memory);
             }
             else
             {
@@ -49,7 +52,7 @@ namespace iMemory
             {
                 //Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
                 ProducerHelper.SendAMessage(
-                        MessageTopic.TaskFeedback,
+                        MessageTopic.MemoryFeedback,
                         new Feedback(type: type, name: FeedbackGroupNames.Memory, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
                         )
                     .GetAwaiter().GetResult();
@@ -61,10 +64,11 @@ namespace iMemory
             return DateTimeOffset.Parse(metadata.CreateDate.ToString());
         }
 
-        static void AddMemoryItem(string id, string groupKey, string description, string parentId, MemoryType memoryType)
+        static void AddMemoryItem(string id, string groupKey, string text, string hint, string parentId, DateTimeOffset actionTime, MemoryType memoryType)
         {
-            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Description = description, MemoryType = memoryType };
+            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType };
             Memories.Add(memory);
+            SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewMemoryAdded, groupkey: groupKey, content: memory);
         }
 
         #endregion
@@ -81,16 +85,17 @@ namespace iMemory
             Memories = new List<MemoryItem>();
         }
 
-        public static List<MemoryItem> Memories { get; private set; }
+        public static List<MemoryItem> Memories { get; private set; } = new List<MemoryItem>();
         #endregion
     }
     public class MemoryItem
     {
         public string Id { get; internal set; }
         public string ParentId { get; internal set; }
-        public string Description { get; internal set; }
+        public string Text { get; internal set; }
         public string GroupKey { get; internal set; }
         public MemoryType MemoryType { get; internal set; }
+        public string Hint { get; internal set; }
     }
 
     public enum MemoryType

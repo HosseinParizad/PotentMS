@@ -129,6 +129,7 @@ namespace PersonalAssistant
     {
         public DateTimeOffset NextMemorizeDate { get; set; } = DateTimeOffset.MinValue;
         public MemoryStage Stage { get; set; } = MemoryStage.Stage1;
+        public string Hint { get; set; }
     }
 
     public enum MemoryStage

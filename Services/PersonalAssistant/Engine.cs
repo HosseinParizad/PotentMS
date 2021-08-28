@@ -151,7 +151,30 @@ namespace PersonalAssistant
 
         static void ApplyNewMemoryAdded(Feedback feedback)
         {
-            ApplyNewItemAdded(feedback, Memorizes, OnMemoryChanged, () => new MemoryItem());
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var id = data.Id.ToString();
+            var text = data.Text.ToString();
+            var hint = data.Hint.ToString();
+            Console.WriteLine(hint);
+
+            var parentId = data.ParentId.ToString();
+            parentId = parentId == "" ? null : parentId;
+            var item = new MemoryItem();
+            item.Text = text;
+            item.Id = id;
+            item.Hint = hint;
+            item.GroupKey = groupKey;
+            item.ParentId = parentId;
+
+            Memorizes.Add(item);
+            var parent = Memorizes.SingleOrDefault(d => d.Id == parentId);
+            if (parent != null)
+            {
+                parent.IsParent = true;
+            }
+            OnMemoryChanged(groupKey);
+
         }
 
         static void ApplyNewItemAdded<T>(Feedback feedback, List<T> list, Action<string> OnListChange, Func<T> GetNewItem)
@@ -591,7 +614,7 @@ namespace PersonalAssistant
                     Type = task.IsParent ? BadgeType.Catogory : BadgeType.None,
                     LinkItems = GetLinkItems(task, key, "Memory").ToList(),
                     Items = GetBadgesMemorizes(key, task.Id).ToList(),
-                    Info = JsonConvert.SerializeObject(task)
+                    Info = task.Hint
                 };
             }
         }
@@ -627,6 +650,10 @@ namespace PersonalAssistant
                 {
                     yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
                     yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
+                }
+                if (kind == "Memory")
+                {
+                    yield return new LinkItem { Link = $"{((MemoryItem)task).Hint}", Text = "link" };
                 }
 
                 if (!task.IsParent)

@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
   totalAngularPackages: string = '';
   hidden = false;
   text: string = "";
+  description: string = "";
   group: string = "Family";
   selected: any = {};
   selectedPart: any = {};
@@ -87,15 +88,20 @@ export class AppComponent implements OnInit {
   }
 
   SendMemoryRequest() {
-    var body = this.BodyMaker('newMemory', this.selected.group, { Description: this.text, ParentId: "" });
-    this.sent = this.SendRequest(body);
+    var body = this.BodyMaker('newMemory', this.selected.group, { Text: this.text, Hint: this.description, ParentId: "" });
+    this.sent = this.SendRequestCore("/Memory", body);
     return false;
   }
 
   SendTaskRequestSpe(body: string) {
-    body = body.replace('[text]', this.text)
-    body = body.replace('[date]', this.inputdate)
-    this.sent = this.SendRequest(JSON.parse(body));
+    if (body.substring(0, 4) == 'http') {
+      window.open(body, "_blank");
+    }
+    else {
+      body = body.replace('[text]', this.text)
+      body = body.replace('[date]', this.inputdate)
+      this.sent = this.SendRequest(JSON.parse(body));
+    }
   }
 
   SendGoalRequest() {

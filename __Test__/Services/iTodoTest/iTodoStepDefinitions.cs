@@ -18,24 +18,25 @@ namespace SpecFlowDemo.Steps
         public void WhenISendFllowingTasks(Table table)
         {
             string url = "https://localhost:5001/Gateway/";
-            WhenISendFllowingTodos(table, "newTask", url);
+            Func<string, dynamic> content = (desc) => new iTodo() { Description = desc, ParentId = selectedId };
+            WhenISendFllowingTodos(table, "newTask", url, content);
         }
 
         [Given("I send the following memory:")]
         public void WhenISendFllowingMemoriess(Table table)
         {
             string url = "https://localhost:5001/Gateway/Memory";
-            WhenISendFllowingTodos(table, "newMemory", url);
+            Func<string, dynamic> content = (desc) => new { Text = desc, ParentId = selectedId, Hint = "" };
+            WhenISendFllowingTodos(table, "newMemory", url, content);
         }
 
-        void WhenISendFllowingTodos(Table table, string action, string url)
+        void WhenISendFllowingTodos(Table table, string action, string url, Func<string, dynamic> getContent)
         {
             var httpMethod = HttpMethod.Post;
 
             foreach (var row in table.Rows)
             {
-                var content = new iTodo() { Description = row["TaskDesc"], ParentId = selectedId };
-                var msg = new Msg(action: action, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
+                var msg = new Msg(action: action, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: getContent(row["TaskDesc"]));
                 var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
             }
@@ -108,7 +109,7 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "TaskDesc", "description" },
+                { "TaskDesc", "text" },
                 { "GroupKey", "groupKey" },
                 { "ParentId", "parentId" },
             };
@@ -241,6 +242,7 @@ namespace SpecFlowDemo.Steps
     {
         public string Description { get; set; }
         public string ParentId { get; set; }
+        public string Hint { get; set; }
     }
 
     class expectedResultItem

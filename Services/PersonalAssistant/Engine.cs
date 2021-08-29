@@ -62,7 +62,7 @@ namespace PersonalAssistant
                     break;
 
                 case FeedbackActions.TaskClosed:
-                    ApplyCloseTask(feedback);
+                    //ApplyCloseTask(feedback);
                     break;
 
                 default:
@@ -72,23 +72,32 @@ namespace PersonalAssistant
             SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
         }
 
+        static void ApplyMemoryFeedback(Feedback feedback)
+        {
+            var data = feedback.Content;
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            OnMemoryChanged(groupKey);
+            OnTaskChanged(groupKey);
+        }
+
         internal static void OnMemoryFeedback(Feedback feedback)
         {
-            switch (feedback.Action)
-            {
-                case FeedbackActions.NewMemoryAdded:
-                    ApplyNewMemoryAdded(feedback);
-                    break;
+            //switch (feedback.Action)
+            //{
+            //    case FeedbackActions.NewMemoryAdded:
+            //        ApplyNewMemoryAdded(feedback);
+            //        break;
 
-                case FeedbackActions.MemoryDeleted:
-                    ApplyMemoryDeleted(feedback);
-                    break;
+            //    case FeedbackActions.MemoryDeleted:
+            //        break;
 
-                default:
-                    break;
-            }
+            //    default:
+            //        break;
+            //}
 
-            SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
+            ApplyMemoryFeedback(feedback);
+
+            //SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
         }
 
         static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
@@ -107,7 +116,6 @@ namespace PersonalAssistant
         static void ApplyNewGroupAdded(Feedback feedback)
         {
             var data = feedback.Content;
-            var metadata = feedback.Metadata;
             var memberKey = data.MemberKey.ToString();
             var groupKey = data.GroupKey.ToString();
 
@@ -353,59 +361,6 @@ namespace PersonalAssistant
             OnTaskChanged(groupKey);
         }
 
-        static void ApplyCloseTask(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
-            var task = Tasks.SingleOrDefault(d => d.Id == id);
-            if (task != null)
-            {
-                task.Status = TodoStatus.closed;
-                OnTaskChanged(groupKey);
-            }
-            else
-            {
-                var memoryItem = Memorizes.SingleOrDefault(d => d.Id == id);
-                if (memoryItem != null)
-                {
-                    var nextdate = DateTimeOffset.Now.AddDays(1);
-                    var stage = memoryItem.Stage;
-                    switch (memoryItem.Stage)
-                    {
-                        case MemoryStage.Stage1:
-                            nextdate = DateTimeOffset.Now.AddDays(1);
-                            stage = MemoryStage.Stage2;
-                            break;
-                        case MemoryStage.Stage2:
-                            nextdate = DateTimeOffset.Now.AddDays(3);
-                            stage = MemoryStage.Stage3;
-                            break;
-                        case MemoryStage.Stage3:
-                            nextdate = DateTimeOffset.Now.AddDays(7);
-                            stage = MemoryStage.Stage4;
-                            break;
-                        case MemoryStage.Stage4:
-                            nextdate = DateTimeOffset.Now.AddDays(14);
-                            stage = MemoryStage.Stage5;
-                            break;
-                        case MemoryStage.Stage5:
-                            nextdate = DateTimeOffset.Now.AddDays(30);
-                            stage = MemoryStage.Stage6;
-                            break;
-                        case MemoryStage.Stage6:
-                            nextdate = DateTimeOffset.MaxValue;
-                            break;
-                        default:
-                            break;
-                    }
-                    memoryItem.NextMemorizeDate = nextdate;
-                    memoryItem.Stage = stage;
-                }
-                OnMemoryChanged(groupKey);
-            }
-        }
-
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;
 
@@ -619,56 +574,21 @@ namespace PersonalAssistant
         public static IEnumerable<BadgeItem> GetBadgesMemorizes(string key, string parentId)
         {
             //foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId).OrderBy(t => t.Stage))
-            foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId && (t.IsParent || t.NextMemorizeDate <= DateTimeOffset.Now)).OrderBy(t => t.Stage))
-            {
-                yield return new BadgeItem
-                {
-                    Id = task.Id,
-                    Text = $"{task.Text} ({task.Stage})",
-                    ParentId = task.ParentId,
-                    Status = task.Status,
-                    Type = task.IsParent ? BadgeType.Catogory : BadgeType.None,
-                    LinkItems = GetLinkItemsMemory(task, key, "Memory").ToList(),
-                    Items = GetBadgesMemorizes(key, task.Id).ToList(),
-                    Info = task.Hint
-                };
-            }
-        }
-
-        static IEnumerable<LinkItem> GetLinkItemsMemory(TodoItem task, string key, string kind, bool shortList = false)
-        {
-            var id = task.Id;
-            Func<string, dynamic, dynamic> createStep = (action, content) =>
-               new
-               {
-                   Group = "/Memory",
-                   Action = action,
-                   Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
-                   Content = content
-               };
-
-            var addSteps = createStep("new" + kind, new { Description = "[text]", ParentId = id });
-            var delete = createStep("del" + kind, new { Id = id });
-            //var update = createStep("updateDescription", new { Description = "[text]", Id = id });
-            //var setLocation = createStep("setLocation", new { Location = "[text]", Id = id });
-            var setTag = createStep("setTag", new { Tag = "[text]", TagKey = 0, Id = id });
-            //var setDeadline = createStep("setDeadline", new { Deadline = "[date]", Id = id });
-            var learnt = createStep("closeTask", new { Id = id });
-            //var start = createStep("startTask", new { Id = id });
-            //var pause = createStep("pauseTask", new { Id = id });
-
-            yield return new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" };
-            yield return new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" };
-            if (!shortList)
-            {
-                yield return new LinkItem { Link = JsonConvert.SerializeObject(setTag), Text = "Tag" };
-                yield return new LinkItem { Link = $"{((MemoryItem)task).Hint}", Text = "link" };
-
-                if (!task.IsParent)
-                {
-                    yield return new LinkItem { Link = JsonConvert.SerializeObject(learnt), Text = "learnt" };
-                }
-            }
+            //foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId && (t.IsParent || t.NextMemorizeDate <= DateTimeOffset.Now)).OrderBy(t => t.Stage))
+            //{
+            //    yield return new BadgeItem
+            //    {
+            //        Id = task.Id,
+            //        Text = $"{task.Text} ({task.Stage})",
+            //        ParentId = task.ParentId,
+            //        Status = task.Status,
+            //        Type = task.IsParent ? BadgeType.Catogory : BadgeType.None,
+            //        LinkItems = GetLinkItemsMemory(task, key, "Memory").ToList(),
+            //        Items = GetBadgesMemorizes(key, task.Id).ToList(),
+            //        Info = task.Hint
+            //    };
+            //}
+            return Enumerable.Empty<BadgeItem>();
         }
 
         static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key, string kind, bool shortList = false)
@@ -703,10 +623,6 @@ namespace PersonalAssistant
                 {
                     yield return new LinkItem { Link = JsonConvert.SerializeObject(setLocation), Text = "Location" };
                     yield return new LinkItem { Link = JsonConvert.SerializeObject(setDeadline), Text = "Deadline" };
-                }
-                if (kind == "Memory")
-                {
-                    yield return new LinkItem { Link = $"{((MemoryItem)task).Hint}", Text = "link" };
                 }
 
                 if (!task.IsParent)

@@ -86,6 +86,8 @@ namespace PersonalAssistant
         public List<BadgeItem> Items { get; set; } = new List<BadgeItem>();
         public string Info { get; set; }
         public TodoStatus Status { get; set; }
+        public string LinkGetData { get; set; }
+
     }
 
     public class LinkItem
@@ -119,27 +121,6 @@ namespace PersonalAssistant
         start,
         pause,
         closed
-    }
-
-    #endregion
-
-    #region MemoryItem
-
-    public class MemoryItem : TodoItem
-    {
-        public DateTimeOffset NextMemorizeDate { get; set; } = DateTimeOffset.MinValue;
-        public MemoryStage Stage { get; set; } = MemoryStage.Stage1;
-        public string Hint { get; set; }
-    }
-
-    public enum MemoryStage
-    {
-        Stage1,
-        Stage2,
-        Stage3,
-        Stage4,
-        Stage5,
-        Stage6
     }
 
     #endregion

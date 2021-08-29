@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PotentHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,13 @@ namespace iMemory.Controllers
         public IEnumerable<MemoryItem> Get(string groupKey)
         {
             return Engine.GetMemory(groupKey);
+        }
+
+        [HttpGet]
+        [Route("GetPresentation")]
+        public IEnumerable<PresentItem> GetPresentation(string groupKey)
+        {
+            return Engine.GetMemoryPresentation(groupKey, "");
         }
     }
 }

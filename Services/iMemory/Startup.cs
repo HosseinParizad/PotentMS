@@ -46,6 +46,8 @@ namespace iMemory
 
             app.UseHttpsRedirection();
 
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
             app.UseRouting();
 
             app.UseAuthorization();

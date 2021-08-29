@@ -35,13 +35,17 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    //this.http.get<any>('https://localhost:5007/PersonalAssistant/AllofUs')
     this.http.get<any>('https://localhost:5007/PersonalAssistant/' + this.group)
       .subscribe(data => {
         this.selected.badge = {};
         this.cats = [];
-        //data.sort((a: any, b: any) => a.id == this.selected.group ? 0 : 1).forEach((row: any) => {
         data.forEach((row: any) => {
+          this.http.get<any>('https://localhost:5008/Memory/GetPresentation?groupKey=' + row.id)
+            .subscribe(data => {
+              setTimeout(() => {
+                row.parts.filter((i: any) => i.text == "Memorizes")[0].badges = data;
+              }, 1000);
+            });
           this.cats.push(row);
           if (this.selected.group == undefined) {
             this.selected.group = row.id;

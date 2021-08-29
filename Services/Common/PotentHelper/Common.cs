@@ -51,6 +51,7 @@ namespace PotentHelper
         {
             public const string NewMemory = "newMemory";
             public const string NewMemoryCategory = "newMemoryCategory";
+            public const string DelMemory = "delMemory";
         }
     }
 

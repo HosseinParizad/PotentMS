@@ -27,6 +27,26 @@ namespace iMemory
 
         #endregion
 
+        #region DeleteMemory
+
+        internal static void DeleteMemory(dynamic metadata, dynamic content)
+        {
+            var id = content.Id.ToString();
+            var memory = Memories.SingleOrDefault(t => t.Id == id);
+            var groupkey = metadata.GroupKey.ToString();
+            if (memory != null)
+            {
+                Memories.Remove(memory);
+                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.MemoryDeleted, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
+            }
+            else
+            {
+                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot find memory item!");
+            }
+        }
+
+        #endregion
+
         #region Implement
 
         static void NewMemoryItem(dynamic metadata, dynamic content, MemoryType memory)

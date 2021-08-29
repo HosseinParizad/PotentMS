@@ -100,7 +100,9 @@ export class AppComponent implements OnInit {
     else {
       body = body.replace('[text]', this.text)
       body = body.replace('[date]', this.inputdate)
-      this.sent = this.SendRequest(JSON.parse(body));
+      var obj = JSON.parse(body);
+
+      this.sent = this.SendRequestCore(obj.Group, obj);
     }
   }
 

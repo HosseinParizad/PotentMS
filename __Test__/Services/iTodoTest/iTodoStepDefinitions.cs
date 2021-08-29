@@ -119,8 +119,26 @@ namespace SpecFlowDemo.Steps
             {
                 var url = $"https://localhost:5008/Memory?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);
-                AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", selectedId } }));
+                AreEqual(row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", selectedId } }), RestHelper.DynamicToList(todos, expectedColums));
             }
+        }
+
+        [When("User delete memory item (.*) from '(.*)'")]
+        public void WhenUserUpdateDescription(int index, string groupKey)
+        {
+            var urlRead = $"https://localhost:5008/Memory?groupKey={groupKey}";
+            var todos = RestHelper.MakeAGetRequest(urlRead);
+            if (todos.Count() >= index)
+            {
+                selectedId = todos.Skip(index - 1).Take(1).Single().id.ToString();
+            }
+            const string url = "https://localhost:5001/Gateway/Memory";
+            var httpMethod = HttpMethod.Post;
+
+            var content = new { Id = selectedId };
+            var msg = new Msg(action: "delMemory", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var dataToSend = JsonConvert.SerializeObject(msg);
+            RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
         [When("User set deadline '(.*)' on selected task for '(.*)'")]

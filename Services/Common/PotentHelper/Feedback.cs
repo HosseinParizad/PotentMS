@@ -50,5 +50,7 @@ namespace PotentHelper
         public const string CannotAddTask = "Error: cannot add task";
         public const string CannotAddMemory = "Error: cannot add Memory";
         public const string NewMemoryAdded = "New memory has been added";
+        public const string MemoryDeleted = "Memory has been deleted";
+        public const string CannotFindMemory = "Error: cannot find Memory item";
     }
 }

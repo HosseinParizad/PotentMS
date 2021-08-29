@@ -27,6 +27,7 @@ namespace iMemory
                 {
                     { MapAction.Memory.NewMemory, Engine.CreateNewMemory },
                     { MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory },
+                    { MapAction.Memory.DelMemory, Engine.DeleteMemory },
                 };
 
             var commonActions =

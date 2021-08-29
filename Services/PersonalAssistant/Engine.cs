@@ -80,6 +80,10 @@ namespace PersonalAssistant
                     ApplyNewMemoryAdded(feedback);
                     break;
 
+                case FeedbackActions.MemoryDeleted:
+                    ApplyMemoryDeleted(feedback);
+                    break;
+
                 default:
                     break;
             }
@@ -156,14 +160,13 @@ namespace PersonalAssistant
             var id = data.Id.ToString();
             var text = data.Text.ToString();
             var hint = data.Hint.ToString();
-            Console.WriteLine(hint);
 
             var parentId = data.ParentId.ToString();
             parentId = parentId == "" ? null : parentId;
-            var item = new MemoryItem();
+            var item = new TodoItem();
             item.Text = text;
             item.Id = id;
-            item.Hint = hint;
+            //item.Hint = hint;
             item.GroupKey = groupKey;
             item.ParentId = parentId;
 
@@ -175,6 +178,19 @@ namespace PersonalAssistant
             }
             OnMemoryChanged(groupKey);
 
+        }
+
+        static void ApplyMemoryDeleted(Feedback feedback)
+        {
+            var data = feedback.Content;
+            var id = data.Id.ToString();
+            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var memory = Memorizes.SingleOrDefault(d => d.Id == id);
+            if (memory != null)
+            {
+                Memorizes.Remove(memory);
+                OnMemoryChanged(groupKey);
+            }
         }
 
         static void ApplyNewItemAdded<T>(Feedback feedback, List<T> list, Action<string> OnListChange, Func<T> GetNewItem)
@@ -439,7 +455,7 @@ namespace PersonalAssistant
             Groups = new Dictionary<string, HashSet<string>>();
             Goals = new List<TodoItem>();
             Tasks = new List<TodoItem>();
-            Memorizes = new List<MemoryItem>();
+            Memorizes = new List<TodoItem>();
             Locations = new Dictionary<string, HashSet<string>>();
             //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
@@ -509,7 +525,7 @@ namespace PersonalAssistant
         static List<TodoItem> Goals = new List<TodoItem>();
         //static List<TodoItem> Dues = new List<TodoItem>();
         static List<TodoItem> Tasks = new List<TodoItem>();
-        static List<MemoryItem> Memorizes = new List<MemoryItem>();
+        static List<TodoItem> Memorizes = new List<TodoItem>();
         public static Dictionary<string, HashSet<string>> Locations = new Dictionary<string, HashSet<string>>();
 
         public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
@@ -612,10 +628,46 @@ namespace PersonalAssistant
                     ParentId = task.ParentId,
                     Status = task.Status,
                     Type = task.IsParent ? BadgeType.Catogory : BadgeType.None,
-                    LinkItems = GetLinkItems(task, key, "Memory").ToList(),
+                    LinkItems = GetLinkItemsMemory(task, key, "Memory").ToList(),
                     Items = GetBadgesMemorizes(key, task.Id).ToList(),
                     Info = task.Hint
                 };
+            }
+        }
+
+        static IEnumerable<LinkItem> GetLinkItemsMemory(TodoItem task, string key, string kind, bool shortList = false)
+        {
+            var id = task.Id;
+            Func<string, dynamic, dynamic> createStep = (action, content) =>
+               new
+               {
+                   Group = "/Memory",
+                   Action = action,
+                   Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
+                   Content = content
+               };
+
+            var addSteps = createStep("new" + kind, new { Description = "[text]", ParentId = id });
+            var delete = createStep("del" + kind, new { Id = id });
+            //var update = createStep("updateDescription", new { Description = "[text]", Id = id });
+            //var setLocation = createStep("setLocation", new { Location = "[text]", Id = id });
+            var setTag = createStep("setTag", new { Tag = "[text]", TagKey = 0, Id = id });
+            //var setDeadline = createStep("setDeadline", new { Deadline = "[date]", Id = id });
+            var learnt = createStep("closeTask", new { Id = id });
+            //var start = createStep("startTask", new { Id = id });
+            //var pause = createStep("pauseTask", new { Id = id });
+
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(addSteps), Text = "Steps" };
+            yield return new LinkItem { Link = JsonConvert.SerializeObject(delete), Text = "Delete" };
+            if (!shortList)
+            {
+                yield return new LinkItem { Link = JsonConvert.SerializeObject(setTag), Text = "Tag" };
+                yield return new LinkItem { Link = $"{((MemoryItem)task).Hint}", Text = "link" };
+
+                if (!task.IsParent)
+                {
+                    yield return new LinkItem { Link = JsonConvert.SerializeObject(learnt), Text = "learnt" };
+                }
             }
         }
 
@@ -625,6 +677,7 @@ namespace PersonalAssistant
             Func<string, dynamic, dynamic> createStep = (action, content) =>
                new
                {
+                   Group = "",
                    Action = action,
                    Metadata = new { GroupKey = key, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content

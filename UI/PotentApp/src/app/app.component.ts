@@ -37,18 +37,18 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.http.get<any>('https://localhost:5007/PersonalAssistant/' + this.group)
       .subscribe(data => {
-        this.selected.badge = {};
+        this.selected.Badge = {};
         this.cats = [];
         data.forEach((row: any) => {
-          this.http.get<any>('https://localhost:5008/Memory/GetPresentation?groupKey=' + row.id)
+          this.http.get<any>('https://localhost:5008/Memory/GetPresentation?groupKey=' + row.Id)
             .subscribe(data => {
               setTimeout(() => {
-                row.parts.filter((i: any) => i.text == "Memorizes")[0].badges = data;
+                row.Parts.filter((i: any) => i.Text == "Memorizes")[0].Badges = data;
               }, 1000);
             });
           this.cats.push(row);
-          if (this.selected.group == undefined) {
-            this.selected.group = row.id;
+          if (this.selected.Group == undefined) {
+            this.selected.Group = row.Id;
           }
         });
       });
@@ -97,17 +97,22 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  SendTaskRequestSpe(body: string) {
-    if (body.substring(0, 4) == 'http') {
-      window.open(body, "_blank");
+  SendTaskRequestSpe(body: any) {
+    // alert(JSON.stringify(body));
+    // alert(body);
+    // if (body.substring(0, 4) == 'http') {
+    //   window.open(body, "_blank");
+    // }
+    // else {
+    //   alert('ok');
+    body.content.text = body.content.text.replace('[text]', this.text)
+    if (body.content.hint) {
+      body.content.hint = body.content.hint.replace('[hint]', this.description)
     }
-    else {
-      body = body.replace('[text]', this.text)
-      body = body.replace('[date]', this.inputdate)
-      var obj = JSON.parse(body);
+    body.content.text = body.content.text.replace('[date]', this.inputdate)
 
-      this.sent = this.SendRequestCore(obj.Group, obj);
-    }
+    this.sent = this.SendRequestCore(body.group, body);
+    //}
   }
 
   SendGoalRequest() {
@@ -182,14 +187,14 @@ export class AppComponent implements OnInit {
   }
 
   selectgroup(group: string) {
-    this.selected.group = group;
+    this.selected.Group = group;
     return false;
   }
 
   selectbadgepart(event: any, part: string, badge: any) {
-    if (badge.id) {
-      this.selected.part = part;
-      this.selected.badge = badge;
+    if (badge.Id) {
+      this.selected.Part = part;
+      this.selected.Badge = badge;
       this.sent = badge;
     }
     event.stopPropagation();

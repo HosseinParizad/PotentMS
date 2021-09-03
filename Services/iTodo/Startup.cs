@@ -34,6 +34,13 @@ namespace iTodo
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "iTodo", Version = "v1" });
             });
 
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,9 +57,9 @@ namespace iTodo
 
             app.UseRouting();
 
-             app.UseCors();
-             
-             //app.UseAuthorization();
+            app.UseCors();
+
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

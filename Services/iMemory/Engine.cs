@@ -54,6 +54,7 @@ namespace iMemory
         {
             var presentItem = new PresentItem
             {
+                Id = mi.Id,
                 Text = mi.Text,
                 Link = mi.Hint,
                 Actions = GetActions(mi).ToList(),
@@ -64,19 +65,19 @@ namespace iMemory
 
         static IEnumerable<PresentItemActions> GetActions(MemoryItem mi)
         {
-            Func<string, dynamic, PresentItemActions> createStep = (action, content) =>
+            Func<string, string, dynamic, PresentItemActions> createStep = (text, action, content) =>
                new PresentItemActions
                {
+                   Text = text,
                    Group = "/Memory",
                    Action = action,
                    Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
-
-            yield return createStep("newMemory", new { Text = "[text]", ParentId = mi.Id });
-            yield return createStep("updateMemory", new { Text = "[text]", Id = mi.Id });
-            yield return createStep("deleteMemory", new { Id = mi.Id });
-            yield return createStep("learntMemory", new { Id = mi.Id });
+            yield return createStep("step", "newMemory", new { Text = "[text]", Hint = "[hint]", ParentId = mi.Id });
+            yield return createStep("update", "updateMemory", new { Text = "[text]", Hint = "[hint]", Id = mi.Id });
+            yield return createStep("delete", "deleteMemory", new { Id = mi.Id });
+            yield return createStep("learnt", "learntMemory", new { Id = mi.Id });
         }
 
         #endregion
@@ -134,7 +135,6 @@ namespace iMemory
             var hint = content.Hint.ToString();
             if (!Memories.Any(t => t.Id == id || (t.ParentId == parentId && t.Text == text)))
             {
-
                 AddMemoryItem(id, metadata.GroupKey.ToString(), text, hint, parentId, GetCreateDate(metadata), memory);
             }
             else

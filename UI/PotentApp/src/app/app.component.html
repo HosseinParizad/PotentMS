@@ -1,12 +1,12 @@
-<div *ngFor="let dashboard of cats" class="groupcard" [class.selectedgroup]="dashboard.id === selected.group"
-  (click)="selectgroup(dashboard.id)">
+<div *ngFor="let dashboard of cats" class="groupcard" [class.selectedgroup]="dashboard.Id === selected.Group"
+  (click)="selectgroup(dashboard.Id)">
   <mat-card>
     <mat-card-header>
       <div mat-card-avatar></div>
-      <mat-card-title [class.notselectedtitle]="dashboard.id != selected.group">{{dashboard.id}}</mat-card-title>
+      <mat-card-title [class.notselectedtitle]="dashboard.Id != selected.Group">{{dashboard.Id}}</mat-card-title>
       <!-- <mat-card-subtitle>{{dashboard | json}}</mat-card-subtitle> -->
     </mat-card-header>
-    <mat-card-content *ngIf="dashboard.id == selected.group">
+    <mat-card-content *ngIf="dashboard.Id == selected.Group">
       <p>
         <!-- <button *ngFor="let badge of category.badges" mat-raised-button matBadge="7" [matBadgeHidden]="hidden"
        (click)="toggleBadgeVisibility()">
@@ -21,11 +21,11 @@
         </mat-chip-list> -->
       </p>
       <ul style="list-style-type: none;padding-inline-start: 0px ; ">
-        <li *ngFor="let part of dashboard.parts;">
-          <span class="parttext" [class.selectedgrouppart]="dashboard.id == selected.group"
-            (click)="showDetail(part)">{{part.text}}</span>
-          <ol *ngIf="part.badges?.length != null && part.badges?.length > 0">
-            <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: part.badges, part:part }">
+        <li *ngFor="let part of dashboard.Parts;">
+          <span class="parttext" [class.selectedgrouppart]="dashboard.Id == selected.Group"
+            (click)="showDetail(part)">{{part.Text}}</span>
+          <ol *ngIf="part.Badges?.length != null && part.Badges?.length > 0">
+            <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: part.Badges, part:part }">
             </ng-container>
 
           </ol>
@@ -33,14 +33,14 @@
       </ul>
     </mat-card-content>
     <mat-card-actions>
-      <div class="locationPanel">
-        <span *ngFor="let location of dashboard.locations;" (click)="moveTo(dashboard.id, location)">
+      <!-- <div class="locationPanel">
+        <span *ngFor="let location of dashboard.locations;" (click)="moveTo(dashboard.Id, location)">
           <span class="material-icons">
             location_on
           </span>
           {{location}}
         </span>
-      </div>
+      </div> -->
     </mat-card-actions>
   </mat-card>
 
@@ -49,17 +49,17 @@
 
 <ng-template #recursiveListTmpl let-list="list" let-part="part">
   <span *ngFor="let badge of list">
-    <li [class.selectedbadge]="badge.id === selected.badge.id && part.text == selected.part" *ngIf="badge.status != 3"
-      (click)="selectbadgepart($event, part.text, badge)">
-      <mat-icon *ngIf="badge.type != 3">attach_file</mat-icon>
-      <mat-icon *ngIf="badge.type == 3">folder_open</mat-icon>
-      <span [class.lastnode]="badge.items.length == 0 && badge.type != 3">{{badge.text}}</span>
-      <mat-icon *ngIf="badge.status == 2">pause</mat-icon>
-      <mat-icon *ngIf="badge.status == 1">play_arrow</mat-icon>
+    <li [class.selectedbadge]="badge.Id === selected.Badge.Id && part.Text == selected.Part" *ngIf="badge.Status != 3"
+      (click)="selectbadgepart($event, part.Text, badge)">
+      <mat-icon *ngIf="badge.Type != 3">attach_file</mat-icon>
+      <mat-icon *ngIf="badge.Type == 3">folder_open</mat-icon>
+      <span [class.lastnode]="badge.Items.length == 0 && badge.Type != 3">{{badge.Text}}</span>
+      <mat-icon *ngIf="badge.Status == 2">pause</mat-icon>
+      <mat-icon *ngIf="badge.Status == 1">play_arrow</mat-icon>
 
     </li>
-    <ul *ngIf="badge.items.length > 0">
-      <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.items, part:part }"></ng-container>
+    <ul *ngIf="badge.Items.length > 0">
+      <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.Items, part:part }"></ng-container>
     </ul>
   </span>
 </ng-template>
@@ -94,9 +94,14 @@
     Add memory item
   </button>
   <mat-chip-list aria-label="????" class="tagtag">
-    <p *ngFor="let lit of selected.badge?.linkItems;">
-      <mat-chip (click)="SendTaskRequestSpe(lit.link)" mat-raised-button>
+    <p *ngFor="let lit of selected.Badge?.LinkItems;">
+      <mat-chip (click)="SendTaskRequestSpe(lit.Link)" mat-raised-button>
         {{lit.text}}
+      </mat-chip>
+    </p>
+    <p *ngFor="let lit of selected.Badge?.Actions;">
+      <mat-chip (click)="SendTaskRequestSpe(lit)" mat-raised-button>
+        {{lit.Text}}
       </mat-chip>
     </p>
   </mat-chip-list>
@@ -196,7 +201,12 @@
 <button type="button" class="bttnn" mat-button (click)="DeleteFeedback()">
   Delete feedback
 </button>
+<pre>
+{{selected|json}}
+</pre>
 
-
+<pre>
+{{cats|json}}
+</pre>
 
 <!-- <pre>{{selectedPart|json}}</pre> -->

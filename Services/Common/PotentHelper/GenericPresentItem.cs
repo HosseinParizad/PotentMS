@@ -8,6 +8,7 @@ namespace PotentHelper
 {
     public class PresentItem
     {
+        public string Id { get; set; }
         public PresentItemType Type { get; set; }
         public string Text { get; set; }
         public string Link { get; set; }
@@ -23,6 +24,7 @@ namespace PotentHelper
     }
     public class PresentItemActions
     {
+        public string Text { get; set; }
         public string Group { get; set; }
         public string Action { get; set; }
         public dynamic Metadata { get; set; }

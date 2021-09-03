@@ -522,7 +522,8 @@ namespace PersonalAssistant
 
         public static IEnumerable<BadgeItem> GetBadgesDues(string key)
         {
-            foreach (var task in Tasks.Where(t => t.GroupKey == key && !t.IsParent).OrderBy(t => t.Deadline == DateTimeOffset.MinValue ? DateTimeOffset.MaxValue : t.Deadline))
+            foreach (var task in Tasks.Where(t => t.GroupKey == key && !t.IsParent)
+                .OrderBy(t => t.Deadline == DateTimeOffset.MinValue ? DateTimeOffset.MaxValue : t.Deadline))
             {
                 yield return new BadgeItem
                 {

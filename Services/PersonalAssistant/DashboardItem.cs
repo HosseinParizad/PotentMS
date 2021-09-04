@@ -41,10 +41,11 @@ namespace PersonalAssistant
         }
 
         DashboardPart DashboardItemGoal()
-            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = Engine.GetBadgesByGoal(AssistantKey, null).ToList() };
+            => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0 };
+        //=> new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = Engine.GetBadgesByGoal(AssistantKey, null).ToList() };
 
         static DashboardPart DashboardItemTag()
-            => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g I am in shop now!", Sequence = 1 };
+                => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g I am in shop now!", Sequence = 1 };
 
         static DashboardPart DashboardItemLocation()
             => new DashboardPart { Text = "UsedLocations", Description = "For now we manually select location until ...", Sequence = 2 };
@@ -59,7 +60,7 @@ namespace PersonalAssistant
             => new DashboardPart { Text = "Ordered", Description = "Ordered", Sequence = 5, BadgesInternal = Engine.GetBadgesOrdered(AssistantKey, null).ToList() };
 
         DashboardPart DashboardItemMemory()
-            => new DashboardPart { Text = "Memorizes", Description = "Memorizes", Sequence = 6, BadgesInternal = Engine.GetBadgesMemorizes(AssistantKey, null).ToList() };
+            => new DashboardPart { Text = "Memorizes", Description = "Memorizes", Sequence = 6 };
 
         #endregion
     }

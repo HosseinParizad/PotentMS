@@ -72,6 +72,7 @@ namespace iTodo
             newItem.Description = content.Description.ToString();
             newItem.GroupKey = metadata.GroupKey.ToString();
             newItem.Sequence = Todos.Count;
+            newItem.ParentId = content.ParentId.ToString(); ;
             newItem.Kind = TodoType.Goal;
             Todos.Add(newItem);
             var dataToSend = new { Id = newItem.Id, Goal = newItem.Description };
@@ -489,6 +490,48 @@ namespace iTodo
             Groups = new List<GroupItem>();
             TimeLog = new List<TimeItem>();
             MemberCurrentLocation = new Dictionary<string, string>();
+        }
+
+        #endregion
+
+        #region GetPresentation
+
+        internal static IEnumerable<PresentItem> GetPresentationTaskGoal(string groupKey, string parentId)
+        {
+            return Todos.Where(i => i.Kind == TodoType.Goal && i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.ParentId == parentId)
+                .Select(i => GetPresentationItemTaskGoal(groupKey, i));
+            //return Todos.Where(i => i.ParentId == parentId).Select(i => GetPresentationItemTaskGoal(groupKey, i));
+        }
+
+
+        static PresentItem GetPresentationItemTaskGoal(string groupKey, TodoItem todo)
+        {
+            var presentItem = new PresentItem
+            {
+                Id = todo.Id,
+                Text = todo.Description,
+                Link = "",
+                Actions = GetActions(todo).ToList(),
+                Items = GetPresentationTaskGoal(groupKey, todo.Id).ToList()
+            };
+            return presentItem;
+        }
+
+        static IEnumerable<PresentItemActions> GetActions(TodoItem todo)
+        {
+            Func<string, string, dynamic, PresentItemActions> createStep = (text, action, content) =>
+               new PresentItemActions
+               {
+                   Text = text,
+                   Group = "",
+                   Action = action,
+                   Metadata = new { GroupKey = todo.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Content = content
+               };
+            yield return createStep("step", MapAction.Task.NewGoal, new { Description = "[text]", Hint = "[hint]", ParentId = todo.Id });
+            yield return createStep("update", MapAction.Task.UpdateDescription, new { Description = "[text]", Hint = "[hint]", Id = todo.Id });
+            yield return createStep("delete", MapAction.Task.DelTask, new { Id = todo.Id });
+            yield return createStep("learnt", MapAction.Task.CloseTask, new { Id = todo.Id });
         }
 
         #endregion

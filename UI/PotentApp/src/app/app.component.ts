@@ -40,17 +40,29 @@ export class AppComponent implements OnInit {
         this.selected.Badge = {};
         this.cats = [];
         data.forEach((row: any) => {
-          this.http.get<any>('https://localhost:5008/Memory/GetPresentation?groupKey=' + row.Id)
-            .subscribe(data => {
-              setTimeout(() => {
-                row.Parts.filter((i: any) => i.Text == "Memorizes")[0].Badges = data;
-              }, 1000);
-            });
+          var url = 'https://localhost:5008/Memory/GetPresentation?groupKey=';
+          var group = "Memorizes";
+          this.addSection(row, url, group);
+
+          var url = 'https://localhost:5003/TodoQuery/GetPresentationTaskGoal?groupKey=';
+          var group = "Goal";
+          this.addSection(row, url, group);
+
           this.cats.push(row);
           if (this.selected.Group == undefined) {
             this.selected.Group = row.Id;
           }
+
         });
+      });
+  }
+
+  addSection(row: any, url: string, group: string) {
+    this.http.get<any>(url + row.Id)
+      .subscribe(data => {
+        setTimeout(() => {
+          row.Parts.filter((i: any) => i.Text == group)[0].Badges = data;
+        }, 1000);
       });
   }
 
@@ -92,37 +104,31 @@ export class AppComponent implements OnInit {
   }
 
   SendMemoryRequest() {
-    var body = this.BodyMaker('newMemory', this.selected.group, { Text: this.text, Hint: this.description, ParentId: "" });
+    var body = this.BodyMaker('newMemory', this.selected.Group, { Text: this.text, Hint: this.description, ParentId: "" });
     this.sent = this.SendRequestCore("/Memory", body);
     return false;
   }
 
   SendTaskRequestSpe(body: any) {
-    // alert(JSON.stringify(body));
-    // alert(body);
-    // if (body.substring(0, 4) == 'http') {
-    //   window.open(body, "_blank");
-    // }
-    // else {
-    //   alert('ok');
-    body.content.text = body.content.text.replace('[text]', this.text)
-    if (body.content.hint) {
-      body.content.hint = body.content.hint.replace('[hint]', this.description)
+    if (body.Content.Text) {
+      body.Content.Text = body.Content.Text.replace('[text]', this.text)
+      body.Content.Text = body.Content.Text.replace('[date]', this.inputdate)
     }
-    body.content.text = body.content.text.replace('[date]', this.inputdate)
+    if (body.Content.Hint) {
+      body.Content.Hint = body.Content.Hint.replace('[hint]', this.description)
+    }
 
-    this.sent = this.SendRequestCore(body.group, body);
-    //}
+    this.sent = this.SendRequestCore(body.Group, body);
   }
 
   SendGoalRequest() {
-    var body = this.BodyMaker('newGoal', this.selected.group, { Description: this.text, ParentId: "" });
+    var body = this.BodyMaker('newGoal', this.selected.Group, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }
 
   SendGroupRequest() {
-    var body = this.BodyMaker('newGroup', this.selected.group, { Description: this.text, ParentId: "" });
+    var body = this.BodyMaker('newGroup', this.selected.Group, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }
@@ -134,7 +140,7 @@ export class AppComponent implements OnInit {
   }
 
   SendReapeatRequest(frequency: number) {
-    var body = this.BodyMaker('registerRepeat', this.selected.group, { ReferenceId: this.selected.badge.id, Frequency: frequency, ReferenceName: "Task", RepeatIfAllClosed: this.repeatIfAllClosed });
+    var body = this.BodyMaker('registerRepeat', this.selected.Group, { ReferenceId: this.selected.Badge.Id, Frequency: frequency, ReferenceName: "Task", RepeatIfAllClosed: this.repeatIfAllClosed });
     this.sent = this.SendRequestCore("/Repeat", body);
     return false;
   }

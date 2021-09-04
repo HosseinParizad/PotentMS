@@ -29,12 +29,6 @@ namespace PersonalAssistant
                    { FeedbackGroupNames.Task, Engine.OnTaskFeedback },
                 };
 
-            var memoryFeedbackActions =
-                new Dictionary<string, Action<Feedback>>
-                {
-                    { FeedbackGroupNames.Memory, Engine.OnMemoryFeedback },
-                };
-
             var commonActions =
                 new Dictionary<string, Action<dynamic, dynamic>> {
                     { "reset", Engine.Reset },
@@ -53,7 +47,6 @@ namespace PersonalAssistant
                 MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
                 MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
                 MessageProcessor.MapFeedbackToAction(AppId, e.Text, taskFeedbackActions, true);
-                MessageProcessor.MapFeedbackToAction(AppId, e.Text, memoryFeedbackActions, true);
             }
 
             db.ReplayAll();

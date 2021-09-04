@@ -29,10 +29,6 @@ namespace PersonalAssistant
                     ApplyNewGroupAdded(feedback);
                     break;
 
-                case FeedbackActions.NewGoalAdded:
-                    ApplyNewGoalAdded(feedback);
-                    break;
-
                 case FeedbackActions.NewTaskAdded:
                     ApplyNewTaskAdded(feedback);
                     break;
@@ -47,10 +43,6 @@ namespace PersonalAssistant
 
                 case FeedbackActions.TaskDeleted:
                     ApplyTaskDeleted(feedback);
-                    break;
-
-                case FeedbackActions.GoalDeleted:
-                    ApplyGoalDeleted(feedback);
                     break;
 
                 case FeedbackActions.TaskStarted:
@@ -70,34 +62,6 @@ namespace PersonalAssistant
             }
 
             SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
-        }
-
-        static void ApplyMemoryFeedback(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            OnMemoryChanged(groupKey);
-            OnTaskChanged(groupKey);
-        }
-
-        internal static void OnMemoryFeedback(Feedback feedback)
-        {
-            //switch (feedback.Action)
-            //{
-            //    case FeedbackActions.NewMemoryAdded:
-            //        ApplyNewMemoryAdded(feedback);
-            //        break;
-
-            //    case FeedbackActions.MemoryDeleted:
-            //        break;
-
-            //    default:
-            //        break;
-            //}
-
-            ApplyMemoryFeedback(feedback);
-
-            //SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
         }
 
         static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
@@ -130,75 +94,9 @@ namespace PersonalAssistant
             }
         }
 
-        static void ApplyNewGoalAdded(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
-            var goal = data.Goal.ToString();
-            var item = new TodoItem { Text = goal, Id = id, GroupKey = groupKey };
-            Goals.Add(item);
-            OnGoalChanged(groupKey);
-        }
-
         static void ApplyNewTaskAdded(Feedback feedback)
         {
-            //var data = feedback.Content;
-            //var groupKey = feedback.Metadata.GroupKey.ToString();
-            //var id = data.Id.ToString();
-            //var text = data.Text.ToString();
-
-            //var parentId = data.ParentId.ToString();
-            //parentId = parentId == "" ? null : parentId;
-            //var item = new TodoItem { Text = text, Id = id, GroupKey = groupKey, ParentId = parentId };
-            //Tasks.Add(item);
-            //var parent = Tasks.SingleOrDefault(d => d.Id == parentId);
-            //if (parent != null)
-            //{
-            //    parent.IsParent = true;
-            //}
-            //OnTaskChanged(groupKey);
             ApplyNewItemAdded(feedback, Tasks, OnTaskChanged, () => new TodoItem());
-        }
-
-        static void ApplyNewMemoryAdded(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
-            var text = data.Text.ToString();
-            var hint = data.Hint.ToString();
-
-            var parentId = data.ParentId.ToString();
-            parentId = parentId == "" ? null : parentId;
-            var item = new TodoItem();
-            item.Text = text;
-            item.Id = id;
-            //item.Hint = hint;
-            item.GroupKey = groupKey;
-            item.ParentId = parentId;
-
-            Memorizes.Add(item);
-            var parent = Memorizes.SingleOrDefault(d => d.Id == parentId);
-            if (parent != null)
-            {
-                parent.IsParent = true;
-            }
-            OnMemoryChanged(groupKey);
-
-        }
-
-        static void ApplyMemoryDeleted(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var id = data.Id.ToString();
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var memory = Memorizes.SingleOrDefault(d => d.Id == id);
-            if (memory != null)
-            {
-                Memorizes.Remove(memory);
-                OnMemoryChanged(groupKey);
-            }
         }
 
         static void ApplyNewItemAdded<T>(Feedback feedback, List<T> list, Action<string> OnListChange, Func<T> GetNewItem)
@@ -243,11 +141,6 @@ namespace PersonalAssistant
             //var groupKey = feedback.Metadata.GroupKey.ToString();
             var id = data.Id.ToString();
             var member = data.MemberKey.ToString();
-            TodoItem goal = Goals.SingleOrDefault(t => t.Id == id);
-            if (goal != null)
-            {
-                goal.GroupKey = member;
-            }
             var task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
             {
@@ -324,25 +217,6 @@ namespace PersonalAssistant
             }
         }
 
-        static void ApplyGoalDeleted(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
-            var goal = Goals.SingleOrDefault(t => t.Id == id);
-            if (goal != null)
-            {
-                Goals.Remove(goal);
-                GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal.BadgesInternal = Engine.GetBadgesByGoal(groupKey, null).ToList();
-            }
-            var task = Tasks.SingleOrDefault(t => t.Id == id);
-            if (task != null)
-            {
-                Tasks.Remove(goal);
-                GetDashboardSectionBadges(groupKey, GoalSectionKey).BadgesInternal.BadgesInternal = Engine.GetBadgesTasks(groupKey, null).ToList();
-            }
-        }
-
         static void ApplyStartTask(Feedback feedback)
         {
             var data = feedback.Content;
@@ -408,11 +282,8 @@ namespace PersonalAssistant
         {
             Dashboards = new List<Dashboard>();
             Groups = new Dictionary<string, HashSet<string>>();
-            Goals = new List<TodoItem>();
             Tasks = new List<TodoItem>();
-            Memorizes = new List<TodoItem>();
             Locations = new Dictionary<string, HashSet<string>>();
-            //Deadlines = new Dictionary<string, List<DeadlineItem>>();
         }
 
         #endregion
@@ -430,23 +301,6 @@ namespace PersonalAssistant
 
         #endregion
 
-        //#region Location actions 
-
-        //public static void SetUsedLocation(dynamic metadata, dynamic content)
-        //{
-        //    var data = JsonSerializer.Deserialize<dynamic>(content);
-        //    var key = data.Member.ToString();
-        //    string location = data.Location.ToString();
-        //    IEnumerable<DashboardPart> dashbord = Dashboards.Single(d => d.Id == groupKey).Parts;
-        //    var locations = dashbord.Single(d => d.Text == "UsedLocations").BadgesInternal;
-        //    if (!locations.Any(l => l.Text == location))
-        //    {
-        //        locations.Add(new BadgeItem { Text = location, Type = BadgeType.Location });
-        //    }
-        //}
-
-        //#endregion
-
         #region Implement
 
         const string GoalSectionKey = "Goal";
@@ -460,49 +314,14 @@ namespace PersonalAssistant
             GetDashboardSections(key).Single(d => d.Text == DueSectionKey).BadgesInternal = Engine.GetBadgesDues(key).ToList();
             GetDashboardSections(key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(key, null).ToList();
             GetDashboardSections(key).Single(d => d.Text == OrderedSectionKey).BadgesInternal = Engine.GetBadgesOrdered(key, null).ToList();
-            GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
+            //GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
         }
-
-        static void OnGoalChanged(string key)
-        {
-            GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
-        }
-
-        static void OnMemoryChanged(string key)
-        {
-            GetDashboardSections(key).Single(d => d.Text == MemorizesSectionKey).BadgesInternal = Engine.GetBadgesMemorizes(key, null).ToList();
-        }
-
 
         static List<Dashboard> Dashboards = new List<Dashboard>();
         public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
 
-        static List<TodoItem> Goals = new List<TodoItem>();
-        //static List<TodoItem> Dues = new List<TodoItem>();
         static List<TodoItem> Tasks = new List<TodoItem>();
-        static List<TodoItem> Memorizes = new List<TodoItem>();
         public static Dictionary<string, HashSet<string>> Locations = new Dictionary<string, HashSet<string>>();
-
-        public static IEnumerable<BadgeItem> GetBadgesByGoal(string key, string parentId)
-        {
-            var items = (parentId == null)
-                   ? Goals.Where(t => t.GroupKey == key && t.ParentId == parentId)
-                   : Tasks.Union(Goals).Where(t => t.GroupKey == key && t.ParentId == parentId);
-
-            foreach (var task in items)
-            {
-                yield return new BadgeItem
-                {
-                    Id = task.Id,
-                    Text = task.Text,
-                    Status = task.Status,
-                    ParentId = task.ParentId,
-                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
-                    Items = GetBadgesDuesTree(key, task.Id).ToList(),
-                    Info = JsonConvert.SerializeObject(task)
-                };
-            }
-        }
 
         public static IEnumerable<BadgeItem> GetBadgesDuesTree(string key, string parentId)
         {
@@ -570,26 +389,6 @@ namespace PersonalAssistant
                     Info = JsonConvert.SerializeObject(task)
                 };
             }
-        }
-
-        public static IEnumerable<BadgeItem> GetBadgesMemorizes(string key, string parentId)
-        {
-            //foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId).OrderBy(t => t.Stage))
-            //foreach (var task in Memorizes.Where(t => t.GroupKey == key && t.ParentId == parentId && (t.IsParent || t.NextMemorizeDate <= DateTimeOffset.Now)).OrderBy(t => t.Stage))
-            //{
-            //    yield return new BadgeItem
-            //    {
-            //        Id = task.Id,
-            //        Text = $"{task.Text} ({task.Stage})",
-            //        ParentId = task.ParentId,
-            //        Status = task.Status,
-            //        Type = task.IsParent ? BadgeType.Catogory : BadgeType.None,
-            //        LinkItems = GetLinkItemsMemory(task, key, "Memory").ToList(),
-            //        Items = GetBadgesMemorizes(key, task.Id).ToList(),
-            //        Info = task.Hint
-            //    };
-            //}
-            return Enumerable.Empty<BadgeItem>();
         }
 
         static IEnumerable<LinkItem> GetLinkItems(TodoItem task, string key, string kind, bool shortList = false)

@@ -45,48 +45,14 @@ namespace iMemory
             }
         }
 
-        internal static IEnumerable<PresentItem> GetMemoryPresentation(string groupKey, string parentid)
-        {
-            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).Select(i => MemoryToPresentation(groupKey, i));
-        }
-
-        static PresentItem MemoryToPresentation(string groupKey, MemoryItem mi)
-        {
-            var presentItem = new PresentItem
-            {
-                Id = mi.Id,
-                Text = mi.Text,
-                Link = mi.Hint,
-                Actions = GetActions(mi).ToList(),
-                Items = GetMemoryPresentation(groupKey, mi.Id).ToList()
-            };
-            return presentItem;
-        }
-
-        static IEnumerable<PresentItemActions> GetActions(MemoryItem mi)
-        {
-            Func<string, string, dynamic, PresentItemActions> createStep = (text, action, content) =>
-               new PresentItemActions
-               {
-                   Text = text,
-                   Group = "/Memory",
-                   Action = action,
-                   Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
-                   Content = content
-               };
-            yield return createStep("step", "newMemory", new { Text = "[text]", Hint = "[hint]", ParentId = mi.Id });
-            yield return createStep("update", "updateMemory", new { Text = "[text]", Hint = "[hint]", Id = mi.Id });
-            yield return createStep("delete", "deleteMemory", new { Id = mi.Id });
-            yield return createStep("learnt", "learntMemory", new { Id = mi.Id });
-        }
-
         #endregion
 
-        static void ApplyLearntMemory(Feedback feedback)
+        #region DeleteMemory
+
+        internal static void LearnMemory(dynamic metadata, dynamic content)
         {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var id = content.Id.ToString();
             var memoryItem = Memories.SingleOrDefault(d => d.Id == id);
             if (memoryItem != null)
             {
@@ -123,6 +89,43 @@ namespace iMemory
                 memoryItem.NextMemorizeDate = nextdate;
                 memoryItem.Stage = stage;
             }
+        }
+
+        #endregion
+
+        internal static IEnumerable<PresentItem> GetMemoryPresentation(string groupKey, string parentid)
+        {
+            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).Select(i => MemoryToPresentation(groupKey, i));
+        }
+
+        static PresentItem MemoryToPresentation(string groupKey, MemoryItem mi)
+        {
+            var presentItem = new PresentItem
+            {
+                Id = mi.Id,
+                Text = $" {mi.Text } ({mi.Stage}) ",
+                Link = mi.Hint,
+                Actions = GetActions(mi).ToList(),
+                Items = GetMemoryPresentation(groupKey, mi.Id).ToList()
+            };
+            return presentItem;
+        }
+
+        static IEnumerable<PresentItemActions> GetActions(MemoryItem mi)
+        {
+            Func<string, string, dynamic, PresentItemActions> createStep = (text, action, content) =>
+               new PresentItemActions
+               {
+                   Text = text,
+                   Group = "/Memory",
+                   Action = action,
+                   Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Content = content
+               };
+            yield return createStep("step", MapAction.Memory.NewMemory, new { Text = "[text]", Hint = "[hint]", ParentId = mi.Id });
+            yield return createStep("update", "updateMemory", new { Text = "[text]", Hint = "[hint]", Id = mi.Id });
+            yield return createStep("delete", MapAction.Memory.DelMemory, new { Id = mi.Id });
+            yield return createStep("learnt", MapAction.Memory.LearntMemory, new { Id = mi.Id });
         }
 
         #region Implement
@@ -163,7 +166,7 @@ namespace iMemory
 
         static void AddMemoryItem(string id, string groupKey, string text, string hint, string parentId, DateTimeOffset actionTime, MemoryType memoryType)
         {
-            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType };
+            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage1 };
             Memories.Add(memory);
             SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewMemoryAdded, groupkey: groupKey, content: memory);
         }

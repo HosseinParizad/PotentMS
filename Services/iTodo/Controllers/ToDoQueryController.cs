@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PotentHelper;
 
 namespace iTodo.Controllers
 {
@@ -24,6 +25,14 @@ namespace iTodo.Controllers
         {
             return Engine.GetTask(groupKey);
         }
+
+        [HttpGet]
+        [Route("GetPresentationTaskGoal")]
+        public IEnumerable<PresentItem> GetPresentationTaskGoal(string groupKey)
+        {
+            return Engine.GetPresentationTaskGoal(groupKey, "");
+        }
+
 
         [HttpGet]
         [Route("GroupQuery")]

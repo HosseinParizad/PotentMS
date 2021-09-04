@@ -40,7 +40,29 @@ namespace PotentHelper
 
         public static class Task
         {
+            public const string NewTask = "newTask";
+            public const string NewGoal = "newGoal";
+            public const string DelTask = "delTask";
+            public const string CloseTask = "closeTask";
+            public const string UpdateDescription = "updateDescription";
             public const string RepeatTask = "repeatTask";
+            //                    { "newTask", Engine.CreateNewTask
+            //        },
+            //                    { "newGoal", Engine.CreateNewGoal
+            //    },
+            //                    { "updateDescription", Engine.UpdateDescription
+            //},
+            //                    { "setDeadline", Engine.SetDeadline },
+            //                    { "setTag", Engine.SetTag },
+            //                    { "newGroup", Engine.NewGroup },
+            //                    { "newMember", Engine.NewMember },
+            //                    { "setLocation", Engine.SetLocation },
+            //                    { "closeTask", Engine.CloseTask },
+            //                    { "assignTask", Engine.AssignTask },
+            //                    { "delTask", Engine.DeleteTask },
+            //                    { "startTask", Engine.StartTask },
+            //                    { "pauseTask", Engine.PauseTask },
+            //                    { "moveTask", Engine.MoveTask },
         }
 
         public static class Location
@@ -52,6 +74,7 @@ namespace PotentHelper
             public const string NewMemory = "newMemory";
             public const string NewMemoryCategory = "newMemoryCategory";
             public const string DelMemory = "delMemory";
+            public const string LearntMemory = "lrnMemory";
         }
     }
 

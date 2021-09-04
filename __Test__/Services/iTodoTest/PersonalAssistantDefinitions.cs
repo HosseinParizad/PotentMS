@@ -21,8 +21,8 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "Text", "text" },
-                { "Badges", "badges" },
+                { "Text", "Text" },
+                { "Badges", "Badges" },
             };
 
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
@@ -44,7 +44,7 @@ namespace SpecFlowDemo.Steps
 
                 }
             }
-            var t2 = dashboards[0].parts;
+            var t2 = dashboards[0].Parts;
             var c = new List<dynamic>();
             //foreach (var item in t2)
             //{
@@ -65,7 +65,7 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "Id", "id" },
+                { "Id", "Id" },
             };
 
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
@@ -82,7 +82,7 @@ namespace SpecFlowDemo.Steps
         }
 
         static string DefaultBadgeItem(string item, int isLocation)
-            => "{\"id\":null," + $"\"text\":\"{item.Replace("\"", "")}\",\"parentId\":null,\"linkItems\":null,\"type\":{isLocation},\"count\":0" + ",\"items\":[],\"info\":null,\"status\":0,\"linkGetData\":null}";
+            => "{\"Id\":null," + $"\"Text\":\"{item.Replace("\"", "")}\",\"ParentId\":null,\"LinkItems\":null,\"Type\":{isLocation},\"Count\":0" + ",\"Items\":[],\"Info\":null,\"Status\":0,\"LinkGetData\":null}";
 
 
         [Then(@"I should see the following board deallines:")]
@@ -116,7 +116,7 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
              {
-                 { "Text", "description" },
+                 { "Text", "Description" },
              };
 
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
@@ -133,7 +133,7 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
              {
-                 { "Text", "description" },
+                 { "Text", "Description" },
              };
 
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();

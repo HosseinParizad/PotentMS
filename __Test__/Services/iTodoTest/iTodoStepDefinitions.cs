@@ -65,7 +65,7 @@ namespace SpecFlowDemo.Steps
             var todos = RestHelper.MakeAGetRequest(url);
             if (todos.Count() >= i)
             {
-                selectedId = todos.Skip(i - 1).Take(1).Single().id.ToString();
+                selectedId = todos.Skip(i - 1).Take(1).Single().Id.ToString();
             }
         }
 
@@ -109,9 +109,9 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "TaskDesc", "text" },
-                { "GroupKey", "groupKey" },
-                { "ParentId", "parentId" },
+                { "TaskDesc", "Text" },
+                { "GroupKey", "GroupKey" },
+                { "ParentId", "ParentId" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
@@ -130,7 +130,7 @@ namespace SpecFlowDemo.Steps
             var todos = RestHelper.MakeAGetRequest(urlRead);
             if (todos.Count() >= index)
             {
-                selectedId = todos.Skip(index - 1).Take(1).Single().id.ToString();
+                selectedId = todos.Skip(index - 1).Take(1).Single().Id.ToString();
             }
             const string url = "https://localhost:5001/Gateway/Memory";
             var httpMethod = HttpMethod.Post;
@@ -226,12 +226,12 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "TaskDesc", "description" },
-                { "GroupKey", "groupKey" },
-                { "Deadline", "deadline" },
-                { "Tags", "tags" },
-                { "Locations", "locations" },
-                { "ParentId", "parentId" },
+                { "TaskDesc", "Description" },
+                { "GroupKey", "GroupKey" },
+                { "Deadline", "Deadline" },
+                { "Tags", "Tags" },
+                { "Locations", "Locations" },
+                { "ParentId", "ParentId" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 

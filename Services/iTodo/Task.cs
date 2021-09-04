@@ -16,7 +16,7 @@ namespace iTodo
             var description = content.Description.ToString();
             var parentId = content.ParentId.ToString();
             var id = metadata.ReferenceKey.ToString();
-            if (!Todos.Any(t => t.Id == id || (t.ParentId == parentId && t.Description == description)))
+            if (!Todos.Any(t => (t.Id == id || (t.ParentId == parentId && t.Description == description) && t.GroupKey == metadata.GroupKey.ToString())))
             {
                 CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
                 AddTask(id, metadata.GroupKey.ToString(), description, parentId, GetCreateDate(metadata), TodoType.Task);

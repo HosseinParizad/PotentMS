@@ -29,7 +29,7 @@ namespace SpecFlowDemo.Steps
             const string url = "https://localhost:5001/Gateway/Common";
             var httpMethod = HttpMethod.Post;
 
-            var msg = new Msg(action: "reset", metadata: new { Test="Test"}, content: new { Test="Test"});
+            var msg = new Msg(action: "reset", metadata: new { Test = "Test" }, content: new { Test = "Test" });
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -81,8 +81,8 @@ namespace SpecFlowDemo.Steps
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "Group", "group" },
-                { "Member", "member" },
+                { "Group", "Group" },
+                { "Member", "Member" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 

@@ -54,7 +54,7 @@ namespace PersonalAssistant
             => new DashboardPart { Text = "Due", Description = "Order by Due", Sequence = 3, BadgesInternal = Engine.GetBadgesDues(AssistantKey).ToList() };
 
         DashboardPart DashboardItemTask()
-            => new DashboardPart { Text = "Task", Description = "All tasks", Sequence = 4, BadgesInternal = Engine.GetBadgesTasks(AssistantKey, null).ToList() };
+            => new DashboardPart { Text = "Task", Description = "All tasks", Sequence = 4 };
 
         DashboardPart DashboardItemOrdered()
             => new DashboardPart { Text = "Ordered", Description = "Ordered", Sequence = 5, BadgesInternal = Engine.GetBadgesOrdered(AssistantKey, null).ToList() };

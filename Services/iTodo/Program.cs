@@ -26,20 +26,20 @@ namespace iTodo
 
             var taskActions =
                 new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "newTask", Engine.CreateNewTask },
-                    { "newGoal", Engine.CreateNewGoal },
-                    { "updateDescription", Engine.UpdateDescription },
-                    { "setDeadline", Engine.SetDeadline },
-                    { "setTag", Engine.SetTag },
-                    { "newGroup", Engine.NewGroup },
-                    { "newMember", Engine.NewMember },
-                    { "setLocation", Engine.SetLocation },
-                    { "closeTask", Engine.CloseTask },
-                    { "assignTask", Engine.AssignTask },
-                    { "delTask", Engine.DeleteTask },
-                    { "startTask", Engine.StartTask },
-                    { "pauseTask", Engine.PauseTask },
-                    { "moveTask", Engine.MoveTask },
+                    { MapAction.Task.NewTask, Engine.CreateNewTask },
+                    { MapAction.Task.NewGoal, Engine.CreateNewGoal },
+                    { MapAction.Task.UpdateDescription, Engine.UpdateDescription },
+                    { MapAction.Task.SetDeadline, Engine.SetDeadline },
+                    { MapAction.Task.SetTag, Engine.SetTag },
+                    { MapAction.Group.NewGroup, Engine.NewGroup },
+                    { MapAction.Group.NewMember, Engine.NewMember },
+                    { MapAction.Task.SetLocation, Engine.SetLocation },
+                    { MapAction.Task.CloseTask, Engine.CloseTask },
+                    { MapAction.Task.AssignTask, Engine.AssignTask },
+                    { MapAction.Task.DelTask, Engine.DeleteTask },
+                    { MapAction.Task.StartTask, Engine.StartTask },
+                    { MapAction.Task.PauseTask, Engine.PauseTask },
+                    { MapAction.Task.MoveTask, Engine.MoveTask },
                 };
 
             #endregion

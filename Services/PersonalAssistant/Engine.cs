@@ -280,10 +280,10 @@ namespace PersonalAssistant
 
         internal static void Reset(dynamic arg1, dynamic arg2)
         {
-            Dashboards = new List<Dashboard>();
-            Groups = new Dictionary<string, HashSet<string>>();
-            Tasks = new List<TodoItem>();
-            Locations = new Dictionary<string, HashSet<string>>();
+            Dashboards = new();
+            Groups = new();
+            Tasks = new();
+            Locations = new();
         }
 
         #endregion
@@ -312,16 +312,13 @@ namespace PersonalAssistant
         static void OnTaskChanged(string key)
         {
             GetDashboardSections(key).Single(d => d.Text == DueSectionKey).BadgesInternal = Engine.GetBadgesDues(key).ToList();
-            GetDashboardSections(key).Single(d => d.Text == TaskSectionKey).BadgesInternal = Engine.GetBadgesTasks(key, null).ToList();
             GetDashboardSections(key).Single(d => d.Text == OrderedSectionKey).BadgesInternal = Engine.GetBadgesOrdered(key, null).ToList();
-            //GetDashboardSections(key).Single(d => d.Text == GoalSectionKey).BadgesInternal = Engine.GetBadgesByGoal(key, null).ToList();
         }
 
-        static List<Dashboard> Dashboards = new List<Dashboard>();
-        public static Dictionary<string, HashSet<string>> Groups = new Dictionary<string, HashSet<string>>();
-
-        static List<TodoItem> Tasks = new List<TodoItem>();
-        public static Dictionary<string, HashSet<string>> Locations = new Dictionary<string, HashSet<string>>();
+        static List<Dashboard> Dashboards = new();
+        public static Dictionary<string, HashSet<string>> Groups = new();
+        static List<TodoItem> Tasks = new();
+        public static Dictionary<string, HashSet<string>> Locations = new();
 
         public static IEnumerable<BadgeItem> GetBadgesDuesTree(string key, string parentId)
         {
@@ -352,23 +349,6 @@ namespace PersonalAssistant
                     Status = task.Status,
                     LinkItems = GetLinkItems(task, key, "Task").ToList(),
                     Items = new List<BadgeItem>(),
-                    Info = JsonConvert.SerializeObject(task)
-                };
-            }
-        }
-
-        public static IEnumerable<BadgeItem> GetBadgesTasks(string key, string parentId)
-        {
-            foreach (var task in Tasks.Where(t => t.GroupKey == key && t.ParentId == parentId).Take(10))
-            {
-                yield return new BadgeItem
-                {
-                    Id = task.Id,
-                    Text = task.Text,
-                    ParentId = task.ParentId,
-                    Status = task.Status,
-                    LinkItems = GetLinkItems(task, key, "Task").ToList(),
-                    Items = GetBadgesTasks(key, task.Id).ToList(),
                     Info = JsonConvert.SerializeObject(task)
                 };
             }

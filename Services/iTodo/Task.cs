@@ -35,10 +35,7 @@ namespace iTodo
             newItem.Sequence = Todos.Count;
             newItem.Description = description;
             newItem.Kind = todoType;
-            if (!string.IsNullOrEmpty(parentId))
-            {
-                newItem.ParentId = parentId;
-            }
+            newItem.ParentId = parentId ?? "";
             AddTask(newItem, actionTime);
         }
 
@@ -496,23 +493,21 @@ namespace iTodo
 
         #region GetPresentation
 
-        internal static IEnumerable<PresentItem> GetPresentationTaskGoal(string groupKey, string parentId)
+        internal static IEnumerable<PresentItem> GetPresentationTask(string groupKey, string parentId)
         {
-            return Todos.Where(i => i.Kind == TodoType.Goal && i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.ParentId == parentId)
-                .Select(i => GetPresentationItemTaskGoal(groupKey, i));
-            //return Todos.Where(i => i.ParentId == parentId).Select(i => GetPresentationItemTaskGoal(groupKey, i));
+            return Todos.Where(i => i.Kind != TodoType.Goal && i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.ParentId == parentId)
+                .Select(i => GetPresentationItemTask(groupKey, i));
         }
 
-
-        static PresentItem GetPresentationItemTaskGoal(string groupKey, TodoItem todo)
+        static PresentItem GetPresentationItemTask(string groupKey, TodoItem todo)
         {
             var presentItem = new PresentItem
             {
                 Id = todo.Id,
                 Text = todo.Description,
-                Link = "",
+                Link = todo.Kind.ToString(),
                 Actions = GetActions(todo).ToList(),
-                Items = GetPresentationTaskGoal(groupKey, todo.Id).ToList()
+                Items = GetPresentationTask(groupKey, todo.Id).ToList()
             };
             return presentItem;
         }
@@ -528,10 +523,64 @@ namespace iTodo
                    Metadata = new { GroupKey = todo.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
-            yield return createStep("step", MapAction.Task.NewGoal, new { Description = "[text]", Hint = "[hint]", ParentId = todo.Id });
-            yield return createStep("update", MapAction.Task.UpdateDescription, new { Description = "[text]", Hint = "[hint]", Id = todo.Id });
+            yield return createStep("step", MapAction.Task.NewTask, new { Description = "[text]", ParentId = todo.Id });
+            yield return createStep("update", MapAction.Task.UpdateDescription, new { Description = "[text]", Id = todo.Id });
             yield return createStep("delete", MapAction.Task.DelTask, new { Id = todo.Id });
-            yield return createStep("learnt", MapAction.Task.CloseTask, new { Id = todo.Id });
+            yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
+            yield return createStep("location", MapAction.Task.SetLocation, new { Location = "[text]", Id = todo.Id });
+            yield return createStep("tag", MapAction.Task.SetTag, new { Tag = "[text]", TagKey = 0, Id = todo.Id });
+            yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
+            yield return createStep("start", MapAction.Task.StartTask, new { Id = todo.Id });
+            yield return createStep("pause", MapAction.Task.PauseTask, new { Id = todo.Id });
+        }
+
+        internal static IEnumerable<PresentItem> GetPresentationTaskGoal(string groupKey, string parentId)
+        {
+            return Todos.Where(i => i.Kind == TodoType.Goal && i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.ParentId == parentId)
+                .Select(i => GetPresentationItemTaskGoal(groupKey, i));
+        }
+
+
+        static PresentItem GetPresentationItemTaskGoal(string groupKey, TodoItem todo)
+        {
+            var presentItem = new PresentItem
+            {
+                Id = todo.Id,
+                Text = todo.Description,
+                Link = "",
+                Actions = GetActionsGoal(todo).ToList(),
+                Items = GetPresentationTaskGoal(groupKey, todo.Id).ToList()
+            };
+            return presentItem;
+        }
+
+        static IEnumerable<PresentItemActions> GetActionsGoal(TodoItem todo)
+        {
+            Func<string, string, dynamic, PresentItemActions> createStep = (text, action, content) =>
+               new PresentItemActions
+               {
+                   Text = text,
+                   Group = "",
+                   Action = action,
+                   Metadata = new { GroupKey = todo.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Content = content
+               };
+            yield return createStep("step", MapAction.Task.NewGoal, new { Description = "[text]", ParentId = todo.Id });
+            //yield return createStep("update", MapAction.Task.UpdateDescription, new { Description = "[text]", Id = todo.Id });
+            //yield return createStep("delete", MapAction.Task.DelTask, new { Id = todo.Id });
+            //yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
+
+
+            //var addSteps = createStep("new" + kind, new { Description = "[text]", ParentId = id });
+            //var delete = createStep("del" + kind, new { Id = id });
+            //var update = createStep("updateDescription", new { Description = "[text]", Id = id });
+            //var setLocation = createStep("setLocation", new { Location = "[text]", Id = id });
+            //var setTag = createStep("setTag", new { Tag = "[text]", TagKey = 0, Id = id });
+            //var setDeadline = createStep("setDeadline", new { Deadline = "[date]", Id = id });
+            //var close = createStep("closeTask", new { Id = id });
+            //var start = createStep("startTask", new { Id = id });
+            //var pause = createStep("pauseTask", new { Id = id });
+
         }
 
         #endregion
@@ -616,9 +665,9 @@ namespace iTodo
 
     public enum TodoType
     {
-        Goal,
         Category,
-        Task
+        Task,
+        Goal,
     }
 
     public enum TimeActionStatus

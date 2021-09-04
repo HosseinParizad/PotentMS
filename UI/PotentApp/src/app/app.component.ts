@@ -40,24 +40,20 @@ export class AppComponent implements OnInit {
         this.selected.Badge = {};
         this.cats = [];
         data.forEach((row: any) => {
-          var url = 'https://localhost:5008/Memory/GetPresentation?groupKey=';
-          var group = "Memorizes";
-          this.addSection(row, url, group);
+          this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=');
 
-          var url = 'https://localhost:5003/TodoQuery/GetPresentationTaskGoal?groupKey=';
-          var group = "Goal";
-          this.addSection(row, url, group);
+          this.addSection(row, "Goal", 'https://localhost:5003/TodoQuery/GetPresentationTaskGoal?groupKey=');
+          this.addSection(row, "Task", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=');
 
           this.cats.push(row);
           if (this.selected.Group == undefined) {
             this.selected.Group = row.Id;
           }
-
         });
       });
   }
 
-  addSection(row: any, url: string, group: string) {
+  addSection(row: any, group: string, url: string) {
     this.http.get<any>(url + row.Id)
       .subscribe(data => {
         setTimeout(() => {
@@ -98,7 +94,7 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequest() {
-    var body = this.BodyMaker('newTask', this.selected.group, { Description: this.text, ParentId: "" });
+    var body = this.BodyMaker('newTask', this.selected.Group, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }

@@ -35,6 +35,14 @@ namespace iTodo.Controllers
 
 
         [HttpGet]
+        [Route("GetPresentationTask")]
+        public IEnumerable<PresentItem> GetPresentationTask(string groupKey)
+        {
+            return Engine.GetPresentationTask(groupKey, "");
+        }
+
+
+        [HttpGet]
         [Route("GroupQuery")]
         public IEnumerable<GroupItem> GroupQuery(string groupKey)
         {

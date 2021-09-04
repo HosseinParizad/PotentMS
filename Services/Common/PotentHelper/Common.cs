@@ -45,24 +45,20 @@ namespace PotentHelper
             public const string DelTask = "delTask";
             public const string CloseTask = "closeTask";
             public const string UpdateDescription = "updateDescription";
+            public const string SetLocation = "setLocation";
+            public const string SetDeadline = "setDeadline";
+            public const string SetTag = "setTag";
+            public const string AssignTask = "assignTask";
+            public const string StartTask = "startTask";
+            public const string PauseTask = "pauseTask";
+            public const string MoveTask = "moveTask";
             public const string RepeatTask = "repeatTask";
-            //                    { "newTask", Engine.CreateNewTask
-            //        },
-            //                    { "newGoal", Engine.CreateNewGoal
-            //    },
-            //                    { "updateDescription", Engine.UpdateDescription
-            //},
-            //                    { "setDeadline", Engine.SetDeadline },
-            //                    { "setTag", Engine.SetTag },
-            //                    { "newGroup", Engine.NewGroup },
-            //                    { "newMember", Engine.NewMember },
-            //                    { "setLocation", Engine.SetLocation },
-            //                    { "closeTask", Engine.CloseTask },
-            //                    { "assignTask", Engine.AssignTask },
-            //                    { "delTask", Engine.DeleteTask },
-            //                    { "startTask", Engine.StartTask },
-            //                    { "pauseTask", Engine.PauseTask },
-            //                    { "moveTask", Engine.MoveTask },
+        }
+
+        public static class Group
+        {
+            public const string NewGroup = "newGroup";
+            public const string NewMember = "newMember";
         }
 
         public static class Location

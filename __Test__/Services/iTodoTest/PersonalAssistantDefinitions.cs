@@ -74,9 +74,6 @@ namespace SpecFlowDemo.Steps
             dashboards = RestHelper.MakeAGetRequest(url);
             Dictionary<String, string> replaceValues = new Dictionary<string, string>();
             var c = new List<dynamic>();
-            //c.Add(dashboards[0]);
-            //c.Add(dashboards[1]);
-            //c.Add(dashboards[2]);
             foreach (var item in dashboards)
             {
                 c.Add(item);

@@ -27,7 +27,6 @@ namespace iTodo
             var taskActions =
                 new Dictionary<string, Action<dynamic, dynamic>> {
                     { MapAction.Task.NewTask, Engine.CreateNewTask },
-                    { MapAction.Task.NewGoal, Engine.CreateNewGoal },
                     { MapAction.Task.UpdateDescription, Engine.UpdateDescription },
                     { MapAction.Task.SetDeadline, Engine.SetDeadline },
                     { MapAction.Task.SetTag, Engine.SetTag },

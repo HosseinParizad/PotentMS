@@ -13,6 +13,8 @@ namespace PotentHelper
         public const string TaskFeedback = "TaskFeedback";
         public const string RepeatFeedback = "RepeatFeedback";
         public const string PersonalAssistantFeedback = "PAFeedback";
+        public const string GoalFeedback = "GoalFeedback";
+        public const string Goal = "Goal";
     }
 
     public class FeedbackGroupNames
@@ -20,6 +22,7 @@ namespace PotentHelper
         public const string All = "All";
         public const string Task = "FromTask";
         public const string Memory = "FromMemory";
+        public const string Goal = "FromGoal";
         public const string Repeat = "FromRepeat";
         public const string PersonalAssistant = "FromPA";
     }
@@ -41,7 +44,6 @@ namespace PotentHelper
         public static class Task
         {
             public const string NewTask = "newTask";
-            public const string NewGoal = "newGoal";
             public const string DelTask = "delTask";
             public const string CloseTask = "closeTask";
             public const string UpdateDescription = "updateDescription";
@@ -71,6 +73,12 @@ namespace PotentHelper
             public const string NewMemoryCategory = "newMemoryCategory";
             public const string DelMemory = "delMemory";
             public const string LearntMemory = "lrnMemory";
+        }
+        public static class Goal
+        {
+            public const string NewGoal = "newGoal";
+            public const string UpdateGoal = "updateGoal";
+            public const string DelGoal = "delGoal";
         }
     }
 

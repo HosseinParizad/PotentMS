@@ -27,14 +27,6 @@ namespace iTodo.Controllers
         }
 
         [HttpGet]
-        [Route("GetPresentationTaskGoal")]
-        public IEnumerable<PresentItem> GetPresentationTaskGoal(string groupKey)
-        {
-            return Engine.GetPresentationTaskGoal(groupKey, "");
-        }
-
-
-        [HttpGet]
         [Route("GetPresentationTask")]
         public IEnumerable<PresentItem> GetPresentationTask(string groupKey)
         {

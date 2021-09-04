@@ -62,20 +62,20 @@ namespace iTodo
             SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: feedbackActions, groupkey: newItem.GroupKey, content: dataToSend);
         }
 
-        public static void CreateNewGoal(dynamic metadata, dynamic content)
-        {
-            var newItem = new TodoItem();
-            newItem.Id = metadata.ReferenceKey.ToString();
-            newItem.Description = content.Description.ToString();
-            newItem.GroupKey = metadata.GroupKey.ToString();
-            newItem.Sequence = Todos.Count;
-            newItem.ParentId = content.ParentId.ToString(); ;
-            newItem.Kind = TodoType.Goal;
-            Todos.Add(newItem);
-            var dataToSend = new { Id = newItem.Id, Goal = newItem.Description };
-            SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewGoalAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
-            CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
-        }
+        //public static void CreateNewGoal(dynamic metadata, dynamic content)
+        //{
+        //    var newItem = new TodoItem();
+        //    newItem.Id = metadata.ReferenceKey.ToString();
+        //    newItem.Description = content.Description.ToString();
+        //    newItem.GroupKey = metadata.GroupKey.ToString();
+        //    newItem.Sequence = Todos.Count;
+        //    newItem.ParentId = content.ParentId.ToString(); ;
+        //    newItem.Kind = TodoType.Goal;
+        //    Todos.Add(newItem);
+        //    var dataToSend = new { Id = newItem.Id, Goal = newItem.Description };
+        //    SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewGoalAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+        //    CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
+        //}
 
         #endregion
 
@@ -532,55 +532,6 @@ namespace iTodo
             yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
             yield return createStep("start", MapAction.Task.StartTask, new { Id = todo.Id });
             yield return createStep("pause", MapAction.Task.PauseTask, new { Id = todo.Id });
-        }
-
-        internal static IEnumerable<PresentItem> GetPresentationTaskGoal(string groupKey, string parentId)
-        {
-            return Todos.Where(i => i.Kind == TodoType.Goal && i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == groupKey && i.ParentId == parentId)
-                .Select(i => GetPresentationItemTaskGoal(groupKey, i));
-        }
-
-
-        static PresentItem GetPresentationItemTaskGoal(string groupKey, TodoItem todo)
-        {
-            var presentItem = new PresentItem
-            {
-                Id = todo.Id,
-                Text = todo.Description,
-                Link = "",
-                Actions = GetActionsGoal(todo).ToList(),
-                Items = GetPresentationTaskGoal(groupKey, todo.Id).ToList()
-            };
-            return presentItem;
-        }
-
-        static IEnumerable<PresentItemActions> GetActionsGoal(TodoItem todo)
-        {
-            Func<string, string, dynamic, PresentItemActions> createStep = (text, action, content) =>
-               new PresentItemActions
-               {
-                   Text = text,
-                   Group = "",
-                   Action = action,
-                   Metadata = new { GroupKey = todo.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
-                   Content = content
-               };
-            yield return createStep("step", MapAction.Task.NewGoal, new { Description = "[text]", ParentId = todo.Id });
-            //yield return createStep("update", MapAction.Task.UpdateDescription, new { Description = "[text]", Id = todo.Id });
-            //yield return createStep("delete", MapAction.Task.DelTask, new { Id = todo.Id });
-            //yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
-
-
-            //var addSteps = createStep("new" + kind, new { Description = "[text]", ParentId = id });
-            //var delete = createStep("del" + kind, new { Id = id });
-            //var update = createStep("updateDescription", new { Description = "[text]", Id = id });
-            //var setLocation = createStep("setLocation", new { Location = "[text]", Id = id });
-            //var setTag = createStep("setTag", new { Tag = "[text]", TagKey = 0, Id = id });
-            //var setDeadline = createStep("setDeadline", new { Deadline = "[date]", Id = id });
-            //var close = createStep("closeTask", new { Id = id });
-            //var start = createStep("startTask", new { Id = id });
-            //var pause = createStep("pauseTask", new { Id = id });
-
         }
 
         #endregion

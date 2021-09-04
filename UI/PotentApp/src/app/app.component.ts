@@ -41,8 +41,8 @@ export class AppComponent implements OnInit {
         this.cats = [];
         data.forEach((row: any) => {
           this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=');
+          this.addSection(row, "Goal", 'https://localhost:5010/Goal/GetPresentation?groupKey=');
 
-          this.addSection(row, "Goal", 'https://localhost:5003/TodoQuery/GetPresentationTaskGoal?groupKey=');
           this.addSection(row, "Task", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=');
 
           this.cats.push(row);
@@ -105,6 +105,12 @@ export class AppComponent implements OnInit {
     return false;
   }
 
+  SendGoalRequest() {
+    var body = this.BodyMaker('newGoal', this.selected.Group, { Text: this.text, ParentId: "" });
+    this.sent = this.SendRequestCore("/Goal", body);
+    return false;
+  }
+
   SendTaskRequestSpe(body: any) {
     if (body.Content.Text) {
       body.Content.Text = body.Content.Text.replace('[text]', this.text)
@@ -115,12 +121,6 @@ export class AppComponent implements OnInit {
     }
 
     this.sent = this.SendRequestCore(body.Group, body);
-  }
-
-  SendGoalRequest() {
-    var body = this.BodyMaker('newGoal', this.selected.Group, { Description: this.text, ParentId: "" });
-    this.sent = this.SendRequest(body);
-    return false;
   }
 
   SendGroupRequest() {

@@ -35,12 +35,10 @@ namespace PotentHelper
         public const string DeadlineUpdated = "Deadline has been added";
         public const string NewLocationAdded = "New location has been added";
         public const string NewGroupAdded = "New group/member has been added";
-        public const string NewGoalAdded = "New goal has been added";
         public const string TaskAssginedToMember = "Task assgined to a member";
         public const string updateTaskDescription = "Task description has been added";
         public const string moveTask = "Task parent has been changed";
         public const string TaskDeleted = "Task has been deleted";
-        public const string GoalDeleted = "Goal has been deleted";
         public const string CannotSetTag = "Error: cannot set tag";
         public const string CannotCloseTask = "Error: cannot close tag";
         public const string TaskClosed = "Task has been closed";
@@ -52,5 +50,10 @@ namespace PotentHelper
         public const string NewMemoryAdded = "New memory has been added";
         public const string MemoryDeleted = "Memory has been deleted";
         public const string CannotFindMemory = "Error: cannot find Memory item";
+        public const string CannotAddGoal = "Error: cannot add Goal";
+        public const string CannotUpdateGoal = "Error: cannot update Goal";
+        public const string NewGoalAdded = "New Goal has been added";
+        public const string GoalDeleted = "Goal has been deleted";
+        public const string CannotFindGoal = "Error: cannot find Goal item";
     }
 }

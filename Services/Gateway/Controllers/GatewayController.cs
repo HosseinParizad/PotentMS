@@ -55,6 +55,15 @@ namespace Gateway.Controllers
         }
 
         [HttpPost]
+        [Route("Goal")]
+        public IActionResult PostGoal([FromBody] Msg msg)
+        {
+            var task = ProducerHelper.SendAMessage(MessageTopic.Goal, msg);
+            task.GetAwaiter().GetResult();
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+        [HttpPost]
         [Route("Common")]
         public IActionResult PostCommon([FromBody] Msg msg)
         {

@@ -9,12 +9,14 @@ namespace PotentHelper
         public const string Common = "Common";
         public const string Memory = "Memory";
         public const string Repeat = "Repeat";
+        public const string Goal = "Goal";
+        public const string Group = "Group";
         public const string MemoryFeedback = "MemoryFeedback";
         public const string TaskFeedback = "TaskFeedback";
         public const string RepeatFeedback = "RepeatFeedback";
         public const string PersonalAssistantFeedback = "PAFeedback";
         public const string GoalFeedback = "GoalFeedback";
-        public const string Goal = "Goal";
+        public const string GroupFeedback = "GroupFeedback";
     }
 
     public class FeedbackGroupNames
@@ -23,6 +25,7 @@ namespace PotentHelper
         public const string Task = "FromTask";
         public const string Memory = "FromMemory";
         public const string Goal = "FromGoal";
+        public const string Group = "FromGroup";
         public const string Repeat = "FromRepeat";
         public const string PersonalAssistant = "FromPA";
     }
@@ -60,7 +63,10 @@ namespace PotentHelper
         public static class Group
         {
             public const string NewGroup = "newGroup";
+            public const string UpdateGroup = "updGroup";
             public const string NewMember = "newMember";
+            public const string DeleteGroup = "delGroup";
+            public const string DeleteMember = "delMember";
         }
 
         public static class Location

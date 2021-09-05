@@ -45,13 +45,13 @@ namespace SpecFlowDemo.Steps
         [Given("I send the following goals:")]
         public void WhenISendFllowingGoals(Table table)
         {
-            const string url = "https://localhost:5001/Gateway";
+            const string url = "https://localhost:5001/Gateway/Goal";
             var httpMethod = HttpMethod.Post;
 
             foreach (var row in table.Rows)
             {
-                var content = new iTodo() { Description = row["Goal"], ParentId = selectedId };
-                var msg = new Msg(action: "newGoal", metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
+                var content = new { Text = row["Goal"], ParentId = selectedId };
+                var msg = new Msg(action: MapAction.Goal.NewGoal, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
                 var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }
@@ -118,6 +118,27 @@ namespace SpecFlowDemo.Steps
             foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
             {
                 var url = $"https://localhost:5008/Memory?groupKey={row.Key}";
+                todos = RestHelper.MakeAGetRequest(url);
+                AreEqual(row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", selectedId } }), RestHelper.DynamicToList(todos, expectedColums));
+            }
+        }
+
+        [Then("I should see the following goal list:")]
+        public void ThenTheGoalResultShouldBe(Table table)
+        {
+            dynamic[] todos = null;
+            var tableColumns = table.Header.ToArray();
+            var map = new Dictionary<string, string>
+            {
+                { "TaskDesc", "Text" },
+                { "GroupKey", "GroupKey" },
+                { "ParentId", "ParentId" },
+            };
+            var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
+
+            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            {
+                var url = $"https://localhost:5010/Goal?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);
                 AreEqual(row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", selectedId } }), RestHelper.DynamicToList(todos, expectedColums));
             }

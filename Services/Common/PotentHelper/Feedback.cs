@@ -34,7 +34,6 @@ namespace PotentHelper
         public const string NewTagAdded = "New tag has been added";
         public const string DeadlineUpdated = "Deadline has been added";
         public const string NewLocationAdded = "New location has been added";
-        public const string NewGroupAdded = "New group/member has been added";
         public const string TaskAssginedToMember = "Task assgined to a member";
         public const string updateTaskDescription = "Task description has been added";
         public const string moveTask = "Task parent has been changed";
@@ -55,5 +54,16 @@ namespace PotentHelper
         public const string NewGoalAdded = "New Goal has been added";
         public const string GoalDeleted = "Goal has been deleted";
         public const string CannotFindGoal = "Error: cannot find Goal item";
+
+        //Group
+
+        public const string CannotAddGroup = "Error: cannot add Group";
+        public const string CannotUpdateGroup = "Error: cannot update Group";
+        public const string CannotAddMember = "Error: cannot add member";
+        public const string NewGroupAdded = "New Group has been added";
+        public const string GroupDeleted = "Group has been deleted";
+        public const string CannotFindGroup = "Error: cannot find Group item";
+        public const string CannotFindMember = "Error: cannot find member";
+        public const string NewMemberAdded = "New Member has been added";
     }
 }

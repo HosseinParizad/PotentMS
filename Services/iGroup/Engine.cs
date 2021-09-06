@@ -27,6 +27,11 @@ namespace iGroup
             }
         }
 
+        internal static IEnumerable<GroupItem> GetGroupsTestOnly()
+        {
+            return Groups;
+        }
+
         #endregion
 
         #region UpdateGroup
@@ -122,9 +127,9 @@ namespace iGroup
 
         #endregion
 
-        internal static IEnumerable<PresentItem> GetGroupPresentation(string groupKey, string memberKey)
+        internal static IEnumerable<PresentItem> GetGroupPresentation(string groupKey)
         {
-            return Groups.Where(i => i.GroupKey == groupKey && i.MemberKey == memberKey).Select(i => GroupToPresentation(groupKey, i));
+            return Groups.Where(i => (i.GroupKey == groupKey || groupKey == "All")).Select(i => GroupToPresentation(groupKey, i));
         }
 
         static PresentItem GroupToPresentation(string groupKey, GroupItem mi)
@@ -135,7 +140,7 @@ namespace iGroup
                 Text = mi.MemberKey,
                 Link = "",
                 Actions = GetActions(mi).ToList(),
-                Items = GetGroupPresentation(mi.MemberKey, mi.MemberKey).ToList()
+                Items = new()
             };
             return presentItem;
         }

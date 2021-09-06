@@ -18,7 +18,6 @@ namespace iTodo
             var id = metadata.ReferenceKey.ToString();
             if (!Todos.Any(t => (t.Id == id || (t.ParentId == parentId && t.Description == description) && t.GroupKey == metadata.GroupKey.ToString())))
             {
-                CreateGroupIfNotExists(metadata.GroupKey.ToString(), actionTime: GetCreateDate(metadata));
                 AddTask(id, metadata.GroupKey.ToString(), description, parentId, GetCreateDate(metadata), TodoType.Task);
             }
             else
@@ -305,44 +304,6 @@ namespace iTodo
 
         #endregion
 
-        #region NewGroup 
-
-        public static void NewGroup(dynamic metadata, dynamic content)
-        {
-            var groupKey = metadata.GroupKey.ToString();
-            Groups.Add(CreateNewGroup(groupKey, groupKey, actionTime: GetCreateDate(metadata)));
-        }
-
-        //static GroupItem CreateNewGroup(string groupKey, string member) => new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
-
-        static GroupItem CreateNewGroup(string groupKey, string member, DateTimeOffset actionTime)
-        {
-            var dataToSend = new { GroupKey = groupKey, MemberKey = member };
-            SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewGroupAdded, groupkey: groupKey, content: dataToSend);
-            return new GroupItem { Group = groupKey, Member = member, Tags = new List<TagSetting>() };
-        }
-
-        #endregion
-
-        #region NewMember 
-
-        public static void NewMember(dynamic metadata, dynamic content)
-        {
-            var newMember = content.NewMember.ToString();
-            CreateGroupIfNotExists(newMember, actionTime: GetCreateDate(metadata));
-            Groups.Add(CreateNewGroup(metadata.GroupKey.ToString(), newMember, actionTime: GetCreateDate(metadata)));
-        }
-
-        static void CreateGroupIfNotExists(string groupKey, DateTimeOffset actionTime)
-        {
-            if (!Groups.Any(g => g.Group == groupKey))
-            {
-                Groups.Add(CreateNewGroup(groupKey, groupKey, actionTime: actionTime));
-            }
-        }
-
-        #endregion
-
         #region RepeatTask
 
         public static void RepeatTask(Feedback feedback)
@@ -394,20 +355,6 @@ namespace iTodo
 
         #endregion
 
-        #region GetGroup
-
-        public static IEnumerable<GroupItem> GetGroup(string groupKey)
-        {
-            if (groupKey == "All")
-            {
-                return Groups;
-            }
-
-            return Groups.Where(i => i.Group == groupKey);
-        }
-
-        #endregion
-
         #region GetTaskByGroupTag
 
         internal static IEnumerable<TodoItem> GetTaskByGroupTag(string groupKey, string tag)
@@ -447,8 +394,6 @@ namespace iTodo
         static List<TodoItem> Todos = new List<TodoItem>();
         static List<TimeItem> TimeLog = new List<TimeItem>();
 
-        static List<GroupItem> Groups { get; set; } = new List<GroupItem>();
-
         static Dictionary<string, string> MemberCurrentLocation { get; set; } = new Dictionary<string, string>();
 
         public static string GetSort => Sort;
@@ -484,7 +429,6 @@ namespace iTodo
         public static void Reset(dynamic metadata, dynamic content)
         {
             Todos = new List<TodoItem>();
-            Groups = new List<GroupItem>();
             TimeLog = new List<TimeItem>();
             MemberCurrentLocation = new Dictionary<string, string>();
         }

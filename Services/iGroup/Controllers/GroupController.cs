@@ -26,10 +26,17 @@ namespace iGroup.Controllers
         }
 
         [HttpGet]
+        [Route("GetGroupsTestOnly")]
+        public IEnumerable<GroupItem> GetGroupsTestOnly()
+        {
+            return Engine.GetGroupsTestOnly();
+        }
+
+        [HttpGet]
         [Route("GetPresentation")]
         public IEnumerable<PresentItem> GetPresentation(string groupKey)
         {
-            return Engine.GetGroupPresentation(groupKey, "");
+            return Engine.GetGroupPresentation(groupKey);
         }
     }
 }

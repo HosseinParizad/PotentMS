@@ -42,6 +42,24 @@ namespace SpecFlowDemo.Steps
             }
         }
 
+        [Given("Someone send the following task and group:")]
+        public void WhenISendFllowingTaskAndGroups(Table table)
+        {
+
+            var httpMethod = HttpMethod.Post;
+
+            foreach (var group in table.Rows.Select(r => r["GroupKey"]))
+            {
+                var msg = new Msg(action: MapAction.Group.NewGroup, metadata: Helper.GetMetadataByGroupKey(group), content: new { Group = group });
+                var dataToSend = JsonConvert.SerializeObject(msg);
+                RestHelper.HttpMakeARequestWaitForFeedback("https://localhost:5001/Gateway/Group", httpMethod, dataToSend);
+            }
+
+            string url = "https://localhost:5001/Gateway/";
+            Func<string, dynamic> content = (desc) => new iTodo() { Description = desc, ParentId = selectedId };
+            WhenISendFllowingTodos(table, "newTask", url, content);
+        }
+
         [Given("I send the following goals:")]
         public void WhenISendFllowingGoals(Table table)
         {

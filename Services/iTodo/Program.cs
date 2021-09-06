@@ -30,8 +30,6 @@ namespace iTodo
                     { MapAction.Task.UpdateDescription, Engine.UpdateDescription },
                     { MapAction.Task.SetDeadline, Engine.SetDeadline },
                     { MapAction.Task.SetTag, Engine.SetTag },
-                    { MapAction.Group.NewGroup, Engine.NewGroup },
-                    { MapAction.Group.NewMember, Engine.NewMember },
                     { MapAction.Task.SetLocation, Engine.SetLocation },
                     { MapAction.Task.CloseTask, Engine.CloseTask },
                     { MapAction.Task.AssignTask, Engine.AssignTask },

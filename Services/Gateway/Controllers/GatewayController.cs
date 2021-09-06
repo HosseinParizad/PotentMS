@@ -55,6 +55,15 @@ namespace Gateway.Controllers
         }
 
         [HttpPost]
+        [Route("Group")]
+        public IActionResult PostGroup([FromBody] Msg msg)
+        {
+            var task = ProducerHelper.SendAMessage(MessageTopic.Group, msg);
+            task.GetAwaiter().GetResult();
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
+        [HttpPost]
         [Route("Goal")]
         public IActionResult PostGoal([FromBody] Msg msg)
         {

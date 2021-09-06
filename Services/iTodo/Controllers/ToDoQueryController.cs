@@ -35,13 +35,6 @@ namespace iTodo.Controllers
 
 
         [HttpGet]
-        [Route("GroupQuery")]
-        public IEnumerable<GroupItem> GroupQuery(string groupKey)
-        {
-            return Engine.GetGroup(groupKey);
-        }
-
-        [HttpGet]
         [Route("Sort")]
         public string GetSort()
         {

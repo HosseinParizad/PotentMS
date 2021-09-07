@@ -1,12 +1,12 @@
-<div *ngFor="let dashboard of cats" class="groupcard" [class.selectedgroup]="dashboard.Id === selected.Group"
-  (click)="selectgroup(dashboard.Id)">
+<div *ngFor="let dashboard of cats" class="groupcard" [class.selectedgroup]="dashboard.Text === selected.Group"
+  (click)="selectgroup(dashboard.Text)">
   <mat-card>
     <mat-card-header>
       <div mat-card-avatar></div>
-      <mat-card-title [class.notselectedtitle]="dashboard.Id != selected.Group">{{dashboard.Id}}</mat-card-title>
+      <mat-card-title [class.notselectedtitle]="dashboard.Text != selected.Group">{{dashboard.Text}}</mat-card-title>
       <!-- <mat-card-subtitle>{{dashboard | json}}</mat-card-subtitle> -->
     </mat-card-header>
-    <mat-card-content *ngIf="dashboard.Id == selected.Group">
+    <mat-card-content *ngIf="dashboard.Text == selected.Group">
       <p>
         <!-- <button *ngFor="let badge of category.badges" mat-raised-button matBadge="7" [matBadgeHidden]="hidden"
        (click)="toggleBadgeVisibility()">
@@ -22,7 +22,7 @@
       </p>
       <ul style="list-style-type: none;padding-inline-start: 0px ; ">
         <li *ngFor="let part of dashboard.Parts;">
-          <span class="parttext" [class.selectedgrouppart]="dashboard.Id == selected.Group"
+          <span class="parttext" [class.selectedgrouppart]="dashboard.Text == selected.Group"
             (click)="showDetail(part)">{{part.Text}}</span>
           <ol *ngIf="part.Badges?.length != null && part.Badges?.length > 0">
             <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: part.Badges, part:part }">
@@ -34,7 +34,7 @@
     </mat-card-content>
     <mat-card-actions>
       <!-- <div class="locationPanel">
-        <span *ngFor="let location of dashboard.locations;" (click)="moveTo(dashboard.Id, location)">
+        <span *ngFor="let location of dashboard.locations;" (click)="moveTo(dashboard.Text, location)">
           <span class="material-icons">
             location_on
           </span>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { stringify } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'Potent-root',
@@ -124,14 +125,15 @@ export class AppComponent implements OnInit {
   }
 
   SendGroupRequest() {
-    var body = this.BodyMaker('newGroup', this.selected.Group, { Description: this.text, ParentId: "" });
-    this.sent = this.SendRequest(body);
+    this.selected.Group = this.text;
+    var body = this.BodyMaker('newGroup', this.selected.Group, { Group: this.text });
+    this.sent = this.SendRequestCore("/Group", body);
     return false;
   }
 
   SendMemberRequest() {
     var body = this.BodyMaker('newMember', this.group, { NewMember: this.text });
-    this.sent = this.SendRequest(body);
+    this.sent = this.SendRequestCore("/Group", body);
     return false;
   }
 

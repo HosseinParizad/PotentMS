@@ -65,13 +65,13 @@ namespace iGroup
 
         public static void AddMember(dynamic metadata, dynamic content)
         {
-            var memberName = content.MemberName.ToString();
+            var newMember = content.NewMember.ToString();
             var groupkey = metadata.GroupKey.ToString();
             var id = metadata.ReferenceKey.ToString();
             var groupItems = Groups.Where(t => t.GroupKey == groupkey);
-            if (!groupItems.Any(g => g.MemberKey == memberName))
+            if (!groupItems.Any(g => g.MemberKey == newMember))
             {
-                var group = new GroupItem { Id = id, GroupKey = groupkey, MemberKey = memberName };
+                var group = new GroupItem { Id = id, GroupKey = groupkey, MemberKey = newMember };
                 Groups.Add(group);
                 SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewMemberAdded, groupkey: groupkey, content: group);
             }
@@ -111,9 +111,9 @@ namespace iGroup
 
         internal static void DeleteMember(dynamic metadata, dynamic content)
         {
-            var memberName = content.MemberName.ToString();
+            var newMember = content.NewMember.ToString();
             var groupkey = metadata.GroupKey.ToString();
-            var member = Groups.SingleOrDefault(t => t.GroupKey == groupkey && t.MemberKey == memberName);
+            var member = Groups.SingleOrDefault(t => t.GroupKey == groupkey && t.MemberKey == newMember);
             if (member != null)
             {
                 Groups.Remove(member);
@@ -158,9 +158,9 @@ namespace iGroup
                };
             yield return createStep("Add group", MapAction.Group.NewGroup, new { Group = "[text]" });
             yield return createStep("update", MapAction.Group.UpdateGroup, new { NewGroupName = "[text]" });
-            yield return createStep("Add member", MapAction.Group.NewMember, new { MemberName = "[text]" });
+            yield return createStep("Add member", MapAction.Group.NewMember, new { NewMember = "[text]" });
             yield return createStep("delete group :(", MapAction.Group.DeleteGroup, new { GroupName = "[text]" });
-            yield return createStep("remove member :(", MapAction.Group.DeleteMember, new { MemberName = "[text]" });
+            yield return createStep("remove member :(", MapAction.Group.DeleteMember, new { NewMember = "[text]" });
         }
 
         #region Implement

@@ -39,6 +39,12 @@ namespace PersonalAssistant
                     { "setCurrentLocation", Engine.SetCurrentLocation },
                 };
 
+            var groupFeedbackActions =
+                new Dictionary<string, Action<Feedback>>
+                {
+                    { FeedbackGroupNames.Task, Engine.OnGroupFeedback },
+                };
+
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
 
@@ -47,6 +53,7 @@ namespace PersonalAssistant
                 MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
                 MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
                 MessageProcessor.MapFeedbackToAction(AppId, e.Text, taskFeedbackActions, true);
+                MessageProcessor.MapFeedbackToAction(AppId, e.Text, groupFeedbackActions, true);
             }
 
             db.ReplayAll();
@@ -54,7 +61,8 @@ namespace PersonalAssistant
             Parallel.Invoke(
                     () => CreateHostBuilder(args).Build().Run(),
                     ConsumerHelper.MapTopicToMethod(
-                        new[] { MessageTopic.TaskFeedback, MessageTopic.MemoryFeedback, MessageTopic.Memory, MessageTopic.Common, MessageTopic.Location }
+                        //new[] { MessageTopic.GroupFeedback, MessageTopic.TaskFeedback, MessageTopic.MemoryFeedback, MessageTopic.Memory, MessageTopic.Common, MessageTopic.Location }
+                        new[] { MessageTopic.GroupFeedback, MessageTopic.Common }
                         , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
                     );
         }

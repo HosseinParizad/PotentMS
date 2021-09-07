@@ -25,10 +25,6 @@ namespace PersonalAssistant
                     ApplyDeadlineUpdated(feedback);
                     break;
 
-                case FeedbackActions.NewGroupAdded:
-                    ApplyNewGroupAdded(feedback);
-                    break;
-
                 case FeedbackActions.NewTaskAdded:
                     ApplyNewTaskAdded(feedback);
                     break;
@@ -61,7 +57,19 @@ namespace PersonalAssistant
                     break;
             }
 
-            SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
+            //            SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
+        }
+
+        internal static void OnGroupFeedback(Feedback feedback)
+        {
+            switch (feedback.Action)
+            {
+                case FeedbackActions.NewGroupAdded:
+                    ApplyNewGroupAdded(feedback);
+                    break;
+                default:
+                    break;
+            }
         }
 
         static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
@@ -92,6 +100,7 @@ namespace PersonalAssistant
             {
                 Groups.Add(groupKey, new HashSet<string> { memberKey });
             }
+            Console.WriteLine("_________________+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
@@ -242,7 +251,7 @@ namespace PersonalAssistant
 
         static Dashboard GetDashboardOrAdd(string key)
         {
-            var dashbord = Dashboards.SingleOrDefault(d => d.Id == key);
+            var dashbord = Dashboards.SingleOrDefault(d => d.Text == key);
             if (dashbord == null)
             {
                 dashbord = new Dashboard(key);

@@ -10,7 +10,7 @@ namespace PersonalAssistant
 
         public Dashboard(string memberKey)
         {
-            Id = memberKey;
+            Text = memberKey;
             AssistantKey = memberKey;
             AddMemberSection();
         }
@@ -19,7 +19,7 @@ namespace PersonalAssistant
 
         #region prop
 
-        public string Id { get; set; }
+        public string Text { get; set; }
         public string AssistantKey { get; set; }
         public HashSet<string> Locations { get; set; } = new HashSet<string>();
         public string CurrentLocation { get; set; }
@@ -42,7 +42,6 @@ namespace PersonalAssistant
 
         DashboardPart DashboardItemGoal()
             => new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0 };
-        //=> new DashboardPart { Text = "Goal", Description = "Aim to do short or long term!", Sequence = 0, BadgesInternal = Engine.GetBadgesByGoal(AssistantKey, null).ToList() };
 
         static DashboardPart DashboardItemTag()
                 => new DashboardPart { Text = "Tag", Description = "Tag should be able to get task or sort by selecting tag, e.g I am in shop now!", Sequence = 1 };

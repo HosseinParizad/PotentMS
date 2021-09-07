@@ -26,9 +26,14 @@ namespace SpecFlowDemo.Steps
         [BeforeScenario]
         public virtual void BeforeScenario()
         {
-            const string url = "https://localhost:5001/Gateway/Common";
-            var httpMethod = HttpMethod.Post;
+            Reset("https://localhost:5001/Gateway");
+            Reset("https://localhost:5001/Gateway/Group");
+            Reset("https://localhost:5001/Gateway/Memory");
+        }
 
+        static void Reset(string url)
+        {
+            var httpMethod = HttpMethod.Post;
             var msg = new Msg(action: "reset", metadata: new { Test = "Test" }, content: new { Test = "Test" });
 
             var dataToSend = JsonConvert.SerializeObject(msg);
@@ -38,10 +43,10 @@ namespace SpecFlowDemo.Steps
         [Given(@"Send an email '(.*)' to create group")]
         public void GivenSendAnEmailToCreateGroup(string groupKey)
         {
-            const string url = "https://localhost:5001/Gateway/";
+            const string url = "https://localhost:5001/Gateway/Group";
             var httpMethod = HttpMethod.Post;
 
-            var content = new { GroupKey = groupKey };
+            var content = new { Group = groupKey };
             var msg = new Msg(action: "newGroup", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -50,11 +55,11 @@ namespace SpecFlowDemo.Steps
         [Given(@"Add '(.*)' as member of '(.*)'")]
         public void GivenAddAsMemberOf(string member, string groupKey)
         {
-            const string url = "https://localhost:5001/Gateway/";
+            const string url = "https://localhost:5001/Gateway/Group";
             var httpMethod = HttpMethod.Post;
 
             var content = new { NewMember = member };
-            var msg = new Msg(action: "newMember", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: MapAction.Group.NewMember, metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
@@ -76,13 +81,13 @@ namespace SpecFlowDemo.Steps
         [Then(@"I should see the following group '(.*)'")]
         public void ThenIShouldSeeTheFollowingGroup(string group, Table table)
         {
-            var url = $"https://localhost:5003/TodoQuery/GroupQuery?groupKey=" + group;
+            var url = $"https://localhost:5012/Group/GetGroupsTestOnly?groupKey=" + group;
             var groups = RestHelper.MakeAGetRequest(url);
             var tableColumns = table.Header.ToArray();
             var map = new Dictionary<string, string>
             {
-                { "Group", "Group" },
-                { "Member", "Member" },
+                { "Group", "GroupKey" },
+                { "Member", "MemberKey" },
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 

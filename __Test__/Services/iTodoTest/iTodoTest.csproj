@@ -1,76 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="nunit" Version="3.13.2" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-		<PackageReference Include="SpecFlow.NUnit" Version="3.9.22" />
-		<PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.22" />
-		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="SpecFlow" Version="3.9.22" />
-	</ItemGroup>
-	<ItemGroup>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.memory.feature">
-		  <Visible>False</Visible>
-		  <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\PersonalAssistant\board.memory.feature">
-		  <Visible>$(UsingMicrosoftNETSdk)</Visible>
-		  <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="iTodo.sort.feature">
-			<Visible>True</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="iTodo.group.feature">
-			<Visible>True</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo.group.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo.sort.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo.tag.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo.location.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.location.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.sort.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.tag.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.close.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.group.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-		<SpecFlowFeatureFiles Update="features\iTodo\iTodo.tree.feature">
-		  <Visible>False</Visible>
-		</SpecFlowFeatureFiles>
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Services\Common\PotentHelper\PotentHelper.csproj" />
-	</ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\iGroup\iMemory.engine.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\iLocation\iGroup.engine.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\iMemory\iTime.engine.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\Task\iTodo.close.feature.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="nunit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+    <PackageReference Include="SpecFlow.NUnit" Version="3.9.22" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.22" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="SpecFlow" Version="3.9.22" />
+  </ItemGroup>
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="features\iGroup\iGroup.engine.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iLocation\iLocation.engine.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iMemory\iMemory.engine.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.memory.feature">
+      <Visible>False</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZPersonalAssistant\board.memory.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\Task\iTodo.feature">
+      <Visible>False</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="iTodo.sort.feature">
+      <Visible>True</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="iTodo.group.feature">
+      <Visible>True</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iTodo.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iTodo.group.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iTodo.sort.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iTodo.tag.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iTodo.location.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.location.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.sort.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.tag.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.close.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.group.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\ZZZ\iTodo.tree.feature">
+      <Visible>False</Visible>
+    </SpecFlowFeatureFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Services\Common\PotentHelper\PotentHelper.csproj" />
+    <ProjectReference Include="..\..\..\Services\iGoal\iGoal.csproj" />
+    <ProjectReference Include="..\..\..\Services\iGroup\iGroup.csproj" />
+    <ProjectReference Include="..\..\..\Services\iMemory\iMemory.csproj" />
+    <ProjectReference Include="..\..\..\Services\iTime\iTime.csproj" />
+    <ProjectReference Include="..\..\..\Services\iTodo\iTodo.csproj" />
+    <ProjectReference Include="..\..\..\Services\PersonalAssistant\PersonalAssistant.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="features\iGroup\iGroup.engine.feature.cs">
+      <DependentUpon>iGroup.engine.feature</DependentUpon>
+    </Compile>
+    <Compile Update="features\iLocation\iLocation.engine.feature.cs">
+      <DependentUpon>iLocation.engine.feature</DependentUpon>
+    </Compile>
+    <Compile Update="features\iMemory\iMemory.engine.feature.cs">
+      <DependentUpon>iMemory.engine.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

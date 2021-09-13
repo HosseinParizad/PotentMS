@@ -48,7 +48,10 @@ namespace PotentHelper
             GroupId = groupId;
             CancellationToken = cancellationToken;
             OnMessageReceived = onMessageReceived;
-            Listen();
+            if (groupId.Substring(0, 4) != "Test")
+            {
+                Listen();
+            }
         }
 
         void Listen()

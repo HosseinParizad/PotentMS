@@ -26,9 +26,9 @@ namespace SpecFlowDemo.Steps
         [BeforeScenario]
         public virtual void BeforeScenario()
         {
-            Reset("https://localhost:5001/Gateway");
-            Reset("https://localhost:5001/Gateway/Group");
-            Reset("https://localhost:5001/Gateway/Memory");
+            //Reset("https://localhost:5001/Gateway");
+            //Reset("https://localhost:5001/Gateway/Group");
+            //Reset("https://localhost:5001/Gateway/Memory");
         }
 
         static void Reset(string url)

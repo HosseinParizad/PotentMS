@@ -19,11 +19,11 @@ namespace iGroup
             {
                 var group = new GroupItem { Id = id, GroupKey = groupName, MemberKey = groupName };
                 Groups.Add(group);
-                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewGroupAdded, groupkey: groupName, content: group);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewGroupAdded, groupkey: groupName, content: group);
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Group item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Group item!");
             }
         }
 
@@ -53,7 +53,7 @@ namespace iGroup
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotUpdateGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Group");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotUpdateGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Group");
             }
 
         }
@@ -73,11 +73,11 @@ namespace iGroup
             {
                 var group = new GroupItem { Id = id, GroupKey = groupkey, MemberKey = newMember };
                 Groups.Add(group);
-                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewMemberAdded, groupkey: groupkey, content: group);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewMemberAdded, groupkey: groupkey, content: group);
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMember, groupkey: metadata.GroupKey.ToString(), content: "Cannot add member");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMember, groupkey: metadata.GroupKey.ToString(), content: "Cannot add member");
             }
 
         }
@@ -97,11 +97,11 @@ namespace iGroup
                 {
                     Groups.Remove(group);
                 }
-                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GroupDeleted, groupkey: metadata.GroupKey.ToString(), content: "Group has been deleted");
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GroupDeleted, groupkey: metadata.GroupKey.ToString(), content: "Group has been deleted");
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot find delete item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot find delete item!");
             }
         }
 
@@ -117,11 +117,11 @@ namespace iGroup
             if (member != null)
             {
                 Groups.Remove(member);
-                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GroupDeleted, groupkey: metadata.GroupKey.ToString(), content: "Memeber has been deleted");
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GroupDeleted, groupkey: metadata.GroupKey.ToString(), content: "Memeber has been deleted");
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMember, groupkey: metadata.GroupKey.ToString(), content: "Cannot find member!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMember, groupkey: metadata.GroupKey.ToString(), content: "Cannot find member!");
             }
         }
 
@@ -165,15 +165,15 @@ namespace iGroup
 
         #region Implement
 
-        static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
                 ProducerHelper.SendAMessage(
                         MessageTopic.GroupFeedback,
-                        new Feedback(type: type, name: FeedbackGroupNames.Group, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
+                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
                         )
-                    .GetAwaiter().GetResult();
+                .GetAwaiter().GetResult();
             }
         }
 

@@ -8,13 +8,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace iMemory
+namespace iTime
 {
     public class Program
     {
-        const string AppGroupId = "iMemory";
+
         public static DateTimeOffset StartingTimeApp;
-        static DbText db = new();
 
         public static void Main(string[] args)
         {
@@ -27,6 +26,8 @@ namespace iMemory
             CreateHostBuilder(args).Build().Run();
         }
 
+
+
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -37,21 +38,18 @@ namespace iMemory
 
     public class SetupActions
     {
-        const string AppGroupId = "iMemory";
-        //public static DateTimeOffset StartingTimeApp;
+        const string AppTimeId = "iTime";
         public DbText db = new();
-
         public void Ini()
         {
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
+            var AppId = KafkaEnviroment.preFix + AppTimeId;
 
             var actions =
                 new Dictionary<string, Action<dynamic, dynamic>>
                 {
-                    { MapAction.Memory.NewMemory, Engine.CreateNewMemory },
-                    { MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory },
-                    { MapAction.Memory.DelMemory, Engine.DeleteMemory },
-                    { MapAction.Memory.LearntMemory, Engine.LearnMemory },
+                    { MapAction.Time.Start, Engine.StartTask },
+                    { MapAction.Time.Pause, Engine.PauseTask },
+                    { MapAction.Time.Done, Engine.DoneTask },
                 };
 
             var commonActions =
@@ -73,7 +71,7 @@ namespace iMemory
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Memory, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Time, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
         }
     }
 }

@@ -5,9 +5,9 @@ namespace PotentHelper
 {
     public interface IDb
     {
+        bool Initial(string name, string defaultFolder);
         Task<bool> AddAsync(string msg);
         bool Add(string msg);
-        bool Initial(string name);
         Task<string[]> GetAllAsync();
         string[] GetAll();
         void ReplayAll();

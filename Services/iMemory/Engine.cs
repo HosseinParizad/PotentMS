@@ -37,17 +37,17 @@ namespace iMemory
             if (memory != null)
             {
                 Memories.Remove(memory);
-                SendFeedbackMessage(type: FeedbackType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.MemoryDeleted, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.MemoryDeleted, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot find memory item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot find memory item!");
             }
         }
 
         #endregion
 
-        #region DeleteMemory
+        #region LearnMemory
 
         internal static void LearnMemory(dynamic metadata, dynamic content)
         {
@@ -142,20 +142,19 @@ namespace iMemory
             }
             else
             {
-                SendFeedbackMessage(type: FeedbackType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate memory item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate memory item!");
             }
         }
 
-        static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
-                //Console.WriteLine($"{type}, {action}, {groupkey}, {content}");
                 ProducerHelper.SendAMessage(
                         MessageTopic.MemoryFeedback,
-                        new Feedback(type: type, name: FeedbackGroupNames.Memory, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
+                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
                         )
-                    .GetAwaiter().GetResult();
+                .GetAwaiter().GetResult();
             }
         }
 
@@ -168,7 +167,7 @@ namespace iMemory
         {
             var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage1 };
             Memories.Add(memory);
-            SendFeedbackMessage(type: FeedbackType.Success, actionTime: actionTime, action: FeedbackActions.NewMemoryAdded, groupkey: groupKey, content: memory);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: FeedbackActions.NewMemoryAdded, groupkey: groupKey, content: memory);
         }
 
         #endregion

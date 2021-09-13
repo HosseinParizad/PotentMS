@@ -2,26 +2,34 @@
 
 namespace PotentHelper
 {
-    public class Feedback : IMessageContract
-    {
-        public Feedback(FeedbackType type, string name, string action, dynamic metadata, dynamic content)
-        {
-            Type = type;
-            Action = action;
-            Metadata = metadata;
-            Content = content;
-            Name = name;
-        }
+    //public class Feedback : Msg, IMessageContract
+    //{
+    //    public Feedback(string action, dynamic metadata, dynamic content) : base(action, metadata, content)
+    //    {
+    //    }
 
-        public FeedbackType Type { get; set; }
-        public string Action { get; set; }
-        public string Name { get; set; }
-        public dynamic Metadata { get; set; }
-        public dynamic Content { get; set; }
+    //    public Feedback(MsgType type, string action, dynamic metadata, dynamic content) : base(type, action, metadata, content)
+    //    {
+    //    }
+
+    //    //public Feedback(MsgType type, string action, dynamic metadata, dynamic content) : base(type, action, metadata, content)
+    //    //{ }
+
+    //    public MsgType Type { get; set; }
+    //    public string Action { get; set; }
+    //    public dynamic Metadata { get; set; }
+    //    public dynamic Content { get; set; }
+    //}
+    public class Feedback : Msg
+    {
+        public Feedback(MsgType type, string action, dynamic metadata, dynamic content) : base(type, action, (object)metadata, (object)content)
+        {
+        }
     }
 
-    public enum FeedbackType
+    public enum MsgType
     {
+        Command,
         Success,
         Apply,
         Info,
@@ -41,8 +49,6 @@ namespace PotentHelper
         public const string CannotSetTag = "Error: cannot set tag";
         public const string CannotCloseTask = "Error: cannot close tag";
         public const string TaskClosed = "Task has been closed";
-        public const string TaskStarted = "Task has been started";
-        public const string TaskPaused = "Task has been paused";
         public const string RepeatTask = "Repeat task";
         public const string CannotAddTask = "Error: cannot add task";
         public const string CannotAddMemory = "Error: cannot add Memory";
@@ -65,5 +71,13 @@ namespace PotentHelper
         public const string CannotFindGroup = "Error: cannot find Group item";
         public const string CannotFindMember = "Error: cannot find member";
         public const string NewMemberAdded = "New Member has been added";
+
+        // Time
+        public const string TimeableStarted = "Task has been started";
+        public const string TimeablePaused = "Task has been paused";
+        public const string TimeableDone = "Task has been done";
+        public const string CannotStartTimeable = "Error: cannot start time";
+        public const string CannotPauseTimeable = "Error: cannot pause time";
+        public const string CannotDoneTimeable = "Error: cannot done time";
     }
 }

@@ -50,7 +50,7 @@ namespace PotentHelper
                 }
 
                 var msg = Helper.DeserializeObject<Feedback>(message);
-                if (actions.TryGetValue(msg.Name ?? msg.Action, out var action))
+                if (actions.TryGetValue(msg.Action, out var action))
                 {
                     try
                     {

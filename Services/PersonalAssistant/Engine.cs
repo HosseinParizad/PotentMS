@@ -41,13 +41,13 @@ namespace PersonalAssistant
                     ApplyTaskDeleted(feedback);
                     break;
 
-                case FeedbackActions.TaskStarted:
-                    ApplyStartTask(feedback);
-                    break;
+                //case FeedbackActions.TaskStarted:
+                //    ApplyStartTask(feedback);
+                //    break;
 
-                case FeedbackActions.TaskPaused:
-                    ApplyPauseTask(feedback);
-                    break;
+                //case FeedbackActions.TaskPaused:
+                //    ApplyPauseTask(feedback);
+                //    break;
 
                 case FeedbackActions.TaskClosed:
                     //ApplyCloseTask(feedback);
@@ -72,14 +72,14 @@ namespace PersonalAssistant
             }
         }
 
-        static void SendFeedbackMessage(FeedbackType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
 
                 ProducerHelper.SendAMessage(
                                MessageTopic.PersonalAssistantFeedback,
-                               new Feedback(type: type, name: FeedbackGroupNames.PersonalAssistant, action: action, metadata: metadata, content: content)
+                               new Feedback(type: type, action: action, metadata: metadata, content: content)
                               )
                            .GetAwaiter().GetResult();
             }
@@ -100,7 +100,6 @@ namespace PersonalAssistant
             {
                 Groups.Add(groupKey, new HashSet<string> { memberKey });
             }
-            Console.WriteLine("_________________+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         }
 
         static void ApplyNewTaskAdded(Feedback feedback)
@@ -226,23 +225,23 @@ namespace PersonalAssistant
             }
         }
 
-        static void ApplyStartTask(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
-            Tasks.Single(d => d.Id == id).Status = TodoStatus.start;
-            OnTaskChanged(groupKey);
-        }
+        //static void ApplyStartTask(Feedback feedback)
+        //{
+        //    var data = feedback.Content;
+        //    var groupKey = feedback.Metadata.GroupKey.ToString();
+        //    var id = data.Id.ToString();
+        //    Tasks.Single(d => d.Id == id).Status = TodoStatus.start;
+        //    OnTaskChanged(groupKey);
+        //}
 
-        static void ApplyPauseTask(Feedback feedback)
-        {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
-            var id = data.Id.ToString();
-            Tasks.Single(d => d.Id == id).Status = TodoStatus.pause;
-            OnTaskChanged(groupKey);
-        }
+        //static void ApplyPauseTask(Feedback feedback)
+        //{
+        //    var data = feedback.Content;
+        //    var groupKey = feedback.Metadata.GroupKey.ToString();
+        //    var id = data.Id.ToString();
+        //    Tasks.Single(d => d.Id == id).Status = TodoStatus.pause;
+        //    OnTaskChanged(groupKey);
+        //}
 
         static List<BadgeItem> GetDashboardSectionBadges(string key, string sectionText)
             => GetDashboardSections(key).Single(d => d.Text == sectionText).BadgesInternal;

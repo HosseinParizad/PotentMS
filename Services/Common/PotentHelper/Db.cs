@@ -5,10 +5,10 @@ namespace PotentHelper
 {
     public class DbText : IDb
     {
-        public bool Initial(string name)
+        public bool Initial(string name, string defaultFolder = "DB")
         {
 
-            textname = Path.Combine("DB", name);
+            textname = Path.Combine(defaultFolder, name);
             CreateFileIfNotExists(textname);
             return true;
         }

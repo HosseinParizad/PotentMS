@@ -32,6 +32,7 @@ namespace iTest
         public DbText TimeDb => Services.TimeDb;
         public DbText GroupDb => Services.GroupDb;
         public DbText MemoryDb => Services.MemoryDb;
+
         public static ServiceContiner Services = new ServiceContiner();
         public SendAMessageEventArgs LastMessage { set; get; }
 

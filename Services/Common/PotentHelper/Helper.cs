@@ -88,10 +88,32 @@ namespace PotentHelper
 
                 #region DeleteTask
 
-                public static string DeleteTask(string groupKey, object id)
+                public static string DeleteTask(string groupKey, string id)
                 {
                     var content = new { Id = id };
                     var msg = new Msg(action: MapAction.Task.DelTask, metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+                    return msg.ToString();
+                }
+
+                #endregion
+
+                #region SetLocation
+
+                public static string SetLocation(string groupKey, string id, string location)
+                {
+                    var content = new { Id = id, Location = location };
+                    var msg = new Msg(action: MapAction.Task.SetLocation, metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+                    return msg.ToString();
+                }
+
+                #endregion
+
+                #region SetTag
+
+                public static string SetTag(string groupKey, string id, string tagKey, string tag)
+                {
+                    var content = new { Id = id, TagKey = tagKey, Tag = tag };
+                    var msg = new Msg(action: MapAction.Task.SetTag, metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
                     return msg.ToString();
                 }
 

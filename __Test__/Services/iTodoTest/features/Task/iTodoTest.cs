@@ -1,14 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using iTodo.Controllers;
+using NUnit.Framework;
 using PotentHelper;
+using SpecFlowDemo.Steps;
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using TechTalk.SpecFlow;
-using Time = iTime;
-using iTodo.Controllers;
-using Microsoft.Extensions.Logging;
-using NUnit.Framework;
-using SpecFlowDemo.Steps;
 
 namespace iTest.Task
 {
@@ -65,13 +61,23 @@ namespace iTest.Task
 
             foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
             {
+                var i = 0;
                 var todos = new TodoQueryController(null).GetPresentationTask(row.Key.ToString()).ToArray();
                 Assert.AreEqual(todos.Select(t => t.Text).ToList(), row.Select(r => r["Text"]));
                 if (tableColumns.Contains("Children"))
                 {
                     Assert.AreEqual(todos.Select(t => t.Items.Count).ToList(), row.Select(r => int.Parse(r["Children"])));
                 }
+                if (tableColumns.Contains("Info"))
+                {
+                    foreach (var item in row)
+                    {
+                        Assert.AreEqual(todos[i].Info.ToString(), item["Info"].ToString());
+                        i++;
+                    }
+                }
                 //Assert.AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", SelectedId } }));
+
             }
         }
 

@@ -381,9 +381,16 @@ namespace iTodo
                 Text = todo.Description,
                 Link = todo.Kind.ToString(),
                 Actions = GetActions(todo).ToList(),
-                Items = GetPresentationTask(groupKey, todo.Id).ToList()
+                Items = GetPresentationTask(groupKey, todo.Id).ToList(),
+                Info = GetInfo(todo)
             };
             return presentItem;
+        }
+
+        static string GetInfo(TodoItem todo)
+        {
+            return (todo.Locations.Any() ? $"Locations: {string.Join("|", todo.Locations)}" : "") +
+                (todo.Tags.Any() ? $"Taks: {string.Join("|", todo.Tags.Select(t => $"{t.TagParentKey}-{string.Join('&', t.Value)}"))}" : "");
         }
 
         static IEnumerable<PresentItemActions> GetActions(TodoItem todo)

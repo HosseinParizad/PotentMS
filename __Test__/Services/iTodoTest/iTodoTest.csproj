@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <SpecFlowObsoleteCodeBehindFiles Remove="features\iGroup\iMemory.engine.feature.cs" />
-    <SpecFlowObsoleteCodeBehindFiles Remove="features\iLocation\iGroup.engine.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\iTodo.Location\iGroup.engine.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="features\iMemory\iTime.engine.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="features\Task\iTodo.close.feature.cs" />
   </ItemGroup>
@@ -29,7 +29,7 @@
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="features\iLocation\iLocation.engine.feature">
+    <SpecFlowFeatureFiles Update="features\iTodo.Location\iTodo.Location.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
@@ -105,8 +105,8 @@
     <Compile Update="features\iGroup\iGroup.engine.feature.cs">
       <DependentUpon>iGroup.engine.feature</DependentUpon>
     </Compile>
-    <Compile Update="features\iLocation\iLocation.engine.feature.cs">
-      <DependentUpon>iLocation.engine.feature</DependentUpon>
+    <Compile Update="features\iTodo.Location\iTodo.Location.feature.cs">
+      <DependentUpon>iTodo.Location.feature</DependentUpon>
     </Compile>
     <Compile Update="features\iMemory\iMemory.engine.feature.cs">
       <DependentUpon>iMemory.engine.feature</DependentUpon>

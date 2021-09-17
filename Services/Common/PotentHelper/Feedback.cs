@@ -79,5 +79,8 @@ namespace PotentHelper
         public const string CannotStartTimeable = "Error: cannot start time";
         public const string CannotPauseTimeable = "Error: cannot pause time";
         public const string CannotDoneTimeable = "Error: cannot done time";
+
+        // Location
+        public const string LocationChanged = "Member move to new location";
     }
 }

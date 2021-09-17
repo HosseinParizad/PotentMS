@@ -45,7 +45,7 @@ namespace Gateway
                         MessageTopic.TaskFeedback, MessageTopic.PersonalAssistantFeedback, MessageTopic.MemoryFeedback, MessageTopic.Common
                     }
                     , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-                ); ;
+                );
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

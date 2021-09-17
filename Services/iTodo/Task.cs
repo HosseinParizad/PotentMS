@@ -284,7 +284,7 @@ namespace iTodo
             {
                 return Todos;
             }
-            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => MemberCurrentLocation.ContainsKey(member) && MemberCurrentLocation[member].Split(",").Any(l => t.Locations?.Contains(l) ?? false) ? 0 : 1).ThenBy(t => t.Sequence);
+            return Todos.Where(i => i.Status != TodoStatus.Close && (i.AssignedTo ?? i.GroupKey) == member).OrderBy(t => t.Sequence);
         }
 
         #endregion
@@ -324,7 +324,7 @@ namespace iTodo
         static List<TodoItem> Todos = new List<TodoItem>();
         static List<TimeItem> TimeLog = new List<TimeItem>();
 
-        static Dictionary<string, string> MemberCurrentLocation { get; set; } = new Dictionary<string, string>();
+        //static Dictionary<string, string> MemberCurrentLocation { get; set; } = new Dictionary<string, string>();
 
         public static string GetSort => Sort;
         static string Sort = "";
@@ -336,23 +336,23 @@ namespace iTodo
 
         #endregion
 
-        #region Location actions 
+        //#region Location actions 
 
-        public static void SetCurrentLocation(dynamic metadata, dynamic content)
-        {
-            var member = content.Member.ToString();
-            string location = content.Location.ToString();
-            if (MemberCurrentLocation.TryGetValue(member, out string locations))
-            {
-                MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
-            }
-            else
-            {
-                MemberCurrentLocation.Add(member, location);
-            }
-        }
+        //public static void SetCurrentLocation(dynamic metadata, dynamic content)
+        //{
+        //    var member = content.Member.ToString();
+        //    string location = content.Location.ToString();
+        //    if (MemberCurrentLocation.TryGetValue(member, out string locations))
+        //    {
+        //        MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
+        //    }
+        //    else
+        //    {
+        //        MemberCurrentLocation.Add(member, location);
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
         #region Common actions
 
@@ -360,7 +360,7 @@ namespace iTodo
         {
             Todos = new List<TodoItem>();
             TimeLog = new List<TimeItem>();
-            MemberCurrentLocation = new Dictionary<string, string>();
+            //MemberCurrentLocation = new Dictionary<string, string>();
         }
 
         #endregion

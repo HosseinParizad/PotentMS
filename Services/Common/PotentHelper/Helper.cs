@@ -167,7 +167,6 @@ namespace PotentHelper
                 }
             }
 
-
             public static class Group
             {
                 public static string AddMember(string groupKey, string newMember)
@@ -195,6 +194,23 @@ namespace PotentHelper
                 {
                     var content = new { GroupName = groupName };
                     var msg = new Msg(action: MapAction.Group.UpdateGroup, metadata: Helper.GetMetadataByGroupKey(groupName), content: content);
+                    return msg.ToString();
+                }
+            }
+
+            public static class Location
+            {
+                public static string RegisterMember(string member)
+                {
+                    var content = new { Member = member };
+                    var msg = new Msg(action: MapAction.Location.RegisterMember, metadata: Helper.GetMetadataByGroupKey(member), content: content);
+                    return msg.ToString();
+                }
+
+                public static string TestOnlyLocationChanged(string groupKey, string location)
+                {
+                    var content = new { Location = location };
+                    var msg = new Msg(action: MapAction.Location.TestOnlyLocationChanged, metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
                     return msg.ToString();
                 }
             }

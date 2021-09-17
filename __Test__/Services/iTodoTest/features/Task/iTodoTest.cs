@@ -44,20 +44,7 @@ namespace iTest.Task
         [Then(@"I should see the following todo list directly:")]
         public void ThenIShouldSeeTheFollowingTodoListDirectly(Table table)
         {
-            //var groupKey = table.Rows[0]["GroupKey"];
-            //todoTodo.db.
-            //dynamic[] todos = null;
             var tableColumns = table.Header.ToArray();
-            //var map = new Dictionary<string, string>
-            //{
-            //    { "Description", "Text" },
-            //    //{ "GroupKey", "GroupKey" },
-            //    //{ "Deadline", "Deadline" },
-            //    //{ "Tags", "Tags" },
-            //    //{ "Locations", "Locations" },
-            //    //{ "ParentId", "ParentId" },
-            //};
-            //var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
             foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
             {

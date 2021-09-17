@@ -8,13 +8,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace iGroup
+namespace iLocation
 {
     public class Program
     {
-        const string AppGroupId = "iGroup";
+
         public static DateTimeOffset StartingTimeApp;
-        static DbText db = new();
 
         public static void Main(string[] args)
         {
@@ -25,23 +24,21 @@ namespace iGroup
             setupActions.Ini();
 
             CreateHostBuilder(args).Build().Run();
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureServices((hostContext, services) =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    services.AddHostedService<Worker>();
                 });
+
     }
 
     public class SetupActions
     {
-        const string AppGroupId = "iMemory";
-        //public static DateTimeOffset StartingTimeApp;
+        const string AppGroupId = "iLocation";
         public DbText db = new();
-
         public void Ini()
         {
             var AppId = KafkaEnviroment.preFix + AppGroupId;
@@ -49,10 +46,8 @@ namespace iGroup
             var actions =
                 new Dictionary<string, Action<dynamic, dynamic>>
                 {
-                    { MapAction.Group.NewGroup, Engine.CreateNewGroup },
-                    { MapAction.Group.UpdateGroup, Engine.UpdateGroup },
-                    { MapAction.Group.NewMember, Engine.AddMember },
-                    { MapAction.Group.DeleteMember, Engine.DeleteMember },
+                    { MapAction.Assistant.RegisterMember, Engine.RegisterMember },
+                    { MapAction.Assistant.TestOnlyLocationChanged, Engine.TestOnlyLocationChanged },
                 };
 
             var commonActions =
@@ -68,12 +63,13 @@ namespace iGroup
                 MessageProcessor.MapMessageToAction(AppId, e.Text, actions, true);
                 MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
             }
+
             if (KafkaEnviroment.TempPrefix == "Test")
             {
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Group, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Time, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
         }
     }
 }

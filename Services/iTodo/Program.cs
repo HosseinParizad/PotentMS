@@ -15,6 +15,9 @@ namespace iTodo
             StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
 
+            var setupActions = new SetupActions();
+            setupActions.Ini();
+
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -52,7 +55,7 @@ namespace iTodo
 
             #endregion
 
-            var locationActions = new Dictionary<string, Action<dynamic, dynamic>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
+            //var locationActions = new Dictionary<string, Action<dynamic, dynamic>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
 
             var commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
 
@@ -64,7 +67,7 @@ namespace iTodo
             void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
             {
                 MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions, true);
-                MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
+                //MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
                 MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
                 MessageProcessor.MapFeedbackToAction(AppId, e.Text, repeatActions, true);
             }

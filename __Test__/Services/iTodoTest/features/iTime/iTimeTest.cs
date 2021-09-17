@@ -41,12 +41,35 @@ namespace iTest
 
         }
 
+        private const string ignoreContent = "do not care";
 
-        [Then(@"I get feedback '(.*)'")]
-        public void ThenIGetFeedbackTaskPaused(string expectedResult)
+        [Then(@"I get feedback action '(.*)'")]
+        public void ThenAssertFeedback(string expectedAction)
         {
-            //Assert.AreEqual("TimeFeedback", TestManager.Instance.LastMessage.Topic);
-            Assert.AreEqual(expectedResult, TestManager.Instance.LastMessage.Message.Action);
+            AssertFeedback(expectedAction, ignoreContent);
+        }
+
+        [Then(@"I get feedback '(.*)' with content '(.*)'")]
+        public void ThenAssertFeedbackWithContent(string expectedAction, string expectedContent)
+        {
+            AssertFeedback(expectedAction, expectedContent);
+        }
+
+        static void AssertFeedback(string expectedAction, string expectedContent)
+        {
+            Assert.AreEqual(expectedAction, TestManager.Instance.LastMessage.Message.Action);
+            if (expectedContent != ignoreContent)
+            {
+                Assert.AreEqual(expectedContent, JsonConvert.SerializeObject(TestManager.Instance.LastMessage.Message.Content));
+            }
+        }
+
+        [Then(@"I get a feedback '(.*)' and content contain '(.*)'")]
+        public void ThenAssertFeedbackContentContain(string expectedAction, string expectedContent)
+        {
+            Assert.AreEqual(expectedAction, TestManager.Instance.LastMessage.Message.Action);
+            var content = JsonConvert.SerializeObject(TestManager.Instance.LastMessage.Message.Content);
+            Assert.AreEqual(true, content.IndexOf(expectedContent) > -1, content);
         }
     }
 }

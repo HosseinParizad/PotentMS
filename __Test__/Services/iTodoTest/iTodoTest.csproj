@@ -5,6 +5,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\iAssistant\iLocation.engine.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="features\iLocation\iGroup.engine.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="features\iGroup\iMemory.engine.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="features\iTodo.Location\iGroup.engine.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="features\iMemory\iTime.engine.feature.cs" />
@@ -25,6 +27,14 @@
     <PackageReference Include="SpecFlow" Version="3.9.22" />
   </ItemGroup>
   <ItemGroup>
+    <SpecFlowFeatureFiles Update="features\iAssistant\iAssistant.engine.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="features\iLocation\iLocation.engine.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="features\iGroup\iGroup.engine.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
@@ -94,14 +104,22 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Services\Common\PotentHelper\PotentHelper.csproj" />
+    <ProjectReference Include="..\..\..\Services\iAssistant\iAssistant.csproj" />
     <ProjectReference Include="..\..\..\Services\iGoal\iGoal.csproj" />
     <ProjectReference Include="..\..\..\Services\iGroup\iGroup.csproj" />
+    <ProjectReference Include="..\..\..\Services\iLocation\iLocation.csproj" />
     <ProjectReference Include="..\..\..\Services\iMemory\iMemory.csproj" />
     <ProjectReference Include="..\..\..\Services\iTime\iTime.csproj" />
     <ProjectReference Include="..\..\..\Services\iTodo\iTodo.csproj" />
     <ProjectReference Include="..\..\..\Services\PersonalAssistant\PersonalAssistant.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="features\iAssistant\iAssistant.engine.feature.cs">
+      <DependentUpon>iAssistant.engine.feature</DependentUpon>
+    </Compile>
+    <Compile Update="features\iLocation\iLocation.engine.feature.cs">
+      <DependentUpon>iLocation.engine.feature</DependentUpon>
+    </Compile>
     <Compile Update="features\iGroup\iGroup.engine.feature.cs">
       <DependentUpon>iGroup.engine.feature</DependentUpon>
     </Compile>

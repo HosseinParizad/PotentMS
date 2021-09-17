@@ -15,6 +15,8 @@ namespace iTest
             iTime.Engine.Reset(null, null);
             iGroup.Engine.Reset(null, null);
             iMemory.Engine.Reset(null, null);
+            iLocation.Engine.Reset(null, null);
+            iAssistant.Engine.Reset(null, null);
         }
 
         [AfterScenario]
@@ -26,12 +28,15 @@ namespace iTest
         private void ProducerHelper_OnSendAMessageEvent(object sender, SendAMessageEventArgs e)
         {
             instance.LastMessage = new SendAMessageEventArgs(e.Topic, e.Message);
+            Services.AssistantActions.Db_DbNewDataEvent(null, new DbNewDataEventArgs(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message)));
         }
 
         public DbText TodoDb => Services.TodoDb;
         public DbText TimeDb => Services.TimeDb;
         public DbText GroupDb => Services.GroupDb;
         public DbText MemoryDb => Services.MemoryDb;
+        public DbText LocationDb => Services.LocationDb;
+        public DbText AssistantDb => Services.AssistantDb;
 
         public static ServiceContiner Services = new ServiceContiner();
         public SendAMessageEventArgs LastMessage { set; get; }
@@ -49,20 +54,28 @@ namespace iTest
             TimeActions = new();
             GroupActions = new();
             MemoryActions = new();
+            LocationActions = new();
+            AssistantActions = new();
+            AssistantActions.Ini();
             TimeActions.Ini();
             TodoActions.Ini();
             GroupActions.Ini();
             MemoryActions.Ini();
+            LocationActions.Ini();
         }
 
         public iTodo.SetupActions TodoActions;
         public iTime.SetupActions TimeActions;
         public iGroup.SetupActions GroupActions;
         public iMemory.SetupActions MemoryActions;
+        public iLocation.SetupActions LocationActions;
+        public iAssistant.SetupActions AssistantActions;
 
         public DbText TodoDb => TodoActions.db;
         public DbText TimeDb => TimeActions.db;
         public DbText GroupDb => GroupActions.db;
         public DbText MemoryDb => MemoryActions.db;
+        public DbText LocationDb => LocationActions.db;
+        public DbText AssistantDb => AssistantActions.db;
     }
 }

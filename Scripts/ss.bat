@@ -12,6 +12,10 @@ FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5010"`) DO taskkill /F
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5011"`) DO taskkill /F /PID %%i
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5012"`) DO taskkill /F /PID %%i
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5013"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5014"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5015"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5016"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5017"`) DO taskkill /F /PID %%i
 
 
  @echo off
@@ -41,6 +45,12 @@ cd ../../Services/iGoal/
 start /B dotnet run %p%
 
 cd ../../Services/iGroup/
+start /B dotnet run %p%
+
+cd ../../Services/iAssistant/
+start /B dotnet run %p%
+
+cd ../../Services/iLocation/
 start /B dotnet run %p%
 
 call :wait

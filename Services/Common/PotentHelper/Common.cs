@@ -19,6 +19,7 @@ namespace PotentHelper
         public const string GoalFeedback = "GoalFeedback";
         public const string GroupFeedback = "GroupFeedback";
         public const string TimeFeedback = "TimeFeedback";
+        public const string LocationFeedback = "LocationFeedback";
     }
 
     public class FeedbackGroupNames
@@ -42,6 +43,13 @@ namespace PotentHelper
 
     public static class MapAction
     {
+        public static class Assistant
+        {
+            public const string TestOnlyLocationChanged = "TestOnlyLocationChanged";
+
+            public static string RegisterMember = "RegisterMember";
+        }
+
         public static class Repeat
         {
             public const string RegisterRepeat = "registerRepeat";
@@ -72,8 +80,11 @@ namespace PotentHelper
 
         public static class Location
         {
-            public const string SetCurrentLocation = "setCurrentLocation";
+            public const string RegisterMember = "RegisterMember";
+            public const string TestOnlyLocationChanged = "TestOnlyLocationChanged";
+            //public const string SetCurrentLocation = "setCurrentLocation";
         }
+
         public static class Memory
         {
             public const string NewMemory = "newMemory";

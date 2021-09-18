@@ -10,7 +10,7 @@ namespace iAssistant
     {
         internal static IEnumerable<PresentItem> GetPresentation(string groupKey, string parentid)
         {
-            return Todos.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).Select(i => ToPresentation(groupKey, i));
+            return Todos.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).OrderBy(t => t.Location == MemberLocation[t.GroupKey] ? 0 : 1).Select(i => ToPresentation(groupKey, i));
         }
 
         static PresentItem ToPresentation(string groupKey, TodoItem mi)
@@ -34,8 +34,41 @@ namespace iAssistant
                 Text = content.Text.ToString(),
                 ParentId = content.ParentId.ToString(),
                 GroupKey = metadata.GroupKey.ToString()
-
             });
+            var groupKey = metadata.GroupKey.ToString();
+            if (!MemberLocation.ContainsKey(groupKey))
+            {
+                MemberLocation.Add(groupKey, "");
+            }
+
+        }
+
+        internal static void MemberSetLocation(dynamic metadata, dynamic content)
+        {
+            //var groupKey = metadata.GroupKey.ToString();
+            var location = content.Location.ToString();
+            var id = content.Id.ToString();
+            var todo = Todos.SingleOrDefault(t => t.Id == id);
+            if (todo != null)
+            {
+                todo.Location = location;
+            }
+        }
+
+        static Dictionary<string, string> MemberLocation = new();
+
+        internal static void MemberMoved(dynamic metadata, dynamic content)
+        {
+            var groupKey = metadata.GroupKey.ToString();
+            var newLocation = content.NewLocation.ToString();
+            if (MemberLocation.ContainsKey(groupKey))
+            {
+                MemberLocation[groupKey] = newLocation;
+            }
+            else
+            {
+                MemberLocation.Add(groupKey, newLocation);
+            }
         }
 
         //static IEnumerable<PresentItemActions> GetActions(GoalItem mi)
@@ -93,6 +126,7 @@ namespace iAssistant
         public string Text { get; internal set; }
         public string GroupKey { get; internal set; }
         public string ParentId { get; internal set; }
+        public string Location { get; internal set; }
     }
 
 }

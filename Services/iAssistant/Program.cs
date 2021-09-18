@@ -39,6 +39,8 @@ namespace iAssistant
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
             new MapBinding(MapAction.TaskFeedback.NewTaskAdded, Engine.OnNewTaskAdded),
+            new MapBinding(MapAction.LocationFeedback.LocationChanged, Engine.MemberMoved),
+            new MapBinding(MapAction.TaskFeedback.NewLocationAdded, Engine.MemberSetLocation),
         };
 
         public void Ini()

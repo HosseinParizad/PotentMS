@@ -42,18 +42,14 @@ namespace iTime
         public DbText db = new();
         string AppId = KafkaEnviroment.preFix + AppTimeId;
 
-        Dictionary<string, Action<dynamic, dynamic>> actions =
-            new Dictionary<string, Action<dynamic, dynamic>>
-            {
-                    { MapAction.Time.Start, Engine.StartTask },
-                    { MapAction.Time.Pause, Engine.PauseTask },
-                    { MapAction.Time.Done, Engine.DoneTask },
-            };
 
-        Dictionary<string, Action<dynamic, dynamic>> commonActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-            };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Time.Start, Engine.StartTask ),
+            new MapBinding(MapAction.Time.Pause, Engine.PauseTask),
+            new MapBinding(MapAction.Time.Done, Engine.DoneTask  )
+        };
 
         public void Ini()
         {
@@ -65,13 +61,12 @@ namespace iTime
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Time, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
     }

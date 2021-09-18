@@ -22,7 +22,7 @@ namespace iTodo
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddTask, groupkey: metadata.GroupKey.ToString(), content: "Cannot add task id or description are duplicated!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.CannotAddTask.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add task id or description are duplicated!");
             }
         }
 
@@ -45,13 +45,10 @@ namespace iTodo
             string feedbackActions;
             switch (newItem.Kind)
             {
-                case TodoType.Goal:
-                    feedbackActions = FeedbackActions.NewGoalAdded;
-                    break;
                 case TodoType.Category:
                     throw new NotImplementedException();
                 case TodoType.Task:
-                    feedbackActions = FeedbackActions.NewTaskAdded;
+                    feedbackActions = MapAction.TaskFeedback.NewTaskAdded.Name;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -71,7 +68,7 @@ namespace iTodo
             var description = content.Description.ToString();
             FindById(metadata.GroupKey.ToString(), id).Description = description;
             var dataToSend = new { Id = id, Description = description };
-            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.updateTaskDescription, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.updateTaskDescription.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -84,7 +81,7 @@ namespace iTodo
             var toid = content.ToParentId.ToString();
             FindById(metadata.GroupKey.ToString(), id).ParentId = toid;
             var dataToSend = new { Id = id, NewParentId = toid };
-            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.moveTask, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.Task.MoveTask.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -99,7 +96,7 @@ namespace iTodo
             todo.Deadline = deadline;
             var dataToSend = new { Id = id, Text = todo.Description, Deadline = deadline };
 
-            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.DeadlineUpdated, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.DeadlineUpdated.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -114,7 +111,7 @@ namespace iTodo
             var todo = FindById(metadata.GroupKey.ToString(), id);
             if (todo == null)
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotSetTag, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to assgin tag!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.CannotSetTag.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to assgin tag!");
             }
             else
             {
@@ -140,7 +137,7 @@ namespace iTodo
                 if (!parent.Value.Contains(tag))
                 {
                     parent.Value.Add(tag);
-                    SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: FeedbackActions.NewTagAdded, groupkey: groupKey, content: tag);
+                    SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.TaskFeedback.NewTagAdded.Name, groupkey: groupKey, content: tag);
                 }
             }
         }
@@ -157,11 +154,11 @@ namespace iTodo
             {
                 task.Status = TodoStatus.Close;
                 var dataToSend = new { Id = id };
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskClosed, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.TaskClosed.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotCloseTask, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to close task!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.CannotCloseTask.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Todo item to close task!");
             }
         }
 
@@ -180,11 +177,7 @@ namespace iTodo
                 var dataToSend = new { Id = id };
                 if (task.Kind == TodoType.Task)
                 {
-                    SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
-                }
-                else if (task.Kind == TodoType.Goal)
-                {
-                    SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GoalDeleted, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                    SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.TaskDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
             }
             else
@@ -207,7 +200,7 @@ namespace iTodo
                 task.AssignedTo = assignTo;
             }
             var dataToSend = new { Id = id, MemberKey = assignTo };
-            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.TaskAssginedToMember, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.TaskAssginedToMember.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
         }
 
         #endregion
@@ -231,7 +224,7 @@ namespace iTodo
                 {
                     var dataToSend = new { Id = id, Location = item };
 
-                    SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewLocationAdded, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
+                    SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.TaskFeedback.NewLocationAdded.Name, groupkey: metadata.GroupKey.ToString(), content: dataToSend);
                 }
             }
         }
@@ -405,13 +398,13 @@ namespace iTodo
                    Content = content
                };
 
-            yield return createStep("step", MapAction.Task.NewTask, new { Description = "[text]", ParentId = todo.Id });
-            yield return createStep("update", MapAction.Task.UpdateDescription, new { Description = "[text]", Id = todo.Id });
-            yield return createStep("delete", MapAction.Task.DelTask, new { Id = todo.Id });
-            yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
-            yield return createStep("location", MapAction.Task.SetLocation, new { Location = "[text]", Id = todo.Id });
-            yield return createStep("tag", MapAction.Task.SetTag, new { Tag = "[text]", TagKey = 0, Id = todo.Id });
-            yield return createStep("close", MapAction.Task.CloseTask, new { Id = todo.Id });
+            yield return createStep("step", MapAction.Task.NewTask.Name, new { Description = "[text]", ParentId = todo.Id });
+            yield return createStep("update", MapAction.Task.UpdateDescription.Name, new { Description = "[text]", Id = todo.Id });
+            yield return createStep("delete", MapAction.Task.DelTask.Name, new { Id = todo.Id });
+            yield return createStep("close", MapAction.Task.CloseTask.Name, new { Id = todo.Id });
+            yield return createStep("location", MapAction.Task.SetLocation.Name, new { Location = "[text]", Id = todo.Id });
+            yield return createStep("tag", MapAction.Task.SetTag.Name, new { Tag = "[text]", TagKey = 0, Id = todo.Id });
+            yield return createStep("close", MapAction.Task.CloseTask.Name, new { Id = todo.Id });
         }
 
         #endregion

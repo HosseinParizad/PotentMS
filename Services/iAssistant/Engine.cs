@@ -36,22 +36,6 @@ namespace iAssistant
                 GroupKey = metadata.GroupKey.ToString()
 
             });
-            //          var id = feedback.Content.Id.ToString();
-            //          {
-            //              {
-            //                  "Id": "47399CA8-C533-413C-A2A9-BAF5CDB85AE3",
-            //"Text": "Watch cat videos on YouTube all day",
-            //"ParentId": ""
-            // }
-            //          }
-            //          {
-            //              {
-            //                  "GroupKey": "Ali",
-            //"ReferenceKey": "efd17aca-c3d3-44a0-8e52-57b691e643c2",
-            //"CreateDate": "2021-09-18T07:43:13.7794312+10:00",
-            //"Version": "V0.0"
-            //             }
-            //          }
         }
 
         //static IEnumerable<PresentItemActions> GetActions(GoalItem mi)

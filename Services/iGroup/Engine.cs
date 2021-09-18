@@ -19,11 +19,11 @@ namespace iGroup
             {
                 var group = new GroupItem { Id = id, GroupKey = groupName, MemberKey = groupName };
                 Groups.Add(group);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewGroupAdded, groupkey: groupName, content: group);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.NewGroupAdded.Name, groupkey: groupName, content: group);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Group item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotAddGroup.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Group item!");
             }
         }
 
@@ -53,7 +53,7 @@ namespace iGroup
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotUpdateGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Group");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotUpdateGroup.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Group");
             }
 
         }
@@ -73,11 +73,11 @@ namespace iGroup
             {
                 var group = new GroupItem { Id = id, GroupKey = groupkey, MemberKey = newMember };
                 Groups.Add(group);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.NewMemberAdded, groupkey: groupkey, content: group);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.NewMemberAdded.Name, groupkey: groupkey, content: group);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMember, groupkey: metadata.GroupKey.ToString(), content: "Cannot add member");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotAddMember.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add member");
             }
 
         }
@@ -97,11 +97,11 @@ namespace iGroup
                 {
                     Groups.Remove(group);
                 }
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GroupDeleted, groupkey: metadata.GroupKey.ToString(), content: "Group has been deleted");
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.GroupDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: "Group has been deleted");
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindGroup, groupkey: metadata.GroupKey.ToString(), content: "Cannot find delete item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotFindGroup.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find delete item!");
             }
         }
 
@@ -117,11 +117,11 @@ namespace iGroup
             if (member != null)
             {
                 Groups.Remove(member);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GroupDeleted, groupkey: metadata.GroupKey.ToString(), content: "Memeber has been deleted");
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.GroupDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: "Memeber has been deleted");
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMember, groupkey: metadata.GroupKey.ToString(), content: "Cannot find member!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotFindMember.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find member!");
             }
         }
 
@@ -156,11 +156,11 @@ namespace iGroup
                    Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
-            yield return createStep("Add group", MapAction.Group.NewGroup, new { Group = "[text]" });
-            yield return createStep("update", MapAction.Group.UpdateGroup, new { NewGroupName = "[text]" });
-            yield return createStep("Add member", MapAction.Group.NewMember, new { NewMember = "[text]" });
-            yield return createStep("delete group :(", MapAction.Group.DeleteGroup, new { GroupName = "[text]" });
-            yield return createStep("remove member :(", MapAction.Group.DeleteMember, new { NewMember = "[text]" });
+            yield return createStep("Add group", MapAction.Group.NewGroup.Name, new { Group = "[text]" });
+            yield return createStep("update", MapAction.Group.UpdateGroup.Name, new { NewGroupName = "[text]" });
+            yield return createStep("Add member", MapAction.Group.NewMember.Name, new { NewMember = "[text]" });
+            yield return createStep("delete group :(", MapAction.Group.DeleteGroup.Name, new { GroupName = "[text]" });
+            yield return createStep("remove member :(", MapAction.Group.DeleteMember.Name, new { NewMember = "[text]" });
         }
 
         #region Implement

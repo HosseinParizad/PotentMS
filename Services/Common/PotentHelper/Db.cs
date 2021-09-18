@@ -26,6 +26,7 @@ namespace PotentHelper
         {
             using StreamWriter file = new(textname, append: true);
             file.WriteLine(msg);
+            file.Close();
             RaiseNewDataEvent(msg);
             return true;
         }

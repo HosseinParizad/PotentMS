@@ -8,14 +8,17 @@ namespace PotentHelper
 {
     public class ConsumerHelper
     {
-        public static Action MapTopicToMethod(string[] topics, Action<string> onMessageReceived, string groupId)
+        //public static Action MapTopicToMethod(string[] topics, Action<string> onMessageReceived, string groupId)
+        //{
+        public static Action MapTopicToMethod(List<MapBinding> actions, DbText db, string groupId)
         {
             return () =>
             {
                 var source = new CancellationTokenSource();
                 var token = source.Token;
 
-                _ = new ConsumerHelper("localhost:9092", topics.Select(t => GetTopic(t)).ToList(), token, onMessageReceived, groupId);
+                Action<string> onMessageReceived = (m) => db.Add(m);
+                _ = new ConsumerHelper("localhost:9092", actions.Topics().Select(a => GetTopic(a)).ToList(), token, onMessageReceived, groupId);
             };
         }
 

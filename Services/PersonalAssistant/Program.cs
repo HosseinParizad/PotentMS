@@ -21,7 +21,6 @@ namespace PersonalAssistant
             CreateHostBuilder(args).Build().Run();
         }
 
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -36,33 +35,14 @@ namespace PersonalAssistant
         public DbText db = new();
         string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        Dictionary<string, Action<dynamic, dynamic>> taskFeedbackActions =
-            new Dictionary<string, Action<dynamic, dynamic>>
-            {
-                   { FeedbackActions.NewGoalAdded, Engine.ApplyNewTaskAdded },
-            };
-
-        Dictionary<string, Action<dynamic, dynamic>> commonActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-            };
-
-        Dictionary<string, Action<dynamic, dynamic>> locationActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "setCurrentLocation", Engine.SetCurrentLocation },
-            };
-
-        Dictionary<string, Action<dynamic, dynamic>> groupFeedbackActions =
-            new Dictionary<string, Action<dynamic, dynamic>>
-            {
-                    { FeedbackActions.NewGoalAdded, Engine.ApplyNewGroupAdded },
-            };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+        };
 
 
         public void Ini()
         {
-
-
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
 
@@ -71,17 +51,12 @@ namespace PersonalAssistant
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(
-                new[] { MessageTopic.GroupFeedback, MessageTopic.Common }
-                , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, taskFeedbackActions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, groupFeedbackActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
     }

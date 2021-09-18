@@ -32,7 +32,7 @@ namespace iGoal
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotUpdateGoal, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Goal");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotUpdateGoal.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Goal");
             }
 
         }
@@ -49,11 +49,11 @@ namespace iGoal
             if (Goal != null)
             {
                 Goals.Remove(Goal);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.GoalDeleted, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.GoalDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindGoal, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Goal item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotFindGoal.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Goal item!");
             }
         }
 
@@ -88,9 +88,9 @@ namespace iGoal
                    Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
-            yield return createStep("step", MapAction.Goal.NewGoal, new { Text = "[text]", ParentId = mi.Id });
-            yield return createStep("update", MapAction.Goal.UpdateGoal, new { Text = "[text]", Id = mi.Id });
-            yield return createStep("delete", MapAction.Goal.DelGoal, new { Id = mi.Id });
+            yield return createStep("step", MapAction.Goal.NewGoal.Name, new { Text = "[text]", ParentId = mi.Id });
+            yield return createStep("update", MapAction.Goal.UpdateGoal.Name, new { Text = "[text]", Id = mi.Id });
+            yield return createStep("delete", MapAction.Goal.DelGoal.Name, new { Id = mi.Id });
         }
 
         #region Implement
@@ -106,7 +106,7 @@ namespace iGoal
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddGoal, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Goal item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotAddGoal.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Goal item!");
             }
         }
 
@@ -131,7 +131,7 @@ namespace iGoal
         {
             var Goal = new GoalItem { Id = id, ParentId = parentId, GroupKey = groupKey, Text = text, GoalType = GoalType };
             Goals.Add(Goal);
-            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: FeedbackActions.NewGoalAdded, groupkey: groupKey, content: Goal);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.GoalFeedback.NewGoalAdded.Name, groupkey: groupKey, content: Goal);
         }
 
         #endregion

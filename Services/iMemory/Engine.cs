@@ -37,11 +37,11 @@ namespace iMemory
             if (memory != null)
             {
                 Memories.Remove(memory);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: FeedbackActions.MemoryDeleted, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.MemoryDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotFindMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot find memory item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.CannotFindMemory.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find memory item!");
             }
         }
 
@@ -122,10 +122,10 @@ namespace iMemory
                    Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
-            yield return createStep("step", MapAction.Memory.NewMemory, new { Text = "[text]", Hint = "[hint]", ParentId = mi.Id });
-            yield return createStep("update", "updateMemory", new { Text = "[text]", Hint = "[hint]", Id = mi.Id });
-            yield return createStep("delete", MapAction.Memory.DelMemory, new { Id = mi.Id });
-            yield return createStep("learnt", MapAction.Memory.LearntMemory, new { Id = mi.Id });
+            yield return createStep("step", MapAction.Memory.NewMemory.Name, new { Text = "[text]", Hint = "[hint]", ParentId = mi.Id });
+            yield return createStep("update", MapAction.Memory.UpdateMemory.Name, new { Text = "[text]", Hint = "[hint]", Id = mi.Id });
+            yield return createStep("delete", MapAction.Memory.DelMemory.Name, new { Id = mi.Id });
+            yield return createStep("learnt", MapAction.Memory.LearntMemory.Name, new { Id = mi.Id });
         }
 
         #region Implement
@@ -142,7 +142,7 @@ namespace iMemory
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: FeedbackActions.CannotAddMemory, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate memory item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.CannotAddMemory.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate memory item!");
             }
         }
 
@@ -167,7 +167,7 @@ namespace iMemory
         {
             var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage1 };
             Memories.Add(memory);
-            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: FeedbackActions.NewMemoryAdded, groupkey: groupKey, content: memory);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.MemoryFeedback.NewMemoryAdded.Name, groupkey: groupKey, content: memory);
         }
 
         #endregion

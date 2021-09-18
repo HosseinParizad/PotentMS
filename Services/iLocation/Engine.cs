@@ -23,7 +23,7 @@ namespace iLocation
 
         internal static void MemeberMoveToNewLocation(string newLocation)
         {
-            SendFeedbackMessage(type: MsgType.Info, actionTime: DateTimeOffset.Now, action: FeedbackActions.LocationChanged, groupkey: MemberKey, content: new { NewLocation = newLocation });
+            SendFeedbackMessage(type: MsgType.Info, actionTime: DateTimeOffset.Now, action: MapAction.LocationFeedback.LocationChanged.Name, groupkey: MemberKey, content: new { NewLocation = newLocation });
         }
 
         #endregion

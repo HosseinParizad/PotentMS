@@ -42,19 +42,14 @@ namespace iGroup
         string AppId = KafkaEnviroment.preFix + AppGroupId;
         public DbText db = new();
 
-        Dictionary<string, Action<dynamic, dynamic>> actions =
-                new Dictionary<string, Action<dynamic, dynamic>>
-                {
-                                { MapAction.Group.NewGroup, Engine.CreateNewGroup },
-                                { MapAction.Group.UpdateGroup, Engine.UpdateGroup },
-                                { MapAction.Group.NewMember, Engine.AddMember },
-                                { MapAction.Group.DeleteMember, Engine.DeleteMember },
-                };
-
-        Dictionary<string, Action<dynamic, dynamic>> commonActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-            };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Group.NewGroup, Engine.CreateNewGroup),
+            new MapBinding(MapAction.Group.UpdateGroup, Engine.UpdateGroup),
+            new MapBinding(MapAction.Group.NewMember, Engine.AddMember),
+            new MapBinding(MapAction.Group.DeleteMember, Engine.DeleteMember),
+        };
 
         public void Ini()
         {
@@ -66,13 +61,12 @@ namespace iGroup
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Group, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
     }

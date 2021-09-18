@@ -41,19 +41,14 @@ namespace iMemory
         public DbText db = new();
         string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        Dictionary<string, Action<dynamic, dynamic>> actions =
-            new Dictionary<string, Action<dynamic, dynamic>>
-            {
-                    { MapAction.Memory.NewMemory, Engine.CreateNewMemory },
-                    { MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory },
-                    { MapAction.Memory.DelMemory, Engine.DeleteMemory },
-                    { MapAction.Memory.LearntMemory, Engine.LearnMemory },
-            };
-
-        Dictionary<string, Action<dynamic, dynamic>> commonActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-            };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Memory.NewMemory, Engine.CreateNewMemory ),
+            new MapBinding(MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory),
+            new MapBinding(MapAction.Memory.DelMemory, Engine.DeleteMemory ),
+            new MapBinding(MapAction.Memory.LearntMemory, Engine.LearnMemory),
+        };
 
         public void Ini()
         {
@@ -66,13 +61,12 @@ namespace iMemory
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Memory, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
 

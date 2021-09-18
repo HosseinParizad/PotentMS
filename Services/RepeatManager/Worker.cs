@@ -37,7 +37,7 @@ namespace RepeatManager
                         var now = Now;
                         var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now, Hours = (now - item.LastGeneratedTime).Hours, RepeatIfAllClosed = item.RepeatIfAllClosed };
                         item.LastGeneratedTime = now;
-                        SendAMessage(type: MsgType.Apply, action: MapAction.Task.RepeatTask, content: dataToSend);
+                        SendAMessage(type: MsgType.Apply, action: MapAction.Task.RepeatTask.Name, content: dataToSend);
                     }
                 }
             }

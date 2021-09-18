@@ -12,8 +12,8 @@ namespace iTime
 
         public static void StartTask(dynamic metadata, dynamic content)
         {
-            var applied = FeedbackActions.TimeableStarted;
-            var cannotApply = FeedbackActions.CannotStartTimeable;
+            var applied = MapAction.TimeFeedback.TimeableStarted.Name;
+            var cannotApply = MapAction.TimeFeedback.CannotStartTimeable.Name;
             var statusToApply = TimeStatus.Start;
             Func<dynamic, bool> validationCondition = (time) => time == null || time?.Status != TimeStatus.Start;
             RunAction(metadata, content, cannotApply, applied, statusToApply, validationCondition);
@@ -25,8 +25,8 @@ namespace iTime
 
         public static void PauseTask(dynamic metadata, dynamic content)
         {
-            var applied = FeedbackActions.TimeablePaused;
-            var cannotApply = FeedbackActions.CannotPauseTimeable;
+            var applied = MapAction.TimeFeedback.TimeablePaused.Name;
+            var cannotApply = MapAction.TimeFeedback.CannotPauseTimeable.Name;
             var statusToApply = TimeStatus.Pause;
             Func<dynamic, bool> validationCondition = (time) => time?.Status == TimeStatus.Start;
             RunAction(metadata, content, cannotApply, applied, statusToApply, validationCondition);
@@ -38,8 +38,8 @@ namespace iTime
 
         public static void DoneTask(dynamic metadata, dynamic content)
         {
-            var applied = FeedbackActions.TimeableDone;
-            var cannotApply = FeedbackActions.CannotDoneTimeable;
+            var applied = MapAction.TimeFeedback.TimeableDone.Name;
+            var cannotApply = MapAction.TimeFeedback.CannotDoneTimeable.Name;
             var statusToApply = TimeStatus.Done;
             Func<dynamic, bool> validationCondition = (time) => time == null || time?.Status != TimeStatus.Done;
             RunAction(metadata, content, cannotApply, applied, statusToApply, validationCondition);
@@ -77,9 +77,9 @@ namespace iTime
                    Content = content
                };
 
-            yield return createStep("Start", MapAction.Time.Start, new { ParentId = "[id]", ParentName = "Task", MemberKey = "[memberKey]" });
-            yield return createStep("Pause", MapAction.Time.Pause, new { ParentId = "[id]", ParentName = "Task", MemberKey = "[memberKey]" });
-            yield return createStep("Done", MapAction.Time.Done, new { ParentId = "[id]", ParentName = "Task", MemberKey = "[memberKey]" });
+            yield return createStep("Start", MapAction.Time.Start.Name, new { ParentId = "[id]", ParentName = "Task", MemberKey = "[memberKey]" });
+            yield return createStep("Pause", MapAction.Time.Pause.Name, new { ParentId = "[id]", ParentName = "Task", MemberKey = "[memberKey]" });
+            yield return createStep("Done", MapAction.Time.Done.Name, new { ParentId = "[id]", ParentName = "Task", MemberKey = "[memberKey]" });
         }
 
         #region Implement

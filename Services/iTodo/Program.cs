@@ -38,26 +38,23 @@ namespace iTodo
 
         #region  actions
 
-        Dictionary<string, Action<dynamic, dynamic>> taskActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { MapAction.Task.NewTask, Engine.CreateNewTask },
-                    { MapAction.Task.UpdateDescription, Engine.UpdateDescription },
-                    { MapAction.Task.SetDeadline, Engine.SetDeadline },
-                    { MapAction.Task.SetTag, Engine.SetTag },
-                    { MapAction.Task.SetLocation, Engine.SetLocation },
-                    { MapAction.Task.CloseTask, Engine.CloseTask },
-                    { MapAction.Task.AssignTask, Engine.AssignTask },
-                    { MapAction.Task.DelTask, Engine.DeleteTask },
-                    { MapAction.Task.MoveTask, Engine.MoveTask },
-            };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Task.NewTask, Engine.CreateNewTask ),
+            new MapBinding(MapAction.Task.UpdateDescription, Engine.UpdateDescription ),
+            new MapBinding(MapAction.Task.SetDeadline, Engine.SetDeadline ),
+            new MapBinding(MapAction.Task.SetTag, Engine.SetTag ),
+            new MapBinding(MapAction.Task.SetLocation, Engine.SetLocation ),
+            new MapBinding(MapAction.Task.CloseTask, Engine.CloseTask ),
+            new MapBinding(MapAction.Task.AssignTask, Engine.AssignTask ),
+            new MapBinding(MapAction.Task.DelTask, Engine.DeleteTask ),
+            new MapBinding(MapAction.Task.MoveTask, Engine.MoveTask ),
+            new MapBinding(MapAction.RepeatFeedback.RepeatNewItem , Engine.RepeatTask ),
+        };
 
         #endregion
 
-        //var locationActions = new Dictionary<string, Action<dynamic, dynamic>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
-
-        Dictionary<string, Action<dynamic, dynamic>> commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
-
-        Dictionary<string, Action<dynamic, dynamic>> repeatActions = new Dictionary<string, Action<dynamic, dynamic>> { { FeedbackActions.RepeatTask, Engine.RepeatTask } };
 
         public void Ini()
         {
@@ -70,21 +67,12 @@ namespace iTodo
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[]
-                                {
-                        MessageTopic.Task,
-                        MessageTopic.Location,
-                        MessageTopic.Common,
-                        MessageTopic.RepeatFeedback
-                    }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions);
-            //MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, repeatActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
     }

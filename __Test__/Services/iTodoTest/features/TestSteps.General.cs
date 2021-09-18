@@ -27,8 +27,22 @@ namespace iTest
 
         private void ProducerHelper_OnSendAMessageEvent(object sender, FullMessage e)
         {
-            instance.LastMessage = e;
-            Services.AssistantActions.Db_DbNewDataEvent(null, new DbNewDataEventArgs(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message)));
+            if (instance.LastMessage != e)
+            {
+                instance.LastMessage = e;
+                if (Services.TodoActions.mapping.HasAction(e.Message.Action))
+                    Services.TodoActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
+                if (Services.TimeActions.mapping.HasAction(e.Message.Action))
+                    Services.TimeActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
+                if (Services.GroupActions.mapping.HasAction(e.Message.Action))
+                    Services.GroupActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
+                if (Services.MemoryActions.mapping.HasAction(e.Message.Action))
+                    Services.MemoryActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
+                if (Services.LocationActions.mapping.HasAction(e.Message.Action))
+                    Services.LocationActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
+                if (Services.AssistantActions.mapping.HasAction(e.Message.Action))
+                    Services.AssistantActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
+            }
         }
 
         public DbText TodoDb => Services.TodoDb;

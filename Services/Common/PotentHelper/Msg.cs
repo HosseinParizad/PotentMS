@@ -11,6 +11,12 @@ namespace PotentHelper
         {
             Type = type;
         }
+        public Msg(MsgType type, MapActionItem action, dynamic metadata, dynamic content) : this(type, action.Name, (object)metadata, (object)content)
+        {
+        }
+
+        public Msg(MapActionItem action, dynamic metadata, dynamic content) : this(action.Name, (object)metadata, (object)content)
+        { }
 
         public Msg(string action, dynamic metadata, dynamic content)
         {

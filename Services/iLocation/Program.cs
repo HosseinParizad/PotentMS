@@ -41,17 +41,12 @@ namespace iLocation
         public DbText db = new();
         string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        Dictionary<string, Action<dynamic, dynamic>> actions =
-                new Dictionary<string, Action<dynamic, dynamic>>
-                {
-                                { MapAction.Assistant.RegisterMember, Engine.RegisterMember },
-                                { MapAction.Assistant.TestOnlyLocationChanged, Engine.TestOnlyLocationChanged },
-                };
-
-        Dictionary<string, Action<dynamic, dynamic>> commonActions =
-            new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-            };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Assistant.RegisterMember, Engine.RegisterMember),
+            new MapBinding(MapAction.Assistant.TestOnlyLocationChanged, Engine.TestOnlyLocationChanged),
+        };
 
         public void Ini()
         {
@@ -64,13 +59,12 @@ namespace iLocation
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Time, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
     }

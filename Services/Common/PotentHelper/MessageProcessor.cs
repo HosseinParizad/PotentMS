@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -6,7 +7,7 @@ namespace PotentHelper
 {
     public class MessageProcessor
     {
-        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<dynamic, dynamic>> actions)
+        public static void MapMessageToAction(string appId, string message, List<MapBinding> actions)
         {
             try
             {
@@ -16,11 +17,12 @@ namespace PotentHelper
                 }
 
                 var msg = Helper.DeserializeObject<Msg>(message);
-                if (actions.TryGetValue(msg.Action, out var action))
+                var action = actions.SingleOrDefault(a => a.ActionName == msg.Action);
+                if (action != null)
                 {
                     try
                     {
-                        action(msg.Metadata, msg.Content);
+                        action.Act(msg.Metadata, msg.Content);
                     }
                     catch (Exception ex)
                     {

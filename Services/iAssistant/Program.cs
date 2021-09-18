@@ -21,7 +21,6 @@ namespace iAssistant
             CreateHostBuilder(args).Build().Run();
         }
 
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -36,8 +35,11 @@ namespace iAssistant
         public DbText db = new();
         string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        Dictionary<string, Action<dynamic, dynamic>> commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
-        Dictionary<string, Action<dynamic, dynamic>> taskActions = new Dictionary<string, Action<dynamic, dynamic>> { { FeedbackActions.NewTaskAdded, Engine.OnNewTaskAdded } };
+        public List<MapBinding> mapping = new List<MapBinding>()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.TaskFeedback.NewTaskAdded, Engine.OnNewTaskAdded),
+        };
 
         public void Ini()
         {
@@ -59,17 +61,12 @@ namespace iAssistant
                 db.ReplayAll();
             }
 
-            ConsumerHelper.MapTopicToMethod(new[]
-                                {
-                        MessageTopic.TaskFeedback,
-                        MessageTopic.LocationFeedback,
-                    }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
-            MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
     }

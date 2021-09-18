@@ -25,9 +25,9 @@ namespace iTest
             ProducerHelper.OnSendAMessageEvent -= ProducerHelper_OnSendAMessageEvent;
         }
 
-        private void ProducerHelper_OnSendAMessageEvent(object sender, SendAMessageEventArgs e)
+        private void ProducerHelper_OnSendAMessageEvent(object sender, FullMessage e)
         {
-            instance.LastMessage = new SendAMessageEventArgs(e.Topic, e.Message);
+            instance.LastMessage = e;
             Services.AssistantActions.Db_DbNewDataEvent(null, new DbNewDataEventArgs(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message)));
         }
 
@@ -39,7 +39,7 @@ namespace iTest
         public DbText AssistantDb => Services.AssistantDb;
 
         public static ServiceContiner Services = new ServiceContiner();
-        public SendAMessageEventArgs LastMessage { set; get; }
+        public FullMessage LastMessage { set; get; }
 
         public static TestManager Instance => instance ?? (instance = new TestManager());
         static TestManager instance;

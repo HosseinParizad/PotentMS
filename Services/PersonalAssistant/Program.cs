@@ -1,71 +1,26 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using PotentHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using PotentHelper;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace PersonalAssistant
 {
-    public class Program
+    public partial class Program
     {
-        const string AppGroupId = "PersonalAssistant";
         public static DateTimeOffset StartingTimeApp;
-        static DbText db = new();
 
         public static void Main(string[] args)
         {
             StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
 
-            var taskFeedbackActions =
-                new Dictionary<string, Action<Feedback>>
-                {
-                   { FeedbackGroupNames.Task, Engine.OnTaskFeedback },
-                };
+            var setupActions = new SetupActions();
+            setupActions.Ini();
 
-            var commonActions =
-                new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-                };
-
-            var locationActions =
-                new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "setCurrentLocation", Engine.SetCurrentLocation },
-                };
-
-            var groupFeedbackActions =
-                new Dictionary<string, Action<Feedback>>
-                {
-                    { FeedbackGroupNames.Task, Engine.OnGroupFeedback },
-                };
-
-            db.Initial(AppId + "DB.txt");
-            db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-            {
-                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
-                MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
-                MessageProcessor.MapFeedbackToAction(AppId, e.Text, taskFeedbackActions, true);
-                MessageProcessor.MapFeedbackToAction(AppId, e.Text, groupFeedbackActions, true);
-            }
-
-            db.ReplayAll();
-
-            Parallel.Invoke(
-                    () => CreateHostBuilder(args).Build().Run(),
-                    ConsumerHelper.MapTopicToMethod(
-                        //new[] { MessageTopic.GroupFeedback, MessageTopic.TaskFeedback, MessageTopic.MemoryFeedback, MessageTopic.Memory, MessageTopic.Common, MessageTopic.Location }
-                        new[] { MessageTopic.GroupFeedback, MessageTopic.Common }
-                        , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-                    );
+            CreateHostBuilder(args).Build().Run();
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -73,6 +28,61 @@ namespace PersonalAssistant
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+    }
+
+    public class SetupActions
+    {
+        const string AppGroupId = "PersonalAssistant";
+        public DbText db = new();
+        string AppId = KafkaEnviroment.preFix + AppGroupId;
+
+        Dictionary<string, Action<dynamic, dynamic>> taskFeedbackActions =
+            new Dictionary<string, Action<dynamic, dynamic>>
+            {
+                   { FeedbackActions.NewGoalAdded, Engine.ApplyNewTaskAdded },
+            };
+
+        Dictionary<string, Action<dynamic, dynamic>> commonActions =
+            new Dictionary<string, Action<dynamic, dynamic>> {
+                    { "reset", Engine.Reset },
+            };
+
+        Dictionary<string, Action<dynamic, dynamic>> locationActions =
+            new Dictionary<string, Action<dynamic, dynamic>> {
+                    { "setCurrentLocation", Engine.SetCurrentLocation },
+            };
+
+        Dictionary<string, Action<dynamic, dynamic>> groupFeedbackActions =
+            new Dictionary<string, Action<dynamic, dynamic>>
+            {
+                    { FeedbackActions.NewGoalAdded, Engine.ApplyNewGroupAdded },
+            };
+
+
+        public void Ini()
+        {
+
+
+            db.Initial(AppId + "DB.txt");
+            db.OnDbNewDataEvent += Db_DbNewDataEvent;
+
+            if (KafkaEnviroment.TempPrefix == "Test")
+            {
+                db.ReplayAll();
+            }
+
+            ConsumerHelper.MapTopicToMethod(
+                new[] { MessageTopic.GroupFeedback, MessageTopic.Common }
+                , (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+        }
+
+        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+        {
+            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, taskFeedbackActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, groupFeedbackActions);
+        }
 
     }
 }

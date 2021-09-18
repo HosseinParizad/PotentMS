@@ -39,35 +39,28 @@ namespace iGroup
     public class SetupActions
     {
         const string AppGroupId = "iMemory";
-        //public static DateTimeOffset StartingTimeApp;
+        string AppId = KafkaEnviroment.preFix + AppGroupId;
         public DbText db = new();
+
+        Dictionary<string, Action<dynamic, dynamic>> actions =
+                new Dictionary<string, Action<dynamic, dynamic>>
+                {
+                                { MapAction.Group.NewGroup, Engine.CreateNewGroup },
+                                { MapAction.Group.UpdateGroup, Engine.UpdateGroup },
+                                { MapAction.Group.NewMember, Engine.AddMember },
+                                { MapAction.Group.DeleteMember, Engine.DeleteMember },
+                };
+
+        Dictionary<string, Action<dynamic, dynamic>> commonActions =
+            new Dictionary<string, Action<dynamic, dynamic>> {
+                    { "reset", Engine.Reset },
+            };
 
         public void Ini()
         {
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
-
-            var actions =
-                new Dictionary<string, Action<dynamic, dynamic>>
-                {
-                    { MapAction.Group.NewGroup, Engine.CreateNewGroup },
-                    { MapAction.Group.UpdateGroup, Engine.UpdateGroup },
-                    { MapAction.Group.NewMember, Engine.AddMember },
-                    { MapAction.Group.DeleteMember, Engine.DeleteMember },
-                };
-
-            var commonActions =
-                new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-                };
-
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
 
-            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-            {
-                MessageProcessor.MapMessageToAction(AppId, e.Text, actions, true);
-                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
-            }
             if (KafkaEnviroment.TempPrefix == "Test")
             {
                 db.ReplayAll();
@@ -75,5 +68,12 @@ namespace iGroup
 
             ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Group, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
         }
+
+        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+        {
+            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+        }
+
     }
 }

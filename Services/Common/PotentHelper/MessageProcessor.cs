@@ -6,7 +6,7 @@ namespace PotentHelper
 {
     public class MessageProcessor
     {
-        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<dynamic, dynamic>> actions, bool ignoreMissingAction = false)
+        public static void MapMessageToAction(string appId, string message, Dictionary<string, Action<dynamic, dynamic>> actions)
         {
             try
             {
@@ -28,10 +28,10 @@ namespace PotentHelper
                         Console.WriteLine($"<><><><> {appId} <><><><> cannot run action. {message}");
                     }
                 }
-                else if (!ignoreMissingAction)
-                {
-                    Console.WriteLine($"<><><><> {appId} <><><><> action is not specified. {message}");
-                }
+                //else if (!ignoreMissingAction)
+                //{
+                //    Console.WriteLine($"<><><><> {appId} <><><><> action is not specified. {message}");
+                //}
             }
             catch (Exception ex)
             {
@@ -40,39 +40,39 @@ namespace PotentHelper
             }
         }
 
-        public static void MapFeedbackToAction(string appId, string message, Dictionary<string, Action<Feedback>> actions, bool ignoreMissingAction = true)
-        {
-            try
-            {
-                if (message.Length < 10)
-                {
-                    return;
-                }
+        //public static void MapFeedbackToAction(string appId, string message, Dictionary<string, Action<Feedback>> actions, bool ignoreMissingAction = true)
+        //{
+        //    try
+        //    {
+        //        if (message.Length < 10)
+        //        {
+        //            return;
+        //        }
 
-                var msg = Helper.DeserializeObject<Feedback>(message);
-                if (actions.TryGetValue(msg.Action, out var action))
-                {
-                    try
-                    {
-                        action(msg);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        Console.WriteLine($"*{appId}%%%%%% Feedback %%%%% cannot run action. {message}");
-                    }
-                }
-                else if (!ignoreMissingAction)
-                {
-                    Console.WriteLine($"*{appId}%%%%%% Feedback is not specified. {message}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine($"*{appId}%%%%% Feedback %%%%% format is wrong. {message}");
-            }
-        }
+        //        var msg = Helper.DeserializeObject<Feedback>(message);
+        //        if (actions.TryGetValue(msg.Action, out var action))
+        //        {
+        //            try
+        //            {
+        //                action(msg);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine(ex.Message);
+        //                Console.WriteLine($"*{appId}%%%%%% Feedback %%%%% cannot run action. {message}");
+        //            }
+        //        }
+        //        else if (!ignoreMissingAction)
+        //        {
+        //            Console.WriteLine($"*{appId}%%%%%% Feedback is not specified. {message}");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        Console.WriteLine($"*{appId}%%%%% Feedback %%%%% format is wrong. {message}");
+        //    }
+        //}
 
         public static void MapMessageToAction(string appId, string message, Action<string> action)
         {

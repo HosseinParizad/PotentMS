@@ -9,85 +9,22 @@ namespace PersonalAssistant
 
     internal class Engine
     {
-        internal static void OnTaskFeedback(Feedback feedback)
+        //static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
+        //{
+        //    if (Program.StartingTimeApp < actionTime)
+        //    {
+
+        //        ProducerHelper.SendAMessage(
+        //                       MessageTopic.PersonalAssistantFeedback,
+        //                       new Feedback(type: type, action: action, metadata: metadata, content: content)
+        //                      )
+        //                   .GetAwaiter().GetResult();
+        //    }
+        //}
+
+        public static void ApplyNewGroupAdded(dynamic metadata, dynamic content)
         {
-            switch (feedback.Action)
-            {
-                case FeedbackActions.NewTagAdded:
-                    ApplyNewTagAdded(feedback);
-                    break;
-
-                case FeedbackActions.NewLocationAdded:
-                    ApplyLocationAdded(feedback);
-                    break;
-
-                case FeedbackActions.DeadlineUpdated:
-                    ApplyDeadlineUpdated(feedback);
-                    break;
-
-                case FeedbackActions.NewTaskAdded:
-                    ApplyNewTaskAdded(feedback);
-                    break;
-
-                case FeedbackActions.TaskAssginedToMember:
-                    ApplyTaskAssginedToMember(feedback);
-                    break;
-
-                case FeedbackActions.updateTaskDescription:
-                    ApplyUpdateTaskDescription(feedback);
-                    break;
-
-                case FeedbackActions.TaskDeleted:
-                    ApplyTaskDeleted(feedback);
-                    break;
-
-                //case FeedbackActions.TaskStarted:
-                //    ApplyStartTask(feedback);
-                //    break;
-
-                //case FeedbackActions.TaskPaused:
-                //    ApplyPauseTask(feedback);
-                //    break;
-
-                case FeedbackActions.TaskClosed:
-                    //ApplyCloseTask(feedback);
-                    break;
-
-                default:
-                    break;
-            }
-
-            //            SendFeedbackMessage(FeedbackType.Info, "Info", DateTimeOffset.Parse(feedback.Metadata.CreateDate.ToString()), Helper.GetMetadataByGroupKey(feedback.Metadata.GroupKey.ToString()), "Feedback Processed in Personal Assistant!");
-        }
-
-        internal static void OnGroupFeedback(Feedback feedback)
-        {
-            switch (feedback.Action)
-            {
-                case FeedbackActions.NewGroupAdded:
-                    ApplyNewGroupAdded(feedback);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic metadata, dynamic content)
-        {
-            if (Program.StartingTimeApp < actionTime)
-            {
-
-                ProducerHelper.SendAMessage(
-                               MessageTopic.PersonalAssistantFeedback,
-                               new Feedback(type: type, action: action, metadata: metadata, content: content)
-                              )
-                           .GetAwaiter().GetResult();
-            }
-        }
-
-        static void ApplyNewGroupAdded(Feedback feedback)
-        {
-            var data = feedback.Content;
+            var data = content;
             var memberKey = data.MemberKey.ToString();
             var groupKey = data.GroupKey.ToString();
 
@@ -102,16 +39,16 @@ namespace PersonalAssistant
             }
         }
 
-        static void ApplyNewTaskAdded(Feedback feedback)
+        public static void ApplyNewTaskAdded(dynamic metadata, dynamic content)
         {
-            ApplyNewItemAdded(feedback, Tasks, OnTaskChanged, () => new TodoItem());
+            //ApplyNewItemAdded(metadata, content, Tasks, OnTaskChanged, () => new TodoItem());
         }
 
-        static void ApplyNewItemAdded<T>(Feedback feedback, List<T> list, Action<string> OnListChange, Func<T> GetNewItem)
+        public static void ApplyNewItemAdded<T>(dynamic metadata, dynamic content, List<T> list, Action<string> OnListChange, Func<T> GetNewItem)
             where T : TodoItem
         {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var data = content;
+            var groupKey = metadata.GroupKey.ToString();
             var id = data.Id.ToString();
             var text = data.Text.ToString();
 
@@ -132,10 +69,10 @@ namespace PersonalAssistant
             OnListChange(groupKey);
         }
 
-        static void ApplyUpdateTaskDescription(Feedback feedback)
+        public static void ApplyUpdateTaskDescription(dynamic metadata, dynamic content)
         {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var data = content;
+            var groupKey = metadata.GroupKey.ToString();
             var id = data.Id.ToString();
             var text = data.Description.ToString();
             Tasks.Single(d => d.Id == id).Text = text;
@@ -143,10 +80,10 @@ namespace PersonalAssistant
         }
 
 
-        static void ApplyTaskAssginedToMember(Feedback feedback)
+        public static void ApplyTaskAssginedToMember(dynamic metadata, dynamic content)
         {
-            var data = feedback.Content;
-            //var groupKey = feedback.Metadata.GroupKey.ToString();
+            var data = content;
+            //var groupKey = metadata.GroupKey.ToString();
             var id = data.Id.ToString();
             var member = data.MemberKey.ToString();
             var task = Tasks.SingleOrDefault(t => t.Id == id);
@@ -156,10 +93,10 @@ namespace PersonalAssistant
             }
         }
 
-        static void ApplyNewTagAdded(Feedback feedback)
+        public static void ApplyNewTagAdded(dynamic metadata, dynamic content)
         {
-            var newTag = feedback.Content.ToString();
-            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var newTag = content.ToString();
+            var groupKey = metadata.GroupKey.ToString();
             List<BadgeItem> badges = GetDashboardSectionBadges(groupKey, "Tag");
             if (!badges.Any(b => b.Text == newTag))
             {
@@ -167,10 +104,10 @@ namespace PersonalAssistant
             }
         }
 
-        static void ApplyLocationAdded(Feedback feedback)
+        public static void ApplyLocationAdded(dynamic metadata, dynamic content)
         {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var data = content;
+            var groupKey = metadata.GroupKey.ToString();
             var key = groupKey;
             var location = data.Location.ToString();
             List<BadgeItem> badges = GetDashboardSectionBadges(key, "UsedLocations");
@@ -190,10 +127,10 @@ namespace PersonalAssistant
             GetDashboardOrAdd(key).Locations.Add(location);
         }
 
-        static void ApplyDeadlineUpdated(Feedback feedback)
+        public static void ApplyDeadlineUpdated(dynamic metadata, dynamic content)
         {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var data = content;
+            var groupKey = metadata.GroupKey.ToString();
             var id = data.Id.ToString();
             var deadline = data.Deadline;
             var task = Tasks.Single(t => t.Id == id);
@@ -204,10 +141,10 @@ namespace PersonalAssistant
             OnTaskChanged(groupKey);
         }
 
-        static void ApplyTaskDeleted(Feedback feedback)
+        public static void ApplyTaskDeleted(dynamic metadata, dynamic content)
         {
-            var data = feedback.Content;
-            var groupKey = feedback.Metadata.GroupKey.ToString();
+            var data = content;
+            var groupKey = metadata.GroupKey.ToString();
             var id = data.Id.ToString();
             TodoItem task = Tasks.SingleOrDefault(t => t.Id == id);
             if (task != null)
@@ -225,19 +162,19 @@ namespace PersonalAssistant
             }
         }
 
-        //static void ApplyStartTask(Feedback feedback)
+        //static void ApplyStartTask(dynamic metadata, dynamic content)
         //{
-        //    var data = feedback.Content;
-        //    var groupKey = feedback.Metadata.GroupKey.ToString();
+        //    var data = content;
+        //    var groupKey = metadata.GroupKey.ToString();
         //    var id = data.Id.ToString();
         //    Tasks.Single(d => d.Id == id).Status = TodoStatus.start;
         //    OnTaskChanged(groupKey);
         //}
 
-        //static void ApplyPauseTask(Feedback feedback)
+        //static void ApplyPauseTask(dynamic metadata, dynamic content)
         //{
-        //    var data = feedback.Content;
-        //    var groupKey = feedback.Metadata.GroupKey.ToString();
+        //    var data = content;
+        //    var groupKey = metadata.GroupKey.ToString();
         //    var id = data.Id.ToString();
         //    Tasks.Single(d => d.Id == id).Status = TodoStatus.pause;
         //    OnTaskChanged(groupKey);

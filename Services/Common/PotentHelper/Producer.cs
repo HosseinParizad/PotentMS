@@ -7,31 +7,24 @@ namespace PotentHelper
 {
     public class ProducerHelper
     {
-        public delegate void SendAMessageEventHandler(object sender, SendAMessageEventArgs e);
+        public delegate void SendAMessageEventHandler(object sender, FullMessage e);
 
         public static event SendAMessageEventHandler OnSendAMessageEvent;
 
-        public static async Task SendAMessage(string topic, Msg obj)
+        public static async Task SendAMessage(string topic, Msg msg)
         {
-            //var dyn = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
-            await SendMessageCore(topic, obj);
+            await SendAMessage(new FullMessage(topic, msg));
         }
 
-        public static async Task SendAMessage(string topic, Feedback obj)
-        {
-            //var dyn = Helper.DeserializeObject<dynamic>(System.Text.Json.JsonSerializer.Serialize(obj)); //Todo:remove
-            await SendMessageCore(topic, obj);
-        }
-
-        static async Task SendMessageCore(string topic, dynamic obj)
+        public static async Task SendAMessage(FullMessage message)
         {
             if (OnSendAMessageEvent != null)
             {
-                OnSendAMessageEvent.Invoke(null, new SendAMessageEventArgs(topic, new Msg(obj.Action.ToString(), obj.Metadata, obj.Content)));
+                OnSendAMessageEvent.Invoke(null, new FullMessage(message.Topic, message.Message));
             }
             else
             {
-                var metadata = obj.Metadata;
+                var metadata = message.Message.Metadata;
                 if (metadata.ReferenceKey == null)
                 {
                     metadata.ReferenceKey = Guid.NewGuid().ToString();
@@ -44,7 +37,7 @@ namespace PotentHelper
                 {
                     metadata.Version = "V0.0";
                 }
-                var msg = JsonConvert.SerializeObject(obj);
+                var msg = JsonConvert.SerializeObject(message.Message);
                 var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
 
                 // If serializers are not specified, default serializers from
@@ -54,7 +47,7 @@ namespace PotentHelper
                 {
                     try
                     {
-                        var dr = await p.ProduceAsync(KafkaEnviroment.preFix + topic, new Message<Null, string> { Value = msg });
+                        var dr = await p.ProduceAsync(KafkaEnviroment.preFix + message.Topic, new Message<Null, string> { Value = msg });
                         //Console.WriteLine($"{topic} -> Delivered '{dr.Value}' to '{dr.TopicPartitionOffset}'");
                     }
                     catch (ProduceException<Null, string> e)
@@ -64,15 +57,5 @@ namespace PotentHelper
                 }
             }
         }
-    }
-    public class SendAMessageEventArgs
-    {
-        public SendAMessageEventArgs(string topic, Msg msg)
-        {
-            Topic = topic;
-            Message = msg;
-        }
-        public string Topic { get; set; }
-        public Msg Message { get; set; }
     }
 }

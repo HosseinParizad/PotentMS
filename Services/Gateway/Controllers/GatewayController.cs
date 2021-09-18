@@ -124,18 +124,5 @@ namespace Gateway.Controllers
             ConsumerHelper.deleteTopics(topicNameList);
             return StatusCode(StatusCodes.Status200OK);
         }
-
-
-        internal static void MessageReceived(Feedback feedback)
-        {
-            FeedbackQueue.Add(JsonConvert.SerializeObject(feedback.Content));
-        }
-
-        internal static void PAMessageReceived(Feedback feedback)
-        {
-            PAFeedbackQueue.Add(JsonConvert.SerializeObject(feedback.Content));
-        }
-
-
     }
 }

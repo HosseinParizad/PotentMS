@@ -26,14 +26,14 @@ namespace iAssistant
             return presentItem;
         }
 
-        internal static void TaskFeedback(Feedback feedback)
+        internal static void OnNewTaskAdded(dynamic metadata, dynamic content)
         {
             Todos.Add(new TodoItem
             {
-                Id = feedback.Content.Id.ToString(),
-                Text = feedback.Content.Text.ToString(),
-                ParentId = feedback.Content.ParentId.ToString(),
-                GroupKey = feedback.Metadata.GroupKey.ToString()
+                Id = content.Id.ToString(),
+                Text = content.Text.ToString(),
+                ParentId = content.ParentId.ToString(),
+                GroupKey = metadata.GroupKey.ToString()
 
             });
             //          var id = feedback.Content.Id.ToString();
@@ -72,17 +72,17 @@ namespace iAssistant
 
         #region Implement
 
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
-        {
-            if (Program.StartingTimeApp < actionTime)
-            {
-                ProducerHelper.SendAMessage(
-                        MessageTopic.GoalFeedback,
-                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                        )
-                .GetAwaiter().GetResult();
-            }
-        }
+        //static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        //{
+        //    if (Program.StartingTimeApp < actionTime)
+        //    {
+        //        ProducerHelper.SendAMessage(
+        //                MessageTopic.GoalFeedback,
+        //                new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
+        //                )
+        //        .GetAwaiter().GetResult();
+        //    }
+        //}
 
         static DateTimeOffset GetCreateDate(dynamic metadata)
         {

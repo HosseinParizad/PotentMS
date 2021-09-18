@@ -34,14 +34,12 @@ namespace iTodo
     {
         const string AppGroupId = "iTodo";
         public DbText db = new();
-        public void Ini()
-        {
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
+        string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-            #region  actions
+        #region  actions
 
-            var taskActions =
-                new Dictionary<string, Action<dynamic, dynamic>> {
+        Dictionary<string, Action<dynamic, dynamic>> taskActions =
+            new Dictionary<string, Action<dynamic, dynamic>> {
                     { MapAction.Task.NewTask, Engine.CreateNewTask },
                     { MapAction.Task.UpdateDescription, Engine.UpdateDescription },
                     { MapAction.Task.SetDeadline, Engine.SetDeadline },
@@ -51,26 +49,21 @@ namespace iTodo
                     { MapAction.Task.AssignTask, Engine.AssignTask },
                     { MapAction.Task.DelTask, Engine.DeleteTask },
                     { MapAction.Task.MoveTask, Engine.MoveTask },
-                };
+            };
 
-            #endregion
+        #endregion
 
-            //var locationActions = new Dictionary<string, Action<dynamic, dynamic>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
+        //var locationActions = new Dictionary<string, Action<dynamic, dynamic>> { { MapAction.Location.SetCurrentLocation, Engine.SetCurrentLocation }, };
 
-            var commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
+        Dictionary<string, Action<dynamic, dynamic>> commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
 
-            var repeatActions = new Dictionary<string, Action<Feedback>> { { MapAction.Task.RepeatTask, Engine.RepeatTask } };
+        Dictionary<string, Action<dynamic, dynamic>> repeatActions = new Dictionary<string, Action<dynamic, dynamic>> { { FeedbackActions.RepeatTask, Engine.RepeatTask } };
+
+        public void Ini()
+        {
 
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-            {
-                MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions, true);
-                //MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
-                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
-                MessageProcessor.MapFeedbackToAction(AppId, e.Text, repeatActions, true);
-            }
 
             if (KafkaEnviroment.TempPrefix == "Test")
             {
@@ -85,5 +78,14 @@ namespace iTodo
                         MessageTopic.RepeatFeedback
                     }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
         }
+
+        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+        {
+            MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions);
+            //MessageProcessor.MapMessageToAction(AppId, e.Text, locationActions, true);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, repeatActions);
+        }
+
     }
 }

@@ -240,12 +240,12 @@ namespace iTodo
 
         #region RepeatTask
 
-        public static void RepeatTask(Feedback feedback)
+        public static void RepeatTask(dynamic metadata, dynamic content)
         {
-            var id = feedback.Content.Id.ToString();
-            var repeatIfAllClosed = bool.Parse(feedback.Content.RepeatIfAllClosed?.ToString() ?? "false");
-            var date = DateTimeOffset.Parse(feedback.Content.LastGeneratedTime.ToString());
-            var hours = int.Parse(feedback.Content.Hours.ToString());
+            var id = content.Id.ToString();
+            var repeatIfAllClosed = bool.Parse(content.RepeatIfAllClosed?.ToString() ?? "false");
+            var date = DateTimeOffset.Parse(content.LastGeneratedTime.ToString());
+            var hours = int.Parse(content.Hours.ToString());
             var dateStr = " (" + date.Date.ToShortDateString() + ")";
 
             TodoItem task = Todos.FirstOrDefault(t => t.Id == id);
@@ -254,7 +254,7 @@ namespace iTodo
                 var shouldRepeat = !repeatIfAllClosed || !Todos.Where(t => (t.OriginalRepeatId == id || t.Id == id) && t.Status != TodoStatus.Close).Any();
                 if (shouldRepeat)
                 {
-                    AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id, actionTime: GetCreateDate(feedback.Metadata));
+                    AddTaskAndChildrenRepeat(task, task.ParentId, dateStr, hours, id, actionTime: GetCreateDate(metadata));
                 }
             }
         }

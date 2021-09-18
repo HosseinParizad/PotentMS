@@ -38,35 +38,28 @@ namespace iMemory
     public class SetupActions
     {
         const string AppGroupId = "iMemory";
-        //public static DateTimeOffset StartingTimeApp;
         public DbText db = new();
+        string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        public void Ini()
-        {
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
-
-            var actions =
-                new Dictionary<string, Action<dynamic, dynamic>>
-                {
+        Dictionary<string, Action<dynamic, dynamic>> actions =
+            new Dictionary<string, Action<dynamic, dynamic>>
+            {
                     { MapAction.Memory.NewMemory, Engine.CreateNewMemory },
                     { MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory },
                     { MapAction.Memory.DelMemory, Engine.DeleteMemory },
                     { MapAction.Memory.LearntMemory, Engine.LearnMemory },
-                };
+            };
 
-            var commonActions =
-                new Dictionary<string, Action<dynamic, dynamic>> {
+        Dictionary<string, Action<dynamic, dynamic>> commonActions =
+            new Dictionary<string, Action<dynamic, dynamic>> {
                     { "reset", Engine.Reset },
-                };
+            };
+
+        public void Ini()
+        {
 
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-            {
-                MessageProcessor.MapMessageToAction(AppId, e.Text, actions, true);
-                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
-            }
 
             if (KafkaEnviroment.TempPrefix == "Test")
             {
@@ -75,5 +68,13 @@ namespace iMemory
 
             ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Memory, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
         }
+
+        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+        {
+            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+        }
+
+
     }
 }

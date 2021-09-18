@@ -12,45 +12,17 @@ namespace iGoal
 {
     public class Program
     {
-        const string AppGroupId = "iGoal";
         public static DateTimeOffset StartingTimeApp;
-        static DbText db = new();
 
         public static void Main(string[] args)
         {
             StartingTimeApp = DateTimeOffset.Now;
             KafkaEnviroment.TempPrefix = args[0];
-            var AppId = KafkaEnviroment.preFix + AppGroupId;
 
-            var actions =
-                new Dictionary<string, Action<dynamic, dynamic>>
-                {
-                    { MapAction.Goal.NewGoal, Engine.CreateNewGoal },
-                    { MapAction.Goal.DelGoal, Engine.DeleteGoal },
-                    { MapAction.Goal.UpdateGoal, Engine.UpdateGoal },
-                };
+            var setupActions = new SetupActions();
+            setupActions.Ini();
 
-            var commonActions =
-                new Dictionary<string, Action<dynamic, dynamic>> {
-                    { "reset", Engine.Reset },
-                };
-
-            db.Initial(AppId + "DB.txt");
-            db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-            {
-                MessageProcessor.MapMessageToAction(AppId, e.Text, actions, true);
-                MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
-            }
-
-            db.ReplayAll();
-
-            Parallel.Invoke(
-                () => CreateHostBuilder(args).Build().Run(),
-                ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Goal, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId)
-            );
-
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -60,4 +32,46 @@ namespace iGoal
                     webBuilder.UseStartup<Startup>();
                 });
     }
+
+    public class SetupActions
+    {
+        const string AppGroupId = "iGoal";
+        public DbText db = new();
+        string AppId = KafkaEnviroment.preFix + AppGroupId;
+
+        Dictionary<string, Action<dynamic, dynamic>> actions =
+            new Dictionary<string, Action<dynamic, dynamic>>
+            {
+                    { MapAction.Goal.NewGoal, Engine.CreateNewGoal },
+                    { MapAction.Goal.DelGoal, Engine.DeleteGoal },
+                    { MapAction.Goal.UpdateGoal, Engine.UpdateGoal },
+            };
+
+        Dictionary<string, Action<dynamic, dynamic>> commonActions =
+            new Dictionary<string, Action<dynamic, dynamic>> {
+                    { "reset", Engine.Reset },
+            };
+
+        public void Ini()
+        {
+
+            db.Initial(AppId + "DB.txt");
+            db.OnDbNewDataEvent += Db_DbNewDataEvent;
+
+            if (KafkaEnviroment.TempPrefix == "Test")
+            {
+                db.ReplayAll();
+            }
+
+            ConsumerHelper.MapTopicToMethod(new[] { MessageTopic.Goal, MessageTopic.Common }, (m) => MessageProcessor.MapMessageToAction(AppId, m, (m) => db.Add(m)), AppId);
+        }
+
+        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+        {
+            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, actions);
+        }
+
+    }
+
 }

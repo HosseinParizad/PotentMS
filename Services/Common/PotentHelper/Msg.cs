@@ -5,8 +5,8 @@ namespace PotentHelper
 {
     public class Msg : IMessageContract
     {
-        public Msg()
-        { }
+        public Msg() { }
+
         public Msg(MsgType type, string action, dynamic metadata, dynamic content) : this(action, (object)metadata, (object)content)
         {
             Type = type;
@@ -16,12 +16,12 @@ namespace PotentHelper
         {
             if (string.IsNullOrEmpty(action))
             {
-                throw new System.ArgumentException($"'{nameof(action)}' cannot be null or empty.", nameof(action));
+                throw new ArgumentException($"'{nameof(action)}' cannot be null or empty.", nameof(action));
             }
 
             if (string.IsNullOrEmpty(metadata?.ToString()))
             {
-                throw new System.ArgumentException($"'{nameof(metadata)}' cannot be null or empty.", nameof(metadata));
+                throw new ArgumentException($"'{nameof(metadata)}' cannot be null or empty.", nameof(metadata));
             }
 
             Type = MsgType.Command;
@@ -39,5 +39,16 @@ namespace PotentHelper
         {
             return JsonConvert.SerializeObject(this);
         }
+    }
+
+    public class FullMessage
+    {
+        public FullMessage(string topic, Msg message)
+        {
+            Topic = topic;
+            Message = message;
+        }
+        public string Topic { get; set; }
+        public Msg Message { get; set; }
     }
 }

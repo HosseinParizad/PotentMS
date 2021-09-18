@@ -37,7 +37,7 @@ namespace iAssistant
         string AppId = KafkaEnviroment.preFix + AppGroupId;
 
         Dictionary<string, Action<dynamic, dynamic>> commonActions = new Dictionary<string, Action<dynamic, dynamic>> { { "reset", Engine.Reset }, };
-        Dictionary<string, Action<Feedback>> taskActions = new Dictionary<string, Action<Feedback>> { { FeedbackActions.NewTaskAdded, Engine.TaskFeedback } };
+        Dictionary<string, Action<dynamic, dynamic>> taskActions = new Dictionary<string, Action<dynamic, dynamic>> { { FeedbackActions.NewTaskAdded, Engine.OnNewTaskAdded } };
 
         public void Ini()
         {
@@ -50,7 +50,6 @@ namespace iAssistant
             //    };
 
             #endregion
-
 
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
@@ -69,8 +68,8 @@ namespace iAssistant
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
         {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions, true);
-            MessageProcessor.MapFeedbackToAction(AppId, e.Text, taskActions, true);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, commonActions);
+            MessageProcessor.MapMessageToAction(AppId, e.Text, taskActions);
         }
 
     }

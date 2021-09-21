@@ -7,7 +7,7 @@ namespace PotentHelper
     {
         bool Initial(string name, string defaultFolder);
         Task<bool> AddAsync(string msg);
-        bool Add(string msg);
+        void Add(string msg);
         Task<string[]> GetAllAsync();
         string[] GetAll();
         void ReplayAll();

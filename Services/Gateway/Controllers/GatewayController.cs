@@ -17,6 +17,9 @@ namespace Gateway.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Msg msg)
         {
+            // msg.Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Metadata.ToString(), msg.Metadata);
+            // msg.Content = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Content.ToString(), msg.Content);
+            msg.ToFix();
             var task = ProducerHelper.SendAMessage(MessageTopic.Task, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -31,6 +34,7 @@ namespace Gateway.Controllers
         [Route("Location")]
         public IActionResult PostLocation([FromBody] Msg msg)
         {
+            msg.ToFix();
             var task = ProducerHelper.SendAMessage(MessageTopic.Location, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -40,6 +44,7 @@ namespace Gateway.Controllers
         [Route("Repeat")]
         public IActionResult PostRepeat([FromBody] Msg msg)
         {
+            msg.ToFix();
             var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -49,6 +54,7 @@ namespace Gateway.Controllers
         [Route("Memory")]
         public IActionResult PostMemory([FromBody] Msg msg)
         {
+            msg.ToFix();
             var task = ProducerHelper.SendAMessage(MessageTopic.Memory, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -58,6 +64,7 @@ namespace Gateway.Controllers
         [Route("Group")]
         public IActionResult PostGroup([FromBody] Msg msg)
         {
+            msg.ToFix();
             var task = ProducerHelper.SendAMessage(MessageTopic.Group, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -67,6 +74,10 @@ namespace Gateway.Controllers
         [Route("Goal")]
         public IActionResult PostGoal([FromBody] Msg msg)
         {
+            msg.ToFix();
+            // msg.Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Metadata.ToString(), msg.Metadata);
+            // msg.Content = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Content.ToString(), msg.Content);
+
             var task = ProducerHelper.SendAMessage(MessageTopic.Goal, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
@@ -76,6 +87,7 @@ namespace Gateway.Controllers
         [Route("Common")]
         public IActionResult PostCommon([FromBody] Msg msg)
         {
+            msg.ToFix();
             var task = ProducerHelper.SendAMessage(MessageTopic.Common, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);

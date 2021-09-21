@@ -225,7 +225,7 @@ namespace PotentHelper
         }
         public static List<string> Topics(this List<MapBinding> list)
         {
-            return list.Select(l => l.Topic).Distinct().ToList();
+            return list.Select(l => l.Topic).Distinct().Where(t => t != "").ToList();
         }
         public static bool HasAction(this List<MapBinding> list, string action)
         {

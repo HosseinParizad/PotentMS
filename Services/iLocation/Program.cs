@@ -39,7 +39,7 @@ namespace iLocation
     {
         const string AppGroupId = "iLocation";
         public DbText db = new();
-        string AppId = KafkaEnviroment.preFix + AppGroupId;
+        public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
         public List<MapBinding> mapping = new List<MapBinding>()
         {
@@ -48,18 +48,12 @@ namespace iLocation
             new MapBinding(MapAction.Assistant.TestOnlyLocationChanged, Engine.TestOnlyLocationChanged),
         };
 
-        public void Ini()
+        public async void Ini()
         {
+
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-
-            if (KafkaEnviroment.TempPrefix == "Test")
-            {
-                db.ReplayAll();
-            }
-
-            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
+            await MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -67,5 +61,6 @@ namespace iLocation
             MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
     }
 }

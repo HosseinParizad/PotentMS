@@ -15,7 +15,7 @@ namespace Gateway
         public static void Main(string[] args)
         {
             //StartingTimeApp = DateTimeOffset.Now;
-            //KafkaEnviroment.TempPrefix = args[0];
+            KafkaEnviroment.TempPrefix = args[0];
 
             //var setupActions = new SetupActions();
             //setupActions.Ini();

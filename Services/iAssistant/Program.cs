@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace iAssistant
 {
@@ -33,7 +35,7 @@ namespace iAssistant
     {
         const string AppGroupId = "iAssistant";
         public DbText db = new();
-        string AppId = KafkaEnviroment.preFix + AppGroupId;
+        public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
         public List<MapBinding> mapping = new List<MapBinding>()
         {
@@ -43,27 +45,12 @@ namespace iAssistant
             new MapBinding(MapAction.TaskFeedback.NewLocationAdded, Engine.MemberSetLocation),
         };
 
-        public void Ini()
+        public async void Ini()
         {
-
-            #region  actions
-
-            //var taskActions =
-            //    new Dictionary<string, Action<dynamic, dynamic>> {
-            //        { MapAction.Task.NewTask, Engine.CreateNewTask },
-            //    };
-
-            #endregion
 
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            if (KafkaEnviroment.TempPrefix == "Test")
-            {
-                db.ReplayAll();
-            }
-
-            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
+            await MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -71,5 +58,6 @@ namespace iAssistant
             MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
     }
 }

@@ -16,6 +16,8 @@ FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5014"`) DO taskkill /F
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5015"`) DO taskkill /F /PID %%i
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5016"`) DO taskkill /F /PID %%i
 FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5017"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5018"`) DO taskkill /F /PID %%i
+FOR /F "usebackq tokens=5" %%i IN (`netstat -aon ^| find "5019"`) DO taskkill /F /PID %%i
 
 
  @echo off

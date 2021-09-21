@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace iTodo
 {
@@ -18,9 +21,21 @@ namespace iTodo
             var setupActions = new SetupActions();
             setupActions.Ini();
 
-            CreateHostBuilder(args).Build().Run();
-        }
+            //Console.WriteLine("ooooooooooooooooooooooooooooooooooooooooooo");
+            var source = new CancellationTokenSource();
+            var token = source.Token;
 
+            //_ = ConsumerHelper.MapTopicToMethod(setupActions.mapping, setupActions.db, setupActions.AppId);
+            //_ = new ConsumerHelper("localhost:9092", new List<string>() { "TestTask" }, token,(m) => setupActions.db.Add(m), "TTooooT");
+            //_ = ConsumerHelper.MapTopicToMethod(setupActions.mapping, setupActions.db, setupActions.AppId).ToList();
+
+            CreateHostBuilder(args).Build().Run();
+            //Parallel.Invoke(
+            //        () => CreateHostBuilder(args).Build().Run(),
+            //        ConsumerHelper.MapTopicToMethod(setupActions.mapping, setupActions.db, setupActions.AppId)
+            //    );
+
+        }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -34,7 +49,7 @@ namespace iTodo
     {
         const string AppGroupId = "iTodo";
         public DbText db = new();
-        string AppId = KafkaEnviroment.preFix + AppGroupId;
+        public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
         #region  actions
 
@@ -56,18 +71,12 @@ namespace iTodo
         #endregion
 
 
-        public void Ini()
+        public async void Ini()
         {
 
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            if (KafkaEnviroment.TempPrefix == "Test")
-            {
-                db.ReplayAll();
-            }
-
-            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
+            await MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -75,5 +84,6 @@ namespace iTodo
             MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
     }
 }

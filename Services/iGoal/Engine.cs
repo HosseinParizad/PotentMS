@@ -61,6 +61,7 @@ namespace iGoal
 
         internal static IEnumerable<PresentItem> GetGoalPresentation(string groupKey, string parentid)
         {
+            Console.WriteLine("oooooooooooooooooooooiiiiiiiiiiiiiiiiiiiiiiiiiiiiiooooooooooooooooooooooooo");
             return Goals.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).Select(i => GoalToPresentation(groupKey, i));
         }
 

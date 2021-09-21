@@ -8,18 +8,19 @@ namespace PotentHelper
 {
     public class ConsumerHelper
     {
-        //public static Action MapTopicToMethod(string[] topics, Action<string> onMessageReceived, string groupId)
-        //{
-        public static Action MapTopicToMethod(List<MapBinding> actions, DbText db, string groupId)
+        public static IEnumerable<ConsumerHelper> MapTopicToMethod(List<MapBinding> actions, DbText db, string groupId)
         {
-            return () =>
-            {
-                var source = new CancellationTokenSource();
-                var token = source.Token;
+            // return () =>
+            // {
+            var source = new CancellationTokenSource();
+            var token = source.Token;
 
-                Action<string> onMessageReceived = (m) => db.Add(m);
-                _ = new ConsumerHelper("localhost:9092", actions.Topics().Select(a => GetTopic(a)).ToList(), token, onMessageReceived, groupId);
-            };
+            var topics = actions.Topics().Where(t => t != "").Select(a => GetTopic(a)).ToList();
+            foreach (var t in topics)
+            {
+                yield return new ConsumerHelper("localhost:9092", new List<string>() { t }, token, (m) => MessageProcessor.MapMessageToAction(groupId, m, (m) => db.Add(m)), groupId);
+            }
+            //};
         }
 
         static string GetTopic(string topic) => KafkaEnviroment.preFix + topic;

@@ -25,7 +25,6 @@ namespace iGroup
             setupActions.Ini();
 
             CreateHostBuilder(args).Build().Run();
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -38,8 +37,8 @@ namespace iGroup
 
     public class SetupActions
     {
-        const string AppGroupId = "iMemory";
-        string AppId = KafkaEnviroment.preFix + AppGroupId;
+        const string AppGroupId = "iGroup";
+        public string AppId = KafkaEnviroment.preFix + AppGroupId;
         public DbText db = new();
 
         public List<MapBinding> mapping = new List<MapBinding>()
@@ -51,17 +50,12 @@ namespace iGroup
             new MapBinding(MapAction.Group.DeleteMember, Engine.DeleteMember),
         };
 
-        public void Ini()
+        public async void Ini()
         {
+
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            if (KafkaEnviroment.TempPrefix == "Test")
-            {
-                db.ReplayAll();
-            }
-
-            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
+            await MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -69,5 +63,6 @@ namespace iGroup
             MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
     }
 }

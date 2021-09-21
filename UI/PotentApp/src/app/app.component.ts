@@ -48,14 +48,14 @@ export class AppComponent implements OnInit {
 
           this.cats.push(row);
           if (this.selected.Group == undefined) {
-            this.selected.Group = row.Id;
+            this.selected.Group = "Family";
           }
         });
       });
   }
 
   addSection(row: any, group: string, url: string) {
-    this.http.get<any>(url + row.Id)
+    this.http.get<any>(url + "Family")
       .subscribe(data => {
         setTimeout(() => {
           row.Parts.filter((i: any) => i.Text == group)[0].Badges = data;
@@ -91,7 +91,7 @@ export class AppComponent implements OnInit {
   }
 
   BodyMaker(action: string, groupKey: string, content: any) {
-    return { Action: action, Metadata: { GroupKey: groupKey }, Content: content };
+    return { Type: 0, Action: action, Metadata: { GroupKey: groupKey }, Content: content };
   }
 
   SendTaskRequest() {

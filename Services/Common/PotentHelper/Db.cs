@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace PotentHelper
@@ -22,13 +23,17 @@ namespace PotentHelper
             return true;
         }
 
-        public bool Add(string msg)
+        public void Add(string msg)
         {
             using StreamWriter file = new(textname, append: true);
             file.WriteLine(msg);
             file.Close();
+            Console.WriteLine("_______________________________________________________________");
+            Console.WriteLine(msg);
+            Console.WriteLine("_______________________________________________________________");
+
             RaiseNewDataEvent(msg);
-            return true;
+            //return true;
         }
 
         static void CreateFileIfNotExists(string name)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace PotentHelper
 
         public static async Task SendAMessage(string topic, Msg msg)
         {
+
             await SendAMessage(new FullMessage(topic, msg));
         }
 
@@ -24,6 +26,25 @@ namespace PotentHelper
             }
             else
             {
+                // try
+                // {
+                //     metadata.ReferenceKey = metadata.ReferenceKey;
+                // }
+                // catch (Exception)
+                // {
+                //     message.Message.Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(message.Message.Metadata.ToString(), message.Message.Metadata);
+                //     message.Message.Content = JsonConvert.DeserializeAnonymousType<dynamic>(message.Message.Content.ToString(), message.Message.Content);
+                // }
+
+                // Console.WriteLine("111111111111111111111111111");
+                // Console.WriteLine(JsonConvert.SerializeObject(message));
+                // Console.WriteLine(message.Message.Content);
+
+                // message.Message.Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(message.Message.Metadata.ToString(), message.Message.Metadata);
+                // message.Message.Content = JsonConvert.DeserializeAnonymousType<dynamic>(message.Message.Content.ToString(), message.Message.Content);
+                // Console.WriteLine(message.Message.Metadata);
+                // Console.WriteLine(message.Message.Content);
+
                 var metadata = message.Message.Metadata;
                 if (metadata.ReferenceKey == null)
                 {
@@ -48,7 +69,7 @@ namespace PotentHelper
                     try
                     {
                         var dr = await p.ProduceAsync(KafkaEnviroment.preFix + message.Topic, new Message<Null, string> { Value = msg });
-                        //Console.WriteLine($"{topic} -> Delivered '{dr.Value}' to '{dr.TopicPartitionOffset}'");
+                        //Console.WriteLine($"{KafkaEnviroment.preFix + message.Topic} -> Delivered");
                     }
                     catch (ProduceException<Null, string> e)
                     {

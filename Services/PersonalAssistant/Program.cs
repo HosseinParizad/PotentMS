@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PersonalAssistant
 {
@@ -33,7 +35,7 @@ namespace PersonalAssistant
     {
         const string AppGroupId = "PersonalAssistant";
         public DbText db = new();
-        string AppId = KafkaEnviroment.preFix + AppGroupId;
+        public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
         public List<MapBinding> mapping = new List<MapBinding>()
         {
@@ -41,17 +43,12 @@ namespace PersonalAssistant
         };
 
 
-        public void Ini()
+        public async void Ini()
         {
+
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            if (KafkaEnviroment.TempPrefix == "Test")
-            {
-                db.ReplayAll();
-            }
-
-            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
+            await MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -59,5 +56,6 @@ namespace PersonalAssistant
             MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
     }
 }

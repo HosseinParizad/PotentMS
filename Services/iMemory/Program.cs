@@ -39,7 +39,7 @@ namespace iMemory
     {
         const string AppGroupId = "iMemory";
         public DbText db = new();
-        string AppId = KafkaEnviroment.preFix + AppGroupId;
+        public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
         public List<MapBinding> mapping = new List<MapBinding>()
         {
@@ -50,18 +50,12 @@ namespace iMemory
             new MapBinding(MapAction.Memory.LearntMemory, Engine.LearnMemory),
         };
 
-        public void Ini()
+        public async void Ini()
         {
 
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
-
-            if (KafkaEnviroment.TempPrefix == "Test")
-            {
-                db.ReplayAll();
-            }
-
-            ConsumerHelper.MapTopicToMethod(mapping, db, AppId);
+            await MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -69,6 +63,6 @@ namespace iMemory
             MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
         }
 
-
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
     }
 }

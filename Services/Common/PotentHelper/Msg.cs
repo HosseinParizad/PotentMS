@@ -3,9 +3,28 @@ using System;
 
 namespace PotentHelper
 {
+
+    public class MsgX
+    {
+        public MsgX() { }
+
+        public MsgType Type { get; set; }
+        public string Action { get; set; }
+        public string Metadata { get; set; }
+        public string Content { get; set; }
+    }
+
     public class Msg : IMessageContract
     {
         public Msg() { }
+
+        public Msg(MsgX c)
+        {
+            Type = c.Type;
+            Content = c.Content;
+            Metadata = c.Metadata;
+            Action = c.Action;
+        }
 
         public Msg(MsgType type, string action, dynamic metadata, dynamic content) : this(action, (object)metadata, (object)content)
         {
@@ -41,9 +60,15 @@ namespace PotentHelper
         public dynamic Metadata { get; set; }
         public dynamic Content { get; set; }
 
-        public override string ToString()
+        //public override string ToString()
+        //{
+        //    return JsonConvert.SerializeObject(this);
+        //}
+
+        public void ToFix()
         {
-            return JsonConvert.SerializeObject(this);
+            Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(Metadata.ToString(), Metadata);
+            Content = JsonConvert.DeserializeAnonymousType<dynamic>(Content.ToString(), Content);
         }
     }
 

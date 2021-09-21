@@ -16,8 +16,13 @@ namespace PotentHelper
                     return;
                 }
 
+                Console.WriteLine(message);
+
                 var msg = Helper.DeserializeObject<Msg>(message);
                 var action = actions.SingleOrDefault(a => a.ActionName == msg.Action);
+
+
+
                 if (action != null)
                 {
                     try

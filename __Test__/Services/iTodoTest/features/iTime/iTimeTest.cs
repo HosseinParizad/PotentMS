@@ -11,15 +11,14 @@ namespace iTest
     [Binding]
     class iTimeTest
     {
-        string GroupKey = Guid.NewGuid().ToString();
-        string SelectedId = Guid.NewGuid().ToString();
+        readonly string GroupKey = Guid.NewGuid().ToString();
+        readonly string SelectedId = Guid.NewGuid().ToString();
 
         [Given(@"User have a selected service")]
         public void UserHaveaSelectedService()
         {
             TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.NewTask(GroupKey, SelectedId, "Do want ever you want!", ""));
         }
-
 
         [When(@"User '(.*)' selected task")]
         public void WhenUserPauseSelectedTask(string action)
@@ -41,8 +40,6 @@ namespace iTest
 
         }
 
-        private const string ignoreContent = "do not care";
-
         [Then(@"I get feedback action '(.*)'")]
         public void ThenAssertFeedback(string expectedAction)
         {
@@ -54,7 +51,6 @@ namespace iTest
         {
             AssertFeedback(expectedAction, expectedContent);
         }
-
         static void AssertFeedback(string expectedAction, string expectedContent)
         {
             Assert.AreEqual(expectedAction, TestManager.Instance.LastMessage.Message.Action);
@@ -71,6 +67,8 @@ namespace iTest
             var content = JsonConvert.SerializeObject(TestManager.Instance.LastMessage.Message.Content);
             Assert.AreEqual(true, content.IndexOf(expectedContent) > -1, content);
         }
+
+        const string ignoreContent = "do not care";
     }
 }
 

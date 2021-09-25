@@ -41,7 +41,7 @@ namespace iGroup
         public string AppId = KafkaEnviroment.preFix + AppGroupId;
         public DbText db = new();
 
-        public List<MapBinding> mapping = new List<MapBinding>()
+        public List<MapBinding> mapping = new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
             new MapBinding(MapAction.Group.NewGroup, Engine.CreateNewGroup),

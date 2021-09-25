@@ -55,7 +55,7 @@ namespace iTest
         public static ServiceContiner Services = new ServiceContiner();
         public FullMessage LastMessage { set; get; }
 
-        public static TestManager Instance => instance ?? (instance = new TestManager());
+        public static TestManager Instance => instance ??= new TestManager();
         static TestManager instance;
     }
 

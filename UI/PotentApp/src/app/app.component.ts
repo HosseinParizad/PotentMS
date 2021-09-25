@@ -43,19 +43,19 @@ export class AppComponent implements OnInit {
         data.forEach((row: any) => {
           this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=');
           this.addSection(row, "Goal", 'https://localhost:5010/Goal/GetPresentation?groupKey=');
-
           this.addSection(row, "Task", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=');
 
           this.cats.push(row);
+
           if (this.selected.Group == undefined) {
-            this.selected.Group = "Family";
+            this.selected.Group = row.Id;
           }
         });
       });
   }
 
   addSection(row: any, group: string, url: string) {
-    this.http.get<any>(url + "Family")
+    this.http.get<any>(url + this.selected.Group)
       .subscribe(data => {
         setTimeout(() => {
           row.Parts.filter((i: any) => i.Text == group)[0].Badges = data;
@@ -113,10 +113,15 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequestSpe(body: any) {
+    if (body.Content.Description) {
+      body.Content.Description = body.Content.Description.replace('[text]', this.text)
+    }
+
     if (body.Content.Text) {
       body.Content.Text = body.Content.Text.replace('[text]', this.text)
       body.Content.Text = body.Content.Text.replace('[date]', this.inputdate)
     }
+
     if (body.Content.Hint) {
       body.Content.Hint = body.Content.Hint.replace('[hint]', this.description)
     }

@@ -37,7 +37,7 @@ namespace iAssistant
         public DbText db = new();
         public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        public List<MapBinding> mapping = new List<MapBinding>()
+        public List<MapBinding> mapping = new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
             new MapBinding(MapAction.TaskFeedback.NewTaskAdded, Engine.OnNewTaskAdded),
@@ -47,7 +47,6 @@ namespace iAssistant
 
         public async void Ini()
         {
-
             db.Initial(AppId + "DB.txt");
             db.OnDbNewDataEvent += Db_DbNewDataEvent;
             await MapAsync();

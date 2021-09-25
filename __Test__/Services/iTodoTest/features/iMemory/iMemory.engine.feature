@@ -28,6 +28,9 @@ Scenario: learnt
 	Then I should see the following Memorize list:
 		| Text          | GroupKey |
 		| Book (Stage1) | Ali      |
+	Then I should see after 3 days:
+		| Text          | GroupKey |
+		| Book (Stage1) | Ali      |
 		| Pen (Stage2)  | Ali      |
 
 Scenario: learnt child
@@ -39,10 +42,13 @@ Scenario: learnt child
 	Then I should see the following Memorize list:
 		| Id                                   | Text          | GroupKey | Children |
 		| 47399CA8-C533-413C-A2A9-BAF5CDB85AE3 | Book (Stage1) | Ali      | 2        |
-	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
+	Given User tell I Memorize '1D7335DA-7013-482A-A23F-62CB24939EE6' for 'Ali'
 	Then I should see the following Memorize list:
 		| Text          | GroupKey | Children |
-		| Book (Stage2) | Ali      | 2        |
+		| Book (Stage1) | Ali      | 1        |
+	Then I should see after 1 days:
+		| Text          | GroupKey | Children |
+		| Book (Stage1) | Ali      | 2        |
 
 Scenario: Delete
 	Then I send the following Memorize list:
@@ -83,26 +89,31 @@ Scenario: Memorize stages
 		| Text          | GroupKey |
 		| Book (Stage1) | Ali      |
 	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
-	Then I should see the following Memorize list:
+	Then I should see after 1 days:
 		| Text          | GroupKey |
 		| Book (Stage2) | Ali      |
 	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
-	Then I should see the following Memorize list:
+	# 3 + 1
+	Then I should see after 4 days:
 		| Text          | GroupKey |
 		| Book (Stage3) | Ali      |
 	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
-	Then I should see the following Memorize list:
+	# 7 + 3 + 1
+	Then I should see after 11 days:
 		| Text          | GroupKey |
 		| Book (Stage4) | Ali      |
 	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
-	Then I should see the following Memorize list:
+	# 14 + 7 + 3 + 1
+	Then I should see after 25 days:
 		| Text          | GroupKey |
 		| Book (Stage5) | Ali      |
 	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
-	Then I should see the following Memorize list:
+	# 30 + 14 + 7 + 3 + 1
+	Then I should see after 55 days:
 		| Text          | GroupKey |
 		| Book (Stage6) | Ali      |
 	Given User tell I Memorize '47399CA8-C533-413C-A2A9-BAF5CDB85AE3' for 'Ali'
-	Then I should see the following Memorize list:
+	# :) + 30 + 14 + 7 + 3 + 1 does not show anymore
+	Then I should see after 1000 days:
 		| Text          | GroupKey |
-		| Book (Stage6) | Ali      |
+#| Book (Stage6) | Ali      |

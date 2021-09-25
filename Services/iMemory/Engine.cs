@@ -8,6 +8,8 @@ namespace iMemory
 {
     public class Engine
     {
+        //for test only
+        public static DateTimeOffset Now { get; set; } = DateTimeOffset.Now;
 
         #region CreateNewMemory
 
@@ -56,28 +58,28 @@ namespace iMemory
             var memoryItem = Memories.SingleOrDefault(d => d.Id == id);
             if (memoryItem != null)
             {
-                var nextdate = DateTimeOffset.Now.AddDays(1);
+                var nextdate = Now.AddDays(1);
                 var stage = memoryItem.Stage;
                 switch (memoryItem.Stage)
                 {
                     case MemoryStage.Stage1:
-                        nextdate = DateTimeOffset.Now.AddDays(1);
+                        nextdate = Now.AddDays(1);
                         stage = MemoryStage.Stage2;
                         break;
                     case MemoryStage.Stage2:
-                        nextdate = DateTimeOffset.Now.AddDays(3);
+                        nextdate = Now.AddDays(3);
                         stage = MemoryStage.Stage3;
                         break;
                     case MemoryStage.Stage3:
-                        nextdate = DateTimeOffset.Now.AddDays(7);
+                        nextdate = Now.AddDays(7);
                         stage = MemoryStage.Stage4;
                         break;
                     case MemoryStage.Stage4:
-                        nextdate = DateTimeOffset.Now.AddDays(14);
+                        nextdate = Now.AddDays(14);
                         stage = MemoryStage.Stage5;
                         break;
                     case MemoryStage.Stage5:
-                        nextdate = DateTimeOffset.Now.AddDays(30);
+                        nextdate = Now.AddDays(30);
                         stage = MemoryStage.Stage6;
                         break;
                     case MemoryStage.Stage6:
@@ -95,7 +97,12 @@ namespace iMemory
 
         internal static IEnumerable<PresentItem> GetMemoryPresentation(string groupKey, string parentid)
         {
-            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).Select(i => MemoryToPresentation(groupKey, i));
+            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid && ActiveChild(new[] { i })).Select(i => MemoryToPresentation(groupKey, i));
+        }
+
+        private static bool ActiveChild(IEnumerable<MemoryItem> memoryItems)
+        {
+            return memoryItems.Any(i => i.NextMemorizeDate <= Now || ActiveChild(memoryItems.Where(j => j.ParentId == i.Id)));
         }
 
         static PresentItem MemoryToPresentation(string groupKey, MemoryItem mi)

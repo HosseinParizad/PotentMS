@@ -51,8 +51,19 @@ namespace iTest
         [Then(@"I should see the following Memorize list:")]
         public void ThenIShouldSeeTheFollowingMemorizeList(Table table)
         {
-            var tableColumns = table.Header.ToArray();
+            AssertMemoryList(table);
+        }
 
+        [Then(@"I should see after (.*) days:")]
+        public void ThenIShouldSeeAfterDays(int days, Table table)
+        {
+            Engine.Now = Engine.Now.AddDays(days);
+            AssertMemoryList(table);
+        }
+
+        static void AssertMemoryList(Table table)
+        {
+            var tableColumns = table.Header.ToArray();
             foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
             {
                 var todos = new iMemory.Controllers.MemoryController(null).GetPresentation(row.Key.ToString()).ToArray();
@@ -61,17 +72,8 @@ namespace iTest
                 {
                     Assert.AreEqual(todos.Select(t => t.Items.Count).ToList(), row.Select(r => int.Parse(r["Children"])));
                 }
-                //Assert.AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", SelectedId } }));
             }
         }
-
-
-        //[Then(@"I get feedback '(.*)'")]
-        //public void ThenIGetFeedbackTaskPaused(string expectedResult)
-        //{
-        //    Assert.AreEqual("TimeFeedback", LastMessage.Topic);
-        //    Assert.AreEqual(expectedResult, LastMessage.Message.Action);
-        //}
     }
 }
 

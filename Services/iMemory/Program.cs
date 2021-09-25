@@ -1,20 +1,16 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace iMemory
 {
     public class Program
     {
-        const string AppGroupId = "iMemory";
         public static DateTimeOffset StartingTimeApp;
-        static DbText db = new();
 
         public static void Main(string[] args)
         {
@@ -41,12 +37,12 @@ namespace iMemory
         public DbText db = new();
         public string AppId = KafkaEnviroment.preFix + AppGroupId;
 
-        public List<MapBinding> mapping = new List<MapBinding>()
+        public List<MapBinding> mapping = new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
-            new MapBinding(MapAction.Memory.NewMemory, Engine.CreateNewMemory ),
+            new MapBinding(MapAction.Memory.NewMemory, Engine.CreateNewMemory),
             new MapBinding(MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory),
-            new MapBinding(MapAction.Memory.DelMemory, Engine.DeleteMemory ),
+            new MapBinding(MapAction.Memory.DelMemory, Engine.DeleteMemory),
             new MapBinding(MapAction.Memory.LearntMemory, Engine.LearnMemory),
         };
 

@@ -30,17 +30,17 @@ namespace iTest
             if (instance.LastMessage != e)
             {
                 instance.LastMessage = e;
-                if (Services.TodoActions.mapping.HasAction(e.Message.Action))
+                if (Services.TodoActions.Mapping.HasAction(e.Message.Action))
                     Services.TodoActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
-                if (Services.TimeActions.mapping.HasAction(e.Message.Action))
+                if (Services.TimeActions.Mapping.HasAction(e.Message.Action))
                     Services.TimeActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
-                if (Services.GroupActions.mapping.HasAction(e.Message.Action))
+                if (Services.GroupActions.Mapping.HasAction(e.Message.Action))
                     Services.GroupActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
-                if (Services.MemoryActions.mapping.HasAction(e.Message.Action))
+                if (Services.MemoryActions.Mapping.HasAction(e.Message.Action))
                     Services.MemoryActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
-                if (Services.LocationActions.mapping.HasAction(e.Message.Action))
+                if (Services.LocationActions.Mapping.HasAction(e.Message.Action))
                     Services.LocationActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
-                if (Services.AssistantActions.mapping.HasAction(e.Message.Action))
+                if (Services.AssistantActions.Mapping.HasAction(e.Message.Action))
                     Services.AssistantActions.db.Add(Newtonsoft.Json.JsonConvert.SerializeObject(e.Message));
             }
         }
@@ -70,12 +70,12 @@ namespace iTest
             MemoryActions = new();
             LocationActions = new();
             AssistantActions = new();
-            AssistantActions.Ini();
-            TimeActions.Ini();
-            TodoActions.Ini();
-            GroupActions.Ini();
-            MemoryActions.Ini();
-            LocationActions.Ini();
+            AssistantActions.Ini(false);
+            TimeActions.Ini(false);
+            TodoActions.Ini(false);
+            GroupActions.Ini(false);
+            MemoryActions.Ini(false);
+            LocationActions.Ini(false);
         }
 
         public iTodo.SetupActions TodoActions;

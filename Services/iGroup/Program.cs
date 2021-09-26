@@ -12,9 +12,7 @@ namespace iGroup
 {
     public class Program
     {
-        const string AppGroupId = "iGroup";
         public static DateTimeOffset StartingTimeApp;
-        static DbText db = new();
 
         public static void Main(string[] args)
         {
@@ -22,7 +20,7 @@ namespace iGroup
             KafkaEnviroment.TempPrefix = args[0];
 
             var setupActions = new SetupActions();
-            setupActions.Ini();
+            setupActions.Ini(true);
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -35,13 +33,9 @@ namespace iGroup
                 });
     }
 
-    public class SetupActions
+    public class SetupActions : SetupActionsCore
     {
-        const string AppGroupId = "iGroup";
-        public string AppId = KafkaEnviroment.preFix + AppGroupId;
-        public DbText db = new();
-
-        public List<MapBinding> mapping = new()
+        public override List<MapBinding> Mapping => new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
             new MapBinding(MapAction.Group.NewGroup, Engine.CreateNewGroup),
@@ -50,19 +44,6 @@ namespace iGroup
             new MapBinding(MapAction.Group.DeleteMember, Engine.DeleteMember),
         };
 
-        public async void Ini()
-        {
-
-            db.Initial(AppId + "DB.txt");
-            db.OnDbNewDataEvent += Db_DbNewDataEvent;
-            await MapAsync();
-        }
-
-        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-        {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
-        }
-
-        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
+        public override string AppGroupId => "iGroup";
     }
 }

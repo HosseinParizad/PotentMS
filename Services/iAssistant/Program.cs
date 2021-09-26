@@ -31,13 +31,9 @@ namespace iAssistant
                 });
     }
 
-    public class SetupActions
+    public class SetupActions : SetupActionsCore
     {
-        const string AppGroupId = "iAssistant";
-        public DbText db = new();
-        public string AppId = KafkaEnviroment.preFix + AppGroupId;
-
-        public List<MapBinding> mapping = new()
+        public override List<MapBinding> Mapping => new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
             new MapBinding(MapAction.TaskFeedback.NewTaskAdded, Engine.OnNewTaskAdded),
@@ -45,18 +41,7 @@ namespace iAssistant
             new MapBinding(MapAction.TaskFeedback.NewLocationAdded, Engine.MemberSetLocation),
         };
 
-        public async void Ini()
-        {
-            db.Initial(AppId + "DB.txt");
-            db.OnDbNewDataEvent += Db_DbNewDataEvent;
-            await MapAsync();
-        }
-
-        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-        {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
-        }
-
-        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
+        public override string AppGroupId => "iAssistant";
     }
+
 }

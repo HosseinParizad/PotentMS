@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -215,5 +218,36 @@ namespace PotentHelper
                 }
             }
         }
+    }
+
+    public abstract class SetupActionsCore
+    {
+        public DbText db = new();
+        public string AppId => KafkaEnviroment.preFix + AppGroupId;
+
+        public abstract List<MapBinding> Mapping { get; }
+
+        public abstract string AppGroupId { get; }
+
+        public async void Ini(bool replayAll = true)
+        {
+            db.Initial(AppId + "DB.txt");
+            db.OnDbNewDataEvent += Db_DbNewDataEvent;
+
+            if (replayAll)
+            {
+                db.ReplayAll();
+            }
+
+            await MapAsync();
+        }
+
+        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
+        {
+            MessageProcessor.MapMessageToAction(AppId, e.Text, Mapping);
+        }
+
+        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(Mapping, db, AppId).ToList());
+
     }
 }

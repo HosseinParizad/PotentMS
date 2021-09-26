@@ -197,6 +197,22 @@ namespace iGroup
         }
 
         public static List<GroupItem> Groups { get; private set; } = new List<GroupItem>();
+
+        #endregion
+
+        #region Mapping
+
+        public static List<MapBinding> Mapping = new()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Group.NewGroup, Engine.CreateNewGroup),
+            new MapBinding(MapAction.Group.UpdateGroup, Engine.UpdateGroup),
+            new MapBinding(MapAction.Group.NewMember, Engine.AddMember),
+            new MapBinding(MapAction.Group.DeleteMember, Engine.DeleteMember),
+        };
+
+        public static string AppId => KafkaEnviroment.preFix + "iGroup";
+
         #endregion
     }
     public class GroupItem

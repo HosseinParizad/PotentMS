@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.http.get<any>('https://localhost:5007/PersonalAssistant/' + this.group)
+    this.http.get<any>('https://localhost:5012/Group/GetPresentation?groupKey=' + this.group)
       .subscribe(data => {
         this.selected.Badge = {};
         this.cats = [];

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace iMemory
 {
-    public class Engine
+    public static class Engine
     {
         #region CreateNewMemory
 
@@ -193,6 +193,19 @@ namespace iMemory
 
         //for test only
         public static DateTimeOffset Now { get; set; } = DateTimeOffset.Now;
+
+        #region Mapping
+
+        public static List<MapBinding> Mapping = new()
+        {
+            new MapBinding(MapAction.Common.Reset, Engine.Reset),
+            new MapBinding(MapAction.Memory.NewMemory, Engine.CreateNewMemory),
+            new MapBinding(MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory),
+            new MapBinding(MapAction.Memory.DelMemory, Engine.DeleteMemory),
+            new MapBinding(MapAction.Memory.LearntMemory, Engine.LearnMemory),
+        };
+
+        #endregion
     }
 
     public class MemoryItem

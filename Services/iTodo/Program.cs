@@ -45,45 +45,23 @@ namespace iTodo
                 });
     }
 
-    public class SetupActions
+    public class SetupActions : SetupActionsCore
     {
-        const string AppGroupId = "iTodo";
-        public DbText db = new();
-        public string AppId = KafkaEnviroment.preFix + AppGroupId;
-
-        #region  actions
-
-        public List<MapBinding> mapping = new List<MapBinding>()
+        public override List<MapBinding> Mapping => new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
-            new MapBinding(MapAction.Task.NewTask, Engine.CreateNewTask ),
-            new MapBinding(MapAction.Task.UpdateDescription, Engine.UpdateDescription ),
-            new MapBinding(MapAction.Task.SetDeadline, Engine.SetDeadline ),
-            new MapBinding(MapAction.Task.SetTag, Engine.SetTag ),
-            new MapBinding(MapAction.Task.SetLocation, Engine.SetLocation ),
-            new MapBinding(MapAction.Task.CloseTask, Engine.CloseTask ),
-            new MapBinding(MapAction.Task.AssignTask, Engine.AssignTask ),
-            new MapBinding(MapAction.Task.DelTask, Engine.DeleteTask ),
-            new MapBinding(MapAction.Task.MoveTask, Engine.MoveTask ),
-            new MapBinding(MapAction.RepeatFeedback.RepeatNewItem , Engine.RepeatTask ),
+            new MapBinding(MapAction.Task.NewTask, Engine.CreateNewTask),
+            new MapBinding(MapAction.Task.UpdateDescription, Engine.UpdateDescription),
+            new MapBinding(MapAction.Task.SetDeadline, Engine.SetDeadline),
+            new MapBinding(MapAction.Task.SetTag, Engine.SetTag),
+            new MapBinding(MapAction.Task.SetLocation, Engine.SetLocation),
+            new MapBinding(MapAction.Task.CloseTask, Engine.CloseTask),
+            new MapBinding(MapAction.Task.AssignTask, Engine.AssignTask),
+            new MapBinding(MapAction.Task.DelTask, Engine.DeleteTask),
+            new MapBinding(MapAction.Task.MoveTask, Engine.MoveTask),
+            new MapBinding(MapAction.RepeatFeedback.RepeatNewItem, Engine.RepeatTask),
         };
 
-        #endregion
-
-
-        public async void Ini()
-        {
-
-            db.Initial(AppId + "DB.txt");
-            db.OnDbNewDataEvent += Db_DbNewDataEvent;
-            await MapAsync();
-        }
-
-        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-        {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
-        }
-
-        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
+        public override string AppGroupId => "iTodo";
     }
 }

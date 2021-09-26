@@ -36,33 +36,16 @@ namespace iGoal
                 });
     }
 
-    public class SetupActions
+    public class SetupActions : SetupActionsCore
     {
-        const string AppGroupId = "iGoal";
-        public DbText db = new();
-        public string AppId = KafkaEnviroment.preFix + AppGroupId;
-
-        public List<MapBinding> mapping = new List<MapBinding>()
+        public override List<MapBinding> Mapping => new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
-            new MapBinding(MapAction.Goal.NewGoal, Engine.CreateNewGoal  ),
+            new MapBinding(MapAction.Goal.NewGoal, Engine.CreateNewGoal),
             new MapBinding(MapAction.Goal.DelGoal, Engine.DeleteGoal),
-            new MapBinding(MapAction.Goal.UpdateGoal, Engine.UpdateGoal  ),
+            new MapBinding(MapAction.Goal.UpdateGoal, Engine.UpdateGoal),
         };
 
-        public async void Ini()
-        {
-
-            db.Initial(AppId + "DB.txt");
-            db.OnDbNewDataEvent += Db_DbNewDataEvent;
-            await MapAsync();
-        }
-
-        public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
-        {
-            MessageProcessor.MapMessageToAction(AppId, e.Text, mapping);
-        }
-
-        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(mapping, db, AppId).ToList());
+        public override string AppGroupId => "iGoal";
     }
 }

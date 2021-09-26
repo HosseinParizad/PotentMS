@@ -8,9 +8,6 @@ namespace iMemory
 {
     public class Engine
     {
-        //for test only
-        public static DateTimeOffset Now { get; set; } = DateTimeOffset.Now;
-
         #region CreateNewMemory
 
         public static void CreateNewMemory(dynamic metadata, dynamic content)
@@ -58,10 +55,13 @@ namespace iMemory
             var memoryItem = Memories.SingleOrDefault(d => d.Id == id);
             if (memoryItem != null)
             {
-                var nextdate = Now.AddDays(1);
+                var nextdate = Now;
                 var stage = memoryItem.Stage;
                 switch (memoryItem.Stage)
                 {
+                    case MemoryStage.Stage0:
+                        stage = MemoryStage.Stage1;
+                        break;
                     case MemoryStage.Stage1:
                         nextdate = Now.AddDays(1);
                         stage = MemoryStage.Stage2;
@@ -100,7 +100,7 @@ namespace iMemory
             return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid && ActiveChild(new[] { i })).Select(i => MemoryToPresentation(groupKey, i));
         }
 
-        private static bool ActiveChild(IEnumerable<MemoryItem> memoryItems)
+        static bool ActiveChild(IEnumerable<MemoryItem> memoryItems)
         {
             return memoryItems.Any(i => i.NextMemorizeDate <= Now || ActiveChild(memoryItems.Where(j => j.ParentId == i.Id)));
         }
@@ -110,13 +110,15 @@ namespace iMemory
             var presentItem = new PresentItem
             {
                 Id = mi.Id,
-                Text = $" {mi.Text } ({mi.Stage}) ",
+                Text = $"{mi.Text }" + StageStatus(mi),
                 Link = mi.Hint,
                 Actions = GetActions(mi).ToList(),
                 Items = GetMemoryPresentation(groupKey, mi.Id).ToList()
             };
             return presentItem;
         }
+
+        static string StageStatus(MemoryItem memoryItem) => !Memories.Any(i => i.ParentId == memoryItem.Id) && memoryItem.Stage != MemoryStage.Stage0 ? $" ({memoryItem.Stage}) " : "";
 
         static IEnumerable<PresentItemActions> GetActions(MemoryItem mi)
         {
@@ -165,24 +167,18 @@ namespace iMemory
             }
         }
 
-        static DateTimeOffset GetCreateDate(dynamic metadata)
-        {
-            return DateTimeOffset.Parse(metadata.CreateDate.ToString());
-        }
-
         static void AddMemoryItem(string id, string groupKey, string text, string hint, string parentId, DateTimeOffset actionTime, MemoryType memoryType)
         {
-            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage1 };
+            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage0 };
             Memories.Add(memory);
             SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.MemoryFeedback.NewMemoryAdded.Name, groupkey: groupKey, content: memory);
         }
 
         #endregion
 
-        internal static IEnumerable<MemoryItem> GetMemory(string groupKey)
-        {
-            return Memories.Where(m => m.GroupKey == groupKey);
-        }
+        internal static IEnumerable<MemoryItem> GetMemory(string groupKey) => Memories.Where(m => m.GroupKey == groupKey);
+
+        static DateTimeOffset GetCreateDate(dynamic metadata) => DateTimeOffset.Parse(metadata.CreateDate.ToString());
 
         #region Common actions
 
@@ -191,9 +187,14 @@ namespace iMemory
             Memories = new List<MemoryItem>();
         }
 
-        public static List<MemoryItem> Memories { get; private set; } = new List<MemoryItem>();
+        public static List<MemoryItem> Memories { get; private set; } = new();
+
         #endregion
+
+        //for test only
+        public static DateTimeOffset Now { get; set; } = DateTimeOffset.Now;
     }
+
     public class MemoryItem
     {
         public string Id { get; internal set; }
@@ -214,6 +215,7 @@ namespace iMemory
 
     public enum MemoryStage
     {
+        Stage0,
         Stage1,
         Stage2,
         Stage3,

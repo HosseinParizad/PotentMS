@@ -54,7 +54,7 @@ namespace iTest
             AssertMemoryList(table);
         }
 
-        [Then(@"I should see after (.*) days:")]
+        [Then(@"I should see memorize list after (.*) days:")]
         public void ThenIShouldSeeAfterDays(int days, Table table)
         {
             Engine.Now = Engine.Now.AddDays(days);

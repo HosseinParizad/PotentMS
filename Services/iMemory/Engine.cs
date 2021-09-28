@@ -32,15 +32,16 @@ namespace iMemory
         {
             var id = content.Id.ToString();
             var memory = Memories.SingleOrDefault(t => t.Id == id);
-            var groupkey = metadata.GroupKey.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberKey = metadata.MemberKey.ToString();
             if (memory != null)
             {
                 Memories.Remove(memory);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.MemoryDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.MemoryDeleted.Name, content: new { Id = id });
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.CannotFindMemory.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find memory item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.CannotFindMemory.Name, content: "Cannot find memory item!");
             }
         }
 
@@ -95,9 +96,9 @@ namespace iMemory
 
         #endregion
 
-        internal static IEnumerable<PresentItem> GetMemoryPresentation(string groupKey, string parentid)
+        internal static IEnumerable<PresentItem> GetMemoryPresentation(string groupKey, string memberKey, string parentid)
         {
-            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid && ActiveChild(new[] { i })).Select(i => MemoryToPresentation(groupKey, i));
+            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid && ActiveChild(new[] { i })).Select(i => MemoryToPresentation(groupKey, memberKey, i));
         }
 
         static bool ActiveChild(IEnumerable<MemoryItem> memoryItems)
@@ -105,7 +106,7 @@ namespace iMemory
             return memoryItems.Any(i => i.NextMemorizeDate <= Now || ActiveChild(memoryItems.Where(j => j.ParentId == i.Id)));
         }
 
-        static PresentItem MemoryToPresentation(string groupKey, MemoryItem mi)
+        static PresentItem MemoryToPresentation(string groupKey, string memberKey, MemoryItem mi)
         {
             var presentItem = new PresentItem
             {
@@ -113,7 +114,7 @@ namespace iMemory
                 Text = $"{mi.Text }" + StageStatus(mi),
                 Link = mi.Hint,
                 Actions = GetActions(mi).ToList(),
-                Items = GetMemoryPresentation(groupKey, mi.Id).ToList()
+                Items = GetMemoryPresentation(groupKey, memberKey, mi.Id).ToList()
             };
             return presentItem;
         }
@@ -128,7 +129,7 @@ namespace iMemory
                    Text = text,
                    Group = "/Memory",
                    Action = action,
-                   Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Metadata = new { GroupKey = mi.GroupKey, MemberKey = mi.MemberKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
             yield return createStep("step", MapAction.Memory.NewMemory.Name, new { Text = "[text]", Hint = "[hint]", ParentId = mi.Id });
@@ -145,38 +146,36 @@ namespace iMemory
             var parentId = content.ParentId.ToString();
             var id = metadata.ReferenceKey.ToString();
             var hint = content.Hint.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberKey = metadata.MemberKey.ToString();
             if (!Memories.Any(t => t.Id == id || (t.ParentId == parentId && t.Text == text)))
             {
-                AddMemoryItem(id, metadata.GroupKey.ToString(), text, hint, parentId, GetCreateDate(metadata), memory);
+                AddMemoryItem(id, groupKey, memberKey, text, hint, parentId, GetCreateDate(metadata), memory);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.CannotAddMemory.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate memory item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.MemoryFeedback.CannotAddMemory.Name, content: "Cannot add dupicate memory item!");
             }
         }
 
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
-                ProducerHelper.SendAMessage(
-                        MessageTopic.MemoryFeedback,
-                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                        )
-                .GetAwaiter().GetResult();
+                ProducerHelper.SendMessage(MessageTopic.MemoryFeedback, new Feedback(type: type, action: action, content: content)).GetAwaiter().GetResult();
             }
         }
 
-        static void AddMemoryItem(string id, string groupKey, string text, string hint, string parentId, DateTimeOffset actionTime, MemoryType memoryType)
+        static void AddMemoryItem(string id, string groupKey, string memberKey, string text, string hint, string parentId, DateTimeOffset actionTime, MemoryType memoryType)
         {
-            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage0 };
+            var memory = new MemoryItem { Id = id, ParentId = parentId, GroupKey = groupKey, MemberKey = memberKey, Hint = hint, Text = text, MemoryType = memoryType, Stage = MemoryStage.Stage0 };
             Memories.Add(memory);
-            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.MemoryFeedback.NewMemoryAdded.Name, groupkey: groupKey, content: memory);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.MemoryFeedback.NewMemoryAdded.Name, content: memory);
         }
 
         #endregion
 
-        internal static IEnumerable<MemoryItem> GetMemory(string groupKey) => Memories.Where(m => m.GroupKey == groupKey);
+        internal static IEnumerable<MemoryItem> GetMemory(string groupKey, string memberKey) => Memories.Where(m => m.MemberKey == memberKey);
 
         static DateTimeOffset GetCreateDate(dynamic metadata) => DateTimeOffset.Parse(metadata.CreateDate.ToString());
 
@@ -193,19 +192,6 @@ namespace iMemory
 
         //for test only
         public static DateTimeOffset Now { get; set; } = DateTimeOffset.Now;
-
-        #region Mapping
-
-        public static List<MapBinding> Mapping = new()
-        {
-            new MapBinding(MapAction.Common.Reset, Engine.Reset),
-            new MapBinding(MapAction.Memory.NewMemory, Engine.CreateNewMemory),
-            new MapBinding(MapAction.Memory.NewMemoryCategory, Engine.CreateMemoryCategory),
-            new MapBinding(MapAction.Memory.DelMemory, Engine.DeleteMemory),
-            new MapBinding(MapAction.Memory.LearntMemory, Engine.LearnMemory),
-        };
-
-        #endregion
     }
 
     public class MemoryItem
@@ -214,6 +200,7 @@ namespace iMemory
         public string ParentId { get; internal set; }
         public string Text { get; internal set; }
         public string GroupKey { get; internal set; }
+        public string MemberKey { get; internal set; }
         public MemoryType MemoryType { get; internal set; }
         public string Hint { get; internal set; }
         public MemoryStage Stage { get; internal set; }

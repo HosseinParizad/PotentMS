@@ -47,7 +47,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Group = groupKey };
-            var msg = new Msg(action: "newGroup", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "newGroup", metadata: Helper.GetMetadataByGroupKey(groupKey, ""), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -59,7 +59,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { NewMember = member };
-            var msg = new Msg(action: MapAction.Group.NewMember, metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: MapAction.Group.NewMember, metadata: Helper.GetMetadataByGroupKey(groupKey, ""), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);

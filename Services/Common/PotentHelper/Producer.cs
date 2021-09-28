@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Newtonsoft.Json;
@@ -12,14 +11,29 @@ namespace PotentHelper
 
         public static event SendAMessageEventHandler OnSendAMessageEvent;
 
-        public static async Task SendAMessage(string topic, Msg msg)
-        {
+        //public static async Task SendAMessage(string topic, Msg msg)
+        //{
+        //    await SendAMessage(new FullMessage(topic, msg));
+        //}
 
-            await SendAMessage(new FullMessage(topic, msg));
+        public static async Task SendMessage(string topic, Msg msg)
+        {
+            var metadata = msg.Metadata;
+            if (metadata.GroupKey == null || metadata.MemberKey == null)
+            {
+                throw new ArgumentException("Group and Member key should specify!");
+            }
+            await SendMessage(new FullMessage(topic, msg));
         }
 
-        public static async Task SendAMessage(FullMessage message)
+        public static async Task SendMessage(string topic, Feedback feedback)
         {
+            await SendMessage(new FullMessage(topic, feedback));
+        }
+
+        public static async Task SendMessage(FullMessage message)
+        {
+
             if (OnSendAMessageEvent != null)
             {
                 OnSendAMessageEvent.Invoke(null, new FullMessage(message.Topic, message.Message));

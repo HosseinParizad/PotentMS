@@ -28,9 +28,9 @@ namespace iTodo.Controllers
 
         [HttpGet]
         [Route("GetPresentationTask")]
-        public IEnumerable<PresentItem> GetPresentationTask(string groupKey)
+        public IEnumerable<PresentItem> GetPresentationTask(string groupKey, string memberKey)
         {
-            return Engine.GetPresentationTask(groupKey, "");
+            return Engine.GetPresentationTask(groupKey, memberKey, "");
         }
 
 

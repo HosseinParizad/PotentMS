@@ -28,10 +28,9 @@ namespace PotentHelper
             using StreamWriter file = new(textname, append: true);
             file.WriteLine(msg);
             file.Close();
-            Console.WriteLine("_______________________________________________________________");
-            Console.WriteLine(msg);
-            Console.WriteLine("_______________________________________________________________");
-
+            //Console.WriteLine("_______________________________________________________________");
+            //Console.WriteLine(msg);
+            //Console.WriteLine("_______________________________________________________________");
             RaiseNewDataEvent(msg);
             //return true;
         }

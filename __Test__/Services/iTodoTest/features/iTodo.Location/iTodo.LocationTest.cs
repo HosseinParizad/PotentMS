@@ -10,10 +10,10 @@ namespace iTest.Task
     [Binding]
     class iTagTest
     {
-        [When(@"User add location '(.*)' to task '(.*)' for group '(.*)'")]
-        public void WhenUserAddLocationToSelectedTask(string location, string id, string groupKey)
+        [When(@"User add location '(.*)' to task '(.*)' for member '(.*)' in group '(.*)'")]
+        public void WhenUserAddLocationToSelectedTask(string location, string id, string memberKey, string groupKey)
         {
-            TestManager.Services.TodoDb.Add(TestHelper.BuildContent.Task.SetLocation(groupKey, id, location));
+            TestManager.Services.TodoDb.Add(TestHelper.BuildContent.Task.SetLocation(groupKey, memberKey, id, location));
         }
     }
 }

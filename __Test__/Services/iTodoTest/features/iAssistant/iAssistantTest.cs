@@ -17,25 +17,19 @@ namespace iAssistant
         public void ThenAsstantShouldAskMeToDoFollowingTasks(Table table)
         {
             var tableColumns = table.Header.ToArray();
-
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
-                //var i = 0;
-                var todos = new AssistantController(null).GetPresentation(row.Key.ToString()).ToArray();
+                var todos = new AssistantController(null).GetPresentation(row.Key.GroupKey, row.Key.MemberKey).ToArray();
                 Assert.AreEqual(todos.Select(t => t.Text).ToList(), row.Select(r => r["Text"]));
-                //if (tableColumns.Contains("Children"))
-                //{
-                //    Assert.AreEqual(todos.Select(t => t.Items.Count).ToList(), row.Select(r => int.Parse(r["Children"])));
-                //}
-                //if (tableColumns.Contains("Info"))
-                //{
-                //    foreach (var item in row)
-                //    {
-                //        Assert.AreEqual(todos[i].Info.ToString(), item["Info"].ToString());
-                //        i++;
-                //    }
-                //}
             }
+        }
+
+        [Then(@"Asstant should see following parts:")]
+        public void ThenAsstantShouldSeeFollowingParts(Table table)
+        {
+            var tableColumns = table.Header.ToArray();
+            var todos = new AssistantController(null).GetPresentation("what ever", "what ever").ToArray();
+            Assert.AreEqual(todos.Select(t => t.Text).ToList(), table.Rows.Select(r => r["Text"]));
         }
     }
 }

@@ -1,8 +1,7 @@
 using PotentHelper;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
 
 namespace iGroup
 {
@@ -19,11 +18,11 @@ namespace iGroup
             {
                 var group = new GroupItem { Id = id, GroupKey = groupName, MemberKey = groupName };
                 Groups.Add(group);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.NewGroupAdded.Name, groupkey: groupName, content: group);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.NewGroupAdded.Name, content: group);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotAddGroup.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Group item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotAddGroup.Name, content: "Cannot add dupicate Group item!");
             }
         }
 
@@ -39,11 +38,11 @@ namespace iGroup
         public static void UpdateGroup(dynamic metadata, dynamic content)
         {
             var newName = content.NewGroupName.ToString();
-            var groupkey = metadata.GroupKey.ToString();
-            var groupItems = Groups.Where(t => t.GroupKey == groupkey);
+            var groupKey = metadata.GroupKey.ToString();
+            var groupItems = Groups.Where(t => t.GroupKey == groupKey);
             if (groupItems.Any() && !Groups.Where(t => t.Id == newName).Any())
             {
-                var mGroup = Groups.Single(t => t.GroupKey == groupkey && t.MemberKey == groupkey);
+                var mGroup = Groups.Single(t => t.GroupKey == groupKey && t.MemberKey == groupKey);
                 mGroup.GroupKey = newName;
                 mGroup.MemberKey = newName;
                 foreach (var group in groupItems)
@@ -53,7 +52,7 @@ namespace iGroup
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotUpdateGroup.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Group");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotUpdateGroup.Name, content: "Cannot update Group");
             }
 
         }
@@ -66,18 +65,18 @@ namespace iGroup
         public static void AddMember(dynamic metadata, dynamic content)
         {
             var newMember = content.NewMember.ToString();
-            var groupkey = metadata.GroupKey.ToString();
+            var groupKey = metadata.GroupKey.ToString();
             var id = metadata.ReferenceKey.ToString();
-            var groupItems = Groups.Where(t => t.GroupKey == groupkey);
+            var groupItems = Groups.Where(t => t.GroupKey == groupKey);
             if (!groupItems.Any(g => g.MemberKey == newMember))
             {
-                var group = new GroupItem { Id = id, GroupKey = groupkey, MemberKey = newMember };
+                var group = new GroupItem { Id = id, GroupKey = groupKey, MemberKey = newMember };
                 Groups.Add(group);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.NewMemberAdded.Name, groupkey: groupkey, content: group);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.NewMemberAdded.Name, content: group);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotAddMember.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add member");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotAddMember.Name, content: "Cannot add member");
             }
 
         }
@@ -90,18 +89,18 @@ namespace iGroup
         {
             var groupName = content.GroupName.ToString();
             var groupItems = Groups.Where(t => t.GroupKey == groupName);
-            var groupkey = metadata.GroupKey.ToString();
-            if (groupName == groupkey && groupItems.Any())
+            var groupKey = metadata.GroupKey.ToString();
+            if (groupName == groupKey && groupItems.Any())
             {
                 foreach (var group in groupItems)
                 {
                     Groups.Remove(group);
+                    SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.GroupDeleted.Name, content: new { GroupKey = group.GroupKey, MemberKey = group.MemberKey });
                 }
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.GroupDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: "Group has been deleted");
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotFindGroup.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find delete item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotFindGroup.Name, content: "Cannot find delete item!");
             }
         }
 
@@ -111,28 +110,28 @@ namespace iGroup
 
         internal static void DeleteMember(dynamic metadata, dynamic content)
         {
-            var newMember = content.NewMember.ToString();
-            var groupkey = metadata.GroupKey.ToString();
-            var member = Groups.SingleOrDefault(t => t.GroupKey == groupkey && t.MemberKey == newMember);
-            if (member != null)
+            var member = content.Member.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberFound = Groups.SingleOrDefault(t => t.GroupKey == groupKey && t.MemberKey == member);
+            if (memberFound != null)
             {
                 Groups.Remove(member);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.GroupDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: "Memeber has been deleted");
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.GroupDeleted.Name, content: new { GroupKey = member.GroupKey, MemberKey = member.MemberKey });
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotFindMember.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find member!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GroupFeedback.CannotFindMember.Name, content: "Cannot find member!");
             }
         }
 
         #endregion
 
-        internal static IEnumerable<PresentItem> GetGroupPresentation(string groupKey)
+        internal static IEnumerable<PresentItem> GetGroupPresentation(string groupKey, string memberKey)
         {
-            return Groups.Where(i => (i.GroupKey == groupKey || groupKey == "All")).Select(i => GroupToPresentation(groupKey, i));
+            return Groups.Where(i => (i.GroupKey == groupKey || groupKey == "All")).Select(i => GroupToPresentation(groupKey, memberKey, i));
         }
 
-        static PresentItem GroupToPresentation(string groupKey, GroupItem mi)
+        static PresentItem GroupToPresentation(string groupKey, string memberKey, GroupItem mi)
         {
             var presentItem = new PresentItem
             {
@@ -165,15 +164,11 @@ namespace iGroup
 
         #region Implement
 
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
-                ProducerHelper.SendAMessage(
-                        MessageTopic.GroupFeedback,
-                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                        )
-                .GetAwaiter().GetResult();
+                ProducerHelper.SendMessage(MessageTopic.GroupFeedback, new Feedback(type: type, action: action, content: content)).GetAwaiter().GetResult();
             }
         }
 

@@ -27,7 +27,8 @@ namespace PotentHelper
 
             if (string.IsNullOrEmpty(metadata?.ToString()))
             {
-                throw new ArgumentException($"'{nameof(metadata)}' cannot be null or empty.", nameof(metadata));
+                //throw new ArgumentException($"'{nameof(metadata)}' cannot be null or empty.", nameof(metadata));
+                metadata = new { ReferenceKey = Guid.NewGuid().ToString(), CreateDate = DateTimeOffset.Now, Version = "V0.0" };
             }
 
             Type = MsgType.Command;
@@ -56,6 +57,12 @@ namespace PotentHelper
     public class FullMessage
     {
         public FullMessage(string topic, Msg message)
+        {
+            Topic = topic;
+            Message = message;
+        }
+
+        public FullMessage(string topic, Feedback message)
         {
             Topic = topic;
             Message = message;

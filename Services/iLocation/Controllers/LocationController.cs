@@ -28,9 +28,9 @@ namespace iLocation.Controllers
 
         //[HttpGet]
         //[Route("GetPresentation")]
-        //public IEnumerable<PresentItem> GetPresentation(string groupKey)
+        //public IEnumerable<PresentItem> GetPresentation(string groupKey, string memberKey)
         //{
-        //    return Engine.GetGroupPresentation(groupKey);
+        //    return Engine.GetGroupPresentation(groupKey, memberKey);
         //}
     }
 }

@@ -37,14 +37,14 @@ namespace RepeatManager
                         var now = Now;
                         var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now, Hours = (now - item.LastGeneratedTime).Hours, RepeatIfAllClosed = item.RepeatIfAllClosed };
                         item.LastGeneratedTime = now;
-                        SendAMessage(type: MsgType.Apply, action: MapAction.Task.RepeatTask.Name, content: dataToSend);
+                        SendMessage(type: MsgType.Apply, action: MapAction.Task.RepeatTask.Name, content: dataToSend);
                     }
                 }
             }
         }
 
-        static void SendAMessage(MsgType type, string action, dynamic content)
-            => ProducerHelper.SendAMessage(MessageTopic.RepeatFeedback, new Feedback(type: type, action: action, metadata: new { GroupKey = "", ReferenceKey = Guid.NewGuid().ToString() }, content: content)).GetAwaiter().GetResult();
+        static void SendMessage(MsgType type, string action, dynamic content)
+            => ProducerHelper.SendMessage(MessageTopic.RepeatFeedback, new Feedback(type: type, action: action, content: content)).GetAwaiter().GetResult();
 
     }
 }

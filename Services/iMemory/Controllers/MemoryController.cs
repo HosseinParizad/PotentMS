@@ -20,16 +20,16 @@ namespace iMemory.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<MemoryItem> Get(string groupKey)
+        public IEnumerable<MemoryItem> Get(string groupKey, string memberKey)
         {
-            return Engine.GetMemory(groupKey);
+            return Engine.GetMemory(groupKey, memberKey);
         }
 
         [HttpGet]
         [Route("GetPresentation")]
-        public IEnumerable<PresentItem> GetPresentation(string groupKey)
+        public IEnumerable<PresentItem> GetPresentation(string groupKey, string memberKey)
         {
-            return Engine.GetMemoryPresentation(groupKey, "");
+            return Engine.GetMemoryPresentation(groupKey, memberKey, "");
         }
     }
 }

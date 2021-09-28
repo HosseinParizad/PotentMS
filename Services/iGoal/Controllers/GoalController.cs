@@ -27,9 +27,9 @@ namespace iGoal.Controllers
 
         [HttpGet]
         [Route("GetPresentation")]
-        public IEnumerable<PresentItem> GetPresentation(string groupKey)
+        public IEnumerable<PresentItem> GetPresentation(string groupKey, string memberKey)
         {
-            return Engine.GetGoalPresentation(groupKey, "");
+            return Engine.GetGoalPresentation(groupKey, memberKey, "");
         }
     }
 }

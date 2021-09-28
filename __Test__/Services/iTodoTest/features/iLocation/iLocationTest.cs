@@ -14,7 +14,7 @@ namespace iTest
         [Given(@"Register location service for user '(.*)'")]
         public void GivenRegisterLocationServiceForUser(string member)
         {
-            TestManager.Instance.LocationDb.Add(TestHelper.BuildContent.Location.RegisterMember(member));
+            TestManager.Instance.LocationDb.Add(TestHelper.BuildContent.Location.RegisterMember(member, member));
         }
 
         [Given(@"Simulate location service detect '(.*)' move to '(.*)'")]

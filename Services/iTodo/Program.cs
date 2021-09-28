@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Threading;
 
 namespace iTodo

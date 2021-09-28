@@ -36,14 +36,21 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
+    var parts: any = [];
+    this.http.get<any>('https://localhost:5014/Assistant/GetPresentation?groupKey=WhatEver')
+      .subscribe(data => {
+        parts = data;
+        //alert(JSON.stringify(parts));
+      });
     this.http.get<any>('https://localhost:5012/Group/GetPresentation?groupKey=' + this.group)
       .subscribe(data => {
         this.selected.Badge = {};
         this.cats = [];
         data.forEach((row: any) => {
+          row.Parts = parts;
           this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=');
-          this.addSection(row, "Goal", 'https://localhost:5010/Goal/GetPresentation?groupKey=');
-          this.addSection(row, "Task", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=');
+          this.addSection(row, "Goals", 'https://localhost:5010/Goal/GetPresentation?groupKey=');
+          this.addSection(row, "Todos", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=');
 
           this.cats.push(row);
 
@@ -55,7 +62,7 @@ export class AppComponent implements OnInit {
   }
 
   addSection(row: any, group: string, url: string) {
-    this.http.get<any>(url + this.selected.Group)
+    this.http.get<any>(url + row.Id)
       .subscribe(data => {
         setTimeout(() => {
           row.Parts.filter((i: any) => i.Text == group)[0].Badges = data;

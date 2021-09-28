@@ -1,12 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iGroup
 {
@@ -20,7 +16,7 @@ namespace iGroup
             KafkaEnviroment.TempPrefix = args[0];
 
             var setupActions = new SetupActions();
-            setupActions.Ini(true);
+            setupActions.Ini();
 
             CreateHostBuilder(args).Build().Run();
         }

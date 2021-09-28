@@ -36,7 +36,7 @@ namespace SpecFlowDemo.Steps
 
             foreach (var row in table.Rows)
             {
-                var msg = new Msg(action: action, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: getContent(row["TaskDesc"]));
+                var msg = new Msg(action: action, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"], row["MemberKey"]), content: getContent(row["TaskDesc"]));
                 var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
             }
@@ -48,9 +48,9 @@ namespace SpecFlowDemo.Steps
 
             var httpMethod = HttpMethod.Post;
 
-            foreach (var group in table.Rows.Select(r => r["GroupKey"]))
+            foreach (var group in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
-                var msg = new Msg(action: MapAction.Group.NewGroup, metadata: Helper.GetMetadataByGroupKey(group), content: new { Group = group });
+                var msg = new Msg(action: MapAction.Group.NewGroup, metadata: Helper.GetMetadataByGroupKey(group.Key.GroupKey, group.Key.MemberKey), content: new { Group = group });
                 var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequestWaitForFeedback("https://localhost:5001/Gateway/Group", httpMethod, dataToSend);
             }
@@ -69,7 +69,7 @@ namespace SpecFlowDemo.Steps
             foreach (var row in table.Rows)
             {
                 var content = new { Text = row["Goal"], ParentId = selectedId };
-                var msg = new Msg(action: MapAction.Goal.NewGoal, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"]), content: content);
+                var msg = new Msg(action: MapAction.Goal.NewGoal, metadata: Helper.GetMetadataByGroupKey(row["GroupKey"], row["MemberKey"]), content: content);
                 var dataToSend = JsonConvert.SerializeObject(msg);
                 RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
             }
@@ -95,27 +95,27 @@ namespace SpecFlowDemo.Steps
         }
         string CopyId;
 
-        [When("User select Paste to group '(.*)'")]
-        public void PasteTo(string groupKey)
+        [When("User select Paste to group '(.*)' for member '(.*)'")]
+        public void PasteTo(string groupKey, string memberKey)
         {
             Console.WriteLine(selectedId);
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = CopyId, ToParentId = selectedId };
-            var msg = new Msg(action: "moveTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "moveTask", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When("User update description to '(.*)' for '(.*)'")]
-        public void WhenUserUpdateDescription(string newDescription, string groupKey)
+        [When("User update description to '(.*)' for '(.*)' in group '(.*)'")]
+        public void WhenUserUpdateDescription(string newDescription, string memberKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Description = newDescription };
-            var msg = new Msg(action: "updateDescription", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "updateDescription", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -133,7 +133,7 @@ namespace SpecFlowDemo.Steps
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
                 var url = $"https://localhost:5008/Memory?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);
@@ -154,7 +154,7 @@ namespace SpecFlowDemo.Steps
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
                 var url = $"https://localhost:5010/Goal?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);
@@ -162,8 +162,8 @@ namespace SpecFlowDemo.Steps
             }
         }
 
-        [When("User delete memory item (.*) from '(.*)'")]
-        public void WhenUserUpdateDescription(int index, string groupKey)
+        [When("User delete memory item (.*) for member '(.*)' in group '(.*)'")]
+        public void WhenUserUpdateDescription(int index, string memberKey, string groupKey)
         {
             var urlRead = $"https://localhost:5008/Memory?groupKey={groupKey}";
             var todos = RestHelper.MakeAGetRequest(urlRead);
@@ -175,72 +175,72 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId };
-            var msg = new Msg(action: "delMemory", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "delMemory", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When("User set deadline '(.*)' on selected task for '(.*)'")]
-        public void WhenUserSetDeadline(string newDeadline, string groupKey)
+        [When("User set deadline '(.*)' on selected task for '(.*)' in group '(.*)'")]
+        public void WhenUserSetDeadline(string newDeadline, string memberKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Deadline = newDeadline };
-            var msg = new Msg(action: "setDeadline", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "setDeadline", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequestWaitForFeedback(url, httpMethod, dataToSend);
         }
 
-        [When(@"User close selected task for '(.*)'")]
-        public void WhenUseCloseSelectedTask(string groupKey)
+        [When(@"User close selected task for '(.*)' in group '(.*)'")]
+        public void WhenUseCloseSelectedTask(string memberKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId };
-            var msg = new Msg(action: "closeTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "closeTask", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When(@"User assign selected task to '(.*)' for '(.*)'")]
-        public void WhenUseCloseSelectedTask(string assignTo, string groupKey)
+        [When(@"User assign selected task to for '(.*)' in group '(.*)'")]
+        public void WhenUseCloseSelectedTask(string assignTo, string memberKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, AssignTo = assignTo };
-            var msg = new Msg(action: "assignTask", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "assignTask", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When("User add '(.*)' to tag (.*) on selected task for '(.*)'")]
-        public void WhenUserSetTag(string newTag, string tagKey, string groupKey)
+        [When("User add '(.*)' to tag (.*) on selected task for '(.*)' in group '(.*)'")]
+        public void WhenUserSetTag(string newTag, string tagKey, string memberKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, TagKey = tagKey, Tag = newTag };
 
-            var msg = new Msg(action: "setTag", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "setTag", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
 
-        [When("User set location '(.*)' on selected task for '(.*)'")]
-        public void WhenUserSetLocation(string location, string groupKey)
+        [When("User set location '(.*)' on selected task for '(.*)' in group '(.*)'")]
+        public void WhenUserSetLocation(string location, string memberKey, string groupKey)
         {
             const string url = "https://localhost:5001/Gateway/";
             var httpMethod = HttpMethod.Post;
 
             var content = new { Id = selectedId, Location = location };
-            var msg = new Msg(action: "setLocation", metadata: Helper.GetMetadataByGroupKey(groupKey), content: content);
+            var msg = new Msg(action: "setLocation", metadata: Helper.GetMetadataByGroupKey(groupKey, memberKey), content: content);
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
         }
@@ -252,7 +252,7 @@ namespace SpecFlowDemo.Steps
             var httpMethod = HttpMethod.Post;
 
             var content = new { Member = member, Location = currentLocation };
-            var msg = new Msg(action: "setCurrentLocation", metadata: Helper.GetMetadataByGroupKey(member), content: content);
+            var msg = new Msg(action: "setCurrentLocation", metadata: Helper.GetMetadataByGroupKey(member, member), content: content);
 
             var dataToSend = JsonConvert.SerializeObject(msg);
             RestHelper.HttpMakeARequest(url, httpMethod, dataToSend);
@@ -274,7 +274,7 @@ namespace SpecFlowDemo.Steps
             };
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
                 var url = $"https://localhost:5003/TodoQuery?groupKey={row.Key}";
                 todos = RestHelper.MakeAGetRequest(url);

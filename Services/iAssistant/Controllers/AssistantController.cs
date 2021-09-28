@@ -27,9 +27,9 @@ namespace iAssistant.Controllers
 
         [HttpGet]
         [Route("GetPresentation")]
-        public IEnumerable<PresentItem> GetPresentation(string groupKey)
+        public IEnumerable<PresentItem> GetPresentation(string groupKey, string memberKey)
         {
-            return Engine.GetPresentation(groupKey, "");
+            return Engine.GetPresentation(groupKey, memberKey, "");
         }
     }
 }

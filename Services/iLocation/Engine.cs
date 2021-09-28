@@ -23,7 +23,7 @@ namespace iLocation
 
         internal static void MemeberMoveToNewLocation(string newLocation)
         {
-            SendFeedbackMessage(type: MsgType.Info, actionTime: DateTimeOffset.Now, action: MapAction.LocationFeedback.LocationChanged.Name, groupkey: MemberKey, content: new { NewLocation = newLocation });
+            SendFeedbackMessage(type: MsgType.Info, actionTime: DateTimeOffset.Now, action: MapAction.LocationFeedback.LocationChanged.Name, content: new { MemberKey = MemberKey, NewLocation = newLocation });
         }
 
         #endregion
@@ -36,15 +36,11 @@ namespace iLocation
 
         #region Implement
 
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
-                ProducerHelper.SendAMessage(
-                        MessageTopic.LocationFeedback,
-                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                        )
-                .GetAwaiter().GetResult();
+                ProducerHelper.SendMessage(MessageTopic.LocationFeedback, new Feedback(type: type, action: action, content: content)).GetAwaiter().GetResult();
             }
         }
 

@@ -24,7 +24,8 @@ namespace iGoal
         {
             var text = content.Text.ToString();
             var id = metadata.ReferenceKey.ToString();
-            var groupkey = metadata.GroupKey.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberKey = metadata.MemberKey.ToString();
             var goal = Goals.SingleOrDefault(t => t.Id == id);
             if (goal != null)
             {
@@ -32,7 +33,7 @@ namespace iGoal
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotUpdateGoal.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot update Goal");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotUpdateGoal.Name, content: "Cannot update Goal");
             }
 
         }
@@ -45,26 +46,27 @@ namespace iGoal
         {
             var id = content.Id.ToString();
             var Goal = Goals.SingleOrDefault(t => t.Id == id);
-            var groupkey = metadata.GroupKey.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberKey = metadata.MemberKey.ToString();
             if (Goal != null)
             {
                 Goals.Remove(Goal);
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.GoalDeleted.Name, groupkey: metadata.GroupKey.ToString(), content: new { Id = id });
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.GoalDeleted.Name, content: new { Id = id });
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotFindGoal.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot find Goal item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotFindGoal.Name, content: "Cannot find Goal item!");
             }
         }
 
         #endregion
 
-        internal static IEnumerable<PresentItem> GetGoalPresentation(string groupKey, string parentid)
+        internal static IEnumerable<PresentItem> GetGoalPresentation(string groupKey, string memberKey, string parentid)
         {
-            return Goals.Where(i => i.GroupKey == groupKey && i.ParentId == parentid).Select(i => GoalToPresentation(groupKey, i));
+            return Goals.Where(i => i.GroupKey == groupKey && i.MemberKey == memberKey && i.ParentId == parentid).Select(i => GoalToPresentation(groupKey, memberKey, i));
         }
 
-        static PresentItem GoalToPresentation(string groupKey, GoalItem mi)
+        static PresentItem GoalToPresentation(string groupKey, string memberKey, GoalItem mi)
         {
             var presentItem = new PresentItem
             {
@@ -72,7 +74,7 @@ namespace iGoal
                 Text = mi.Text,
                 Link = "",
                 Actions = GetActions(mi).ToList(),
-                Items = GetGoalPresentation(groupKey, mi.Id).ToList()
+                Items = GetGoalPresentation(groupKey, memberKey, mi.Id).ToList()
             };
             return presentItem;
         }
@@ -100,25 +102,23 @@ namespace iGoal
             var text = content.Text.ToString();
             var parentId = content.ParentId.ToString();
             var id = metadata.ReferenceKey.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberKey = metadata.MemberKey.ToString();
             if (!Goals.Any(t => t.Id == id || (t.ParentId == parentId && t.Text == text)))
             {
-                AddGoalItem(id, metadata.GroupKey.ToString(), text, parentId, GetCreateDate(metadata), goal);
+                AddGoalItem(id, groupKey, memberKey, text, parentId, GetCreateDate(metadata), goal);
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotAddGoal.Name, groupkey: metadata.GroupKey.ToString(), content: "Cannot add dupicate Goal item!");
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotAddGoal.Name, content: "Cannot add dupicate Goal item!");
             }
         }
 
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
-                ProducerHelper.SendAMessage(
-                        MessageTopic.GoalFeedback,
-                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                        )
-                .GetAwaiter().GetResult();
+                ProducerHelper.SendMessage(MessageTopic.GoalFeedback, new Feedback(type: type, action: action, content: content)).GetAwaiter().GetResult();
             }
         }
 
@@ -127,11 +127,11 @@ namespace iGoal
             return DateTimeOffset.Parse(metadata.CreateDate.ToString());
         }
 
-        static void AddGoalItem(string id, string groupKey, string text, string parentId, DateTimeOffset actionTime, GoalType GoalType)
+        static void AddGoalItem(string id, string groupKey, string memberKey, string text, string parentId, DateTimeOffset actionTime, GoalType GoalType)
         {
-            var Goal = new GoalItem { Id = id, ParentId = parentId, GroupKey = groupKey, Text = text, GoalType = GoalType };
+            var Goal = new GoalItem { Id = id, ParentId = parentId, GroupKey = groupKey, MemberKey = memberKey, Text = text, GoalType = GoalType };
             Goals.Add(Goal);
-            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.GoalFeedback.NewGoalAdded.Name, groupkey: groupKey, content: Goal);
+            SendFeedbackMessage(type: MsgType.Success, actionTime: actionTime, action: MapAction.GoalFeedback.NewGoalAdded.Name, content: Goal);
         }
 
         #endregion
@@ -157,6 +157,7 @@ namespace iGoal
         public string ParentId { get; internal set; }
         public string Text { get; internal set; }
         public string GroupKey { get; internal set; }
+        public string MemberKey { get; internal set; }
         public GoalType GoalType { get; internal set; }
     }
 

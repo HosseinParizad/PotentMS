@@ -26,13 +26,13 @@ namespace iTest
             switch (action)
             {
                 case "Start":
-                    TestManager.Instance.TimeDb.Add(TestHelper.BuildContent.Time.StartTime(GroupKey, SelectedId, "Task", "Hossein"));
+                    TestManager.Instance.TimeDb.Add(TestHelper.BuildContent.Time.StartTime(GroupKey, GroupKey, SelectedId, "Task"));
                     break;
                 case "Pause":
-                    TestManager.Instance.TimeDb.Add(TestHelper.BuildContent.Time.PauseTime(GroupKey, SelectedId, "Task", "Hossein"));
+                    TestManager.Instance.TimeDb.Add(TestHelper.BuildContent.Time.PauseTime(GroupKey, GroupKey, SelectedId, "Task"));
                     break;
                 case "Done":
-                    TestManager.Instance.TimeDb.Add(TestHelper.BuildContent.Time.DoneTime(GroupKey, SelectedId, "Task", "Hossein"));
+                    TestManager.Instance.TimeDb.Add(TestHelper.BuildContent.Time.DoneTime(GroupKey, GroupKey, SelectedId, "Task"));
                     break;
                 default:
                     break;
@@ -51,6 +51,7 @@ namespace iTest
         {
             AssertFeedback(expectedAction, expectedContent);
         }
+
         static void AssertFeedback(string expectedAction, string expectedContent)
         {
             Assert.AreEqual(expectedAction, TestManager.Instance.LastMessage.Message.Action);

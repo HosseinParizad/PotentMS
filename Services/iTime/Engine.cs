@@ -47,7 +47,7 @@ namespace iTime
 
         #endregion
 
-        internal static IEnumerable<PresentItem> GetTimePresentation(string memberKey)
+        internal static IEnumerable<PresentItem> GetTimePresentation(string groupKey, string memberKey)
         {
             return Times.Where(i => (i.MemberKey == memberKey || i.MemberKey == "All")).Select(i => TimeToPresentation(memberKey, i));
         }
@@ -88,15 +88,16 @@ namespace iTime
         {
             var parentId = content.ParentId.ToString();
             var parentName = content.ParentName.ToString();
-            var memberKey = content.MemberKey.ToString();
+            var groupKey = metadata.GroupKey.ToString();
+            var memberKey = metadata.MemberKey.ToString();
             var id = metadata.ReferenceKey.ToString();
             TimeItem? lastTime = LastTime(parentId);
             if (validationCondition(lastTime))
             {
-                var item = new TimeItem { Id = id, ActionTime = DateTimeOffset.Now, ParentId = parentId, ParentName = parentName, Status = statusToApply, MemberKey = memberKey };
+                var item = new TimeItem { Id = id, ActionTime = DateTimeOffset.Now, ParentId = parentId, ParentName = parentName, Status = statusToApply, MemberKey = memberKey, GroupKey = groupKey };
                 Times.Add(item);
 
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: applied, groupkey: metadata.GroupKey.ToString(), content: item);
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: applied, content: item);
                 if (statusToApply == TimeStatus.Start)
                 {
                     //PauseOtherTask(memberKey, parentId);
@@ -104,7 +105,7 @@ namespace iTime
             }
             else
             {
-                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: cannotApply, groupkey: metadata.GroupKey.ToString(), content: content);
+                SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: cannotApply, content: content);
             }
         }
 
@@ -112,15 +113,11 @@ namespace iTime
         static TimeItem? LastTime(string id) => LastTime(FindById(id));
         static TimeItem? LastTime(IEnumerable<TimeItem> times) => times.OrderByDescending(t => t.ActionTime).LastOrDefault();
 
-        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, string groupkey, dynamic content)
+        static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)
             {
-                ProducerHelper.SendAMessage(
-                        MessageTopic.TimeFeedback,
-                        new Feedback(type: type, action: action, metadata: Helper.GetMetadataByGroupKey(groupkey), content: content)
-                        );
-                //.GetAwaiter().GetResult();
+                ProducerHelper.SendMessage(MessageTopic.TimeFeedback, new Feedback(type: type, action: action, content: content)).GetAwaiter().GetResult();
             }
         }
 
@@ -150,6 +147,7 @@ namespace iTime
     {
         public string Id { get; internal set; }
         public string ParentId { get; internal set; }
+        public string GroupKey { get; set; }
         public string MemberKey { get; set; }
         public string ParentName { get; internal set; }
         public TimeStatus Status { get; set; }

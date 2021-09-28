@@ -34,9 +34,9 @@ namespace iTime.Controllers
 
         [HttpGet]
         [Route("GetPresentation")]
-        public IEnumerable<PresentItem> GetPresentation(string TimeKey)
+        public IEnumerable<PresentItem> GetPresentation(string groupKey, string memberKey)
         {
-            return Engine.GetTimePresentation(TimeKey);
+            return Engine.GetTimePresentation(groupKey, memberKey);
         }
     }
 }

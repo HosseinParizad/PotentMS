@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PotentHelper;
+using System;
+using System.Collections.Generic;
 
 namespace RepeatManager
 {
@@ -18,7 +16,7 @@ namespace RepeatManager
             KafkaEnviroment.TempPrefix = args[0];
 
             var setupActions = new SetupActions();
-            setupActions.Ini(true);
+            setupActions.Ini();
 
             CreateHostBuilder(args).Build().Run();
         }

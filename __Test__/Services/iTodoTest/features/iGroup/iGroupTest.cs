@@ -29,9 +29,9 @@ namespace iTest
         {
             var tableColumns = table.Header.ToArray();
 
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
-                var todos = new iGroup.Controllers.GroupController(null).GetPresentation(row.Key.ToString()).ToArray();
+                var todos = new iGroup.Controllers.GroupController(null).GetPresentation(row.Key.GroupKey, row.Key.MemberKey).ToArray();
                 Assert.AreEqual(todos.Select(t => t.Text.Trim()).ToList(), row.Select(r => r["Text"]));
             }
         }

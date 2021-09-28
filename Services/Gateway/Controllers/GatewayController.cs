@@ -20,7 +20,7 @@ namespace Gateway.Controllers
             // msg.Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Metadata.ToString(), msg.Metadata);
             // msg.Content = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Content.ToString(), msg.Content);
             msg.ToFix();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Task, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Task, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -35,7 +35,7 @@ namespace Gateway.Controllers
         public IActionResult PostLocation([FromBody] Msg msg)
         {
             msg.ToFix();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Location, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Location, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -45,7 +45,7 @@ namespace Gateway.Controllers
         public IActionResult PostRepeat([FromBody] Msg msg)
         {
             msg.ToFix();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Repeat, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Repeat, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -55,7 +55,7 @@ namespace Gateway.Controllers
         public IActionResult PostMemory([FromBody] Msg msg)
         {
             msg.ToFix();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Memory, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Memory, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -65,7 +65,7 @@ namespace Gateway.Controllers
         public IActionResult PostGroup([FromBody] Msg msg)
         {
             msg.ToFix();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Group, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Group, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -78,7 +78,7 @@ namespace Gateway.Controllers
             // msg.Metadata = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Metadata.ToString(), msg.Metadata);
             // msg.Content = JsonConvert.DeserializeAnonymousType<dynamic>(msg.Content.ToString(), msg.Content);
 
-            var task = ProducerHelper.SendAMessage(MessageTopic.Goal, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Goal, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }
@@ -88,7 +88,7 @@ namespace Gateway.Controllers
         public IActionResult PostCommon([FromBody] Msg msg)
         {
             msg.ToFix();
-            var task = ProducerHelper.SendAMessage(MessageTopic.Common, msg);
+            var task = ProducerHelper.SendMessage(MessageTopic.Common, msg);
             task.GetAwaiter().GetResult();
             return StatusCode(StatusCodes.Status200OK);
         }

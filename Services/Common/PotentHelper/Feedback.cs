@@ -25,6 +25,9 @@ namespace PotentHelper
         public Feedback(MsgType type, string action, dynamic metadata, dynamic content) : base(type, action, (object)metadata, (object)content)
         {
         }
+        public Feedback(MsgType type, string action, dynamic content) : base(type, action, null, (object)content)
+        {
+        }
     }
 
     public enum MsgType

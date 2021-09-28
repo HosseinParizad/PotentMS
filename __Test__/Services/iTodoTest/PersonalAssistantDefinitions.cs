@@ -98,9 +98,9 @@ namespace SpecFlowDemo.Steps
 
             var expectedColums = map.Where(k => tableColumns.Contains(k.Key)).Select(k => k.Value).ToArray();
 
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
-                var url = $"https://localhost:5007/Deadlines/{row.Key}";
+                var url = $"https://localhost:5007/Deadlines/{row.Key.GroupKey}{row.Key.MemberKey}";
                 deadlines = RestHelper.MakeAGetRequest(url);
                 RestHelper.AreEqual(RestHelper.DynamicToList(deadlines, expectedColums), row.ToList(tableColumns));
             }

@@ -19,7 +19,7 @@ namespace iTest.Task
         {
             foreach (var row in table.Rows)
             {
-                TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.NewTask(row["GroupKey"], row["Id"], row["Description"], row["ParentId"]));
+                TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.NewTask(row["GroupKey"], row["MemberKey"], row["Id"], row["Description"], row["ParentId"]));
             }
         }
 
@@ -29,16 +29,16 @@ namespace iTest.Task
             TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.UpdateTask(groupKey, id, newDesciption));
         }
 
-        [When(@"Move task '(.*)' to '(.*)' for '(.*)'")]
-        public void WhenMoveTaskTo(string id, string newParentId, string groupKey)
+        [When(@"Move task '(.*)' to '(.*)' for '(.*)' in group '(.*)'")]
+        public void WhenMoveTaskTo(string id, string newParentId, string memberKey, string groupKey)
         {
-            TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.MoveTask(groupKey, id, newParentId));
+            TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.MoveTask(groupKey, memberKey, id, newParentId));
         }
 
-        [When(@"Delete task '(.*)' for '(.*)'")]
-        public void WhenDeleteTask(string id, string groupKey)
+        [When(@"Delete task '(.*)' for '(.*)' in group '(.*)'")]
+        public void WhenDeleteTask(string id, string memberKey, string groupKey)
         {
-            TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.DeleteTask(groupKey, id));
+            TestManager.Instance.TodoDb.Add(TestHelper.BuildContent.Task.DeleteTask(groupKey, memberKey, id));
         }
 
         [Then(@"I should see the following todo list directly:")]
@@ -46,10 +46,10 @@ namespace iTest.Task
         {
             var tableColumns = table.Header.ToArray();
 
-            foreach (var row in table.Rows.GroupBy(r => r["GroupKey"]))
+            foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
                 var i = 0;
-                var todos = new TodoQueryController(null).GetPresentationTask(row.Key.ToString()).ToArray();
+                var todos = new TodoQueryController(null).GetPresentationTask(row.Key.GroupKey, row.Key.MemberKey).ToArray();
                 Assert.AreEqual(todos.Select(t => t.Text).ToList(), row.Select(r => r["Text"]));
                 if (tableColumns.Contains("Children"))
                 {

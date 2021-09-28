@@ -6,27 +6,27 @@ Scenario: Insert group
 		| Group   |
 		| Hossein |
 	Then I should see the following Group list:
-		| Text    | GroupKey |
-		| Hossein | Hossein  |
+		| Text    | GroupKey | MemberKey |
+		| Hossein | Hossein  | Hossein   |
 
 Scenario: Add member
 	Then I send the following Group list:
 		| Group   |
 		| Hossein |
 	Then I should see the following Group list:
-		| Text    | GroupKey |
-		| Hossein | Hossein  |
+		| Text    | GroupKey | MemberKey |
+		| Hossein | Hossein  | Hossein   |
 	Then Use add member 'Mania' to group 'Hossein'
 	Then I should see the following Group list:
-		| Text    | GroupKey |
-		| Hossein | Hossein  |
-		| Mania   | Hossein  |
+		| Text    | GroupKey | MemberKey |
+		| Hossein | Hossein  | Hossein   |
+		| Mania   | Hossein  | Hossein   |
 	Then Use add member 'Yasmin' to group 'Hossein'
 	Then I should see the following Group list:
-		| Text    | GroupKey |
-		| Hossein | Hossein  |
-		| Mania   | Hossein  |
-		| Yasmin  | Hossein  |
+		| Text    | GroupKey | MemberKey |
+		| Hossein | Hossein  | Hossein   |
+		| Mania   | Hossein  | Hossein   |
+		| Yasmin  | Hossein  | Hossein   |
 
 Scenario: Update group
 	Then I send the following Group list:
@@ -35,16 +35,16 @@ Scenario: Update group
 	Then Use add member 'Mania' to group 'Hossein'
 	Then Use add member 'Yasmin' to group 'Hossein'
 	Then I should see the following Group list:
-		| Text    | GroupKey |
-		| Hossein | Hossein  |
-		| Mania   | Hossein  |
-		| Yasmin  | Hossein  |
+		| Text    | GroupKey | MemberKey |
+		| Hossein | Hossein  | Hossein   |
+		| Mania   | Hossein  | Hossein   |
+		| Yasmin  | Hossein  | Hossein   |
 	When I update group 'Hossein' to 'Asghar'
 	Then I should see the following Group list:
-		| Text   | GroupKey |
-		| Asghar | Asghar   |
-		| Mania  | Asghar   |
-		| Yasmin | Asghar   |
+		| Text   | GroupKey | MemberKey |
+		| Asghar | Asghar   | Hossein   |
+		| Mania  | Asghar   | Hossein   |
+		| Yasmin | Asghar   | Hossein   |
 
 Scenario: Delete group
 	Then I send the following Group list:
@@ -54,13 +54,13 @@ Scenario: Delete group
 	Then Use add member 'Mania' to group 'Hossein'
 	Then Use add member 'Yasmin' to group 'Hossein'
 	Then I should see the following Group list:
-		| Text    | GroupKey |
-		| Hossein | Hossein  |
-		| Mania   | Hossein  |
-		| Yasmin  | Hossein  |
+		| Text    | GroupKey | MemberKey |
+		| Hossein | Hossein  | Hossein   |
+		| Mania   | Hossein  | Hossein   |
+		| Yasmin  | Hossein  | Hossein   |
 	When I delete group 'Hossein'
 	Then I should see the following Group list:
 		| Text   | GroupKey |
 	Then I should see the following Group list:
-		| Text  | GroupKey |
-		| Mania | Mania    |
+		| Text  | GroupKey | MemberKey |
+		| Mania | Mania    | Mania     |

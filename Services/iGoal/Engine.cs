@@ -87,7 +87,7 @@ namespace iGoal
                    Text = text,
                    Group = "/Goal",
                    Action = action,
-                   Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Metadata = new { GroupKey = mi.GroupKey, MemberKey = mi.MemberKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
             yield return createStep("step", MapAction.Goal.NewGoal.Name, new { Text = "[text]", ParentId = mi.Id });

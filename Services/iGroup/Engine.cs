@@ -152,7 +152,7 @@ namespace iGroup
                    Text = text,
                    Group = "/Group",
                    Action = action,
-                   Metadata = new { GroupKey = mi.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Metadata = new { GroupKey = mi.GroupKey, MemberKey = mi.MemberKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
             yield return createStep("Add group", MapAction.Group.NewGroup.Name, new { Group = "[text]" });

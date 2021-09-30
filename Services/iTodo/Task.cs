@@ -337,8 +337,6 @@ namespace iTodo
         static List<TodoItem> Todos = new List<TodoItem>();
         static List<TimeItem> TimeLog = new List<TimeItem>();
 
-        //static Dictionary<string, string> MemberCurrentLocation { get; set; } = new Dictionary<string, string>();
-
         public static string GetSort => Sort;
         static string Sort = "";
 
@@ -349,31 +347,12 @@ namespace iTodo
 
         #endregion
 
-        //#region Location actions 
-
-        //public static void SetCurrentLocation(dynamic metadata, dynamic content)
-        //{
-        //    var member = content.Member.ToString();
-        //    string location = content.Location.ToString();
-        //    if (MemberCurrentLocation.TryGetValue(member, out string locations))
-        //    {
-        //        MemberCurrentLocation[member] = string.Join(",", locations.Split(",").Union(location.Split(",")).Distinct());
-        //    }
-        //    else
-        //    {
-        //        MemberCurrentLocation.Add(member, location);
-        //    }
-        //}
-
-        //#endregion
-
         #region Common actions
 
         public static void Reset(dynamic metadata, dynamic content)
         {
-            Todos = new List<TodoItem>();
-            TimeLog = new List<TimeItem>();
-            //MemberCurrentLocation = new Dictionary<string, string>();
+            Todos = new();
+            TimeLog = new();
         }
 
         #endregion
@@ -414,7 +393,7 @@ namespace iTodo
                    Text = text,
                    Group = "",
                    Action = action,
-                   Metadata = new { GroupKey = todo.GroupKey, ReferenceKey = Guid.NewGuid().ToString() },
+                   Metadata = new { todo.GroupKey, todo.MemberKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
 

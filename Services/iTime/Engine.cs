@@ -73,7 +73,7 @@ namespace iTime
                    Text = text,
                    Group = "/Time",
                    Action = action,
-                   Metadata = new { ReferenceKey = Guid.NewGuid().ToString() },
+                   Metadata = new { GroupKey = mi.GroupKey, MemberKey = mi.MemberKey, ReferenceKey = Guid.NewGuid().ToString() },
                    Content = content
                };
 

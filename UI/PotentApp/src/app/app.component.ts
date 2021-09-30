@@ -37,11 +37,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     var parts: any = [];
+
     this.http.get<any>('https://localhost:5014/Assistant/GetPresentation?groupKey=WhatEver')
       .subscribe(data => {
         parts = data;
         //alert(JSON.stringify(parts));
       });
+
     this.http.get<any>('https://localhost:5012/Group/GetPresentation?groupKey=' + this.group)
       .subscribe(data => {
         this.selected.Badge = {};
@@ -188,6 +190,7 @@ export class AppComponent implements OnInit {
     if (url.substr(0, 4) != 'http') {
       url = 'https://localhost:5001/Gateway' + url
     }
+
     this.http.post<any>(url, body, { headers }).subscribe({
       next: data => {
         this.text = '';

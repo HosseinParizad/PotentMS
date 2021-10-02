@@ -91,7 +91,7 @@ namespace iTime
             var groupKey = metadata.GroupKey.ToString();
             var memberKey = metadata.MemberKey.ToString();
             var id = metadata.ReferenceKey.ToString();
-            TimeItem? lastTime = LastTime(parentId);
+            TimeItem lastTime = LastTime(parentId);
             if (validationCondition(lastTime))
             {
                 var item = new TimeItem { Id = id, ActionTime = DateTimeOffset.Now, ParentId = parentId, ParentName = parentName, Status = statusToApply, MemberKey = memberKey, GroupKey = groupKey };
@@ -110,9 +110,8 @@ namespace iTime
         }
 
         static List<TimeItem> FindById(string id) => Times.Where(t => t.ParentId == id).ToList();
-        static TimeItem? LastTime(string id) => LastTime(FindById(id));
-        static TimeItem? LastTime(IEnumerable<TimeItem> times) => times.OrderByDescending(t => t.ActionTime).LastOrDefault();
-
+        static TimeItem LastTime(string id) => LastTime(FindById(id));
+        static TimeItem LastTime(IEnumerable<TimeItem> times) => times.OrderByDescending(t => t.ActionTime).LastOrDefault();
         static void SendFeedbackMessage(MsgType type, string action, DateTimeOffset actionTime, dynamic content)
         {
             if (Program.StartingTimeApp < actionTime)

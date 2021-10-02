@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using PotentHelper;
 using TechTalk.SpecFlow;
+using TechTalk.SpecFlow.Assist;
+using TechTalk.SpecFlow.Assist.ValueRetrievers;
 
 namespace SpecFlowDemo.Steps
 {
@@ -23,13 +25,19 @@ namespace SpecFlowDemo.Steps
             //System.Threading.Thread.Sleep(1000);
         }
 
-        [BeforeScenario]
-        public virtual void BeforeScenario()
+        [BeforeTestRun]
+        public static void BeforeTestRun()
         {
-            //Reset("https://localhost:5001/Gateway");
-            //Reset("https://localhost:5001/Gateway/Group");
-            //Reset("https://localhost:5001/Gateway/Memory");
+            Service.Instance.ValueRetrievers.Register(new NullValueRetriever("<null>"));
         }
+
+        //[BeforeScenario]
+        //public virtual void BeforeScenario()
+        //{
+        //    //Reset("https://localhost:5001/Gateway");
+        //    //Reset("https://localhost:5001/Gateway/Group");
+        //    //Reset("https://localhost:5001/Gateway/Memory");
+        //}
 
         static void Reset(string url)
         {

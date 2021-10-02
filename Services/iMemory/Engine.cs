@@ -98,7 +98,7 @@ namespace iMemory
 
         internal static IEnumerable<PresentItem> GetMemoryPresentation(string groupKey, string memberKey, string parentid)
         {
-            return Memories.Where(i => i.GroupKey == groupKey && i.ParentId == parentid && ActiveChild(new[] { i })).Select(i => MemoryToPresentation(groupKey, memberKey, i));
+            return Memories.Where(i => i.GroupKey == groupKey && i.MemberKey == memberKey && i.ParentId == parentid && ActiveChild(new[] { i })).Select(i => MemoryToPresentation(groupKey, memberKey, i));
         }
 
         static bool ActiveChild(IEnumerable<MemoryItem> memoryItems)

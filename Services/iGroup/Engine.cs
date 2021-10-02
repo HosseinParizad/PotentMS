@@ -128,7 +128,7 @@ namespace iGroup
 
         internal static IEnumerable<PresentItem> GetGroupPresentation(string groupKey, string memberKey)
         {
-            return Groups.Where(i => (i.GroupKey == groupKey || groupKey == "All")).Select(i => GroupToPresentation(groupKey, memberKey, i));
+            return Groups.Where(i => (i.GroupKey == groupKey && (memberKey == null || i.MemberKey == memberKey)) || ((groupKey == null || i.GroupKey == groupKey) && i.MemberKey == memberKey)).Select(i => GroupToPresentation(groupKey, memberKey, i));
         }
 
         static PresentItem GroupToPresentation(string groupKey, string memberKey, GroupItem mi)
@@ -139,7 +139,8 @@ namespace iGroup
                 Text = mi.MemberKey,
                 Link = "",
                 Actions = GetActions(mi).ToList(),
-                Items = new()
+                Items = new(),
+                Info = memberKey
             };
             return presentItem;
         }

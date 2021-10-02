@@ -38,37 +38,37 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     var parts: any = [];
 
-    this.http.get<any>('https://localhost:5014/Assistant/GetPresentation?groupKey=WhatEver')
+    this.http.get<any>('https://localhost:5014/Assistant/GetPresentation?groupKey=WhatEver&memberKey=WhatEver')
       .subscribe(data => {
         parts = data;
-        //alert(JSON.stringify(parts));
-      });
 
-    this.http.get<any>('https://localhost:5012/Group/GetPresentation?groupKey=' + this.group)
-      .subscribe(data => {
-        this.selected.Badge = {};
-        this.cats = [];
-        data.forEach((row: any) => {
-          row.Parts = parts;
-          this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=');
-          this.addSection(row, "Goals", 'https://localhost:5010/Goal/GetPresentation?groupKey=');
-          this.addSection(row, "Todos", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=');
+        this.http.get<any>('https://localhost:5012/Group/GetPresentation?groupKey=' + this.group + '&memberKey=')
+          .subscribe(data => {
+            this.selected.Badge = {};
+            this.cats = [];
+            data.forEach((row: any) => {
+              var partClone = JSON.parse(JSON.stringify(parts));
+              row.Parts = partClone;
 
-          this.cats.push(row);
+              this.addSection(row, "Goals", 'https://localhost:5010/Goal/GetPresentation?groupKey=' + this.group + '&memberKey=' + row.Text);
+              this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=' + this.group + '&memberKey=' + row.Text);
+              this.addSection(row, "Todos", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=' + this.group + '&memberKey=' + row.Text);
 
-          if (this.selected.Group == undefined) {
-            this.selected.Group = row.Id;
-          }
-        });
+              this.cats.push(row);
+
+              if (this.selected.MemberKey == undefined) {
+                this.selected.MemberKey = row.Text;
+              }
+            });
+          });
+
       });
   }
 
-  addSection(row: any, group: string, url: string) {
-    this.http.get<any>(url + row.Id)
+  addSection(row: any, text: string, url: string) {
+    this.http.get<any>(url)
       .subscribe(data => {
-        setTimeout(() => {
-          row.Parts.filter((i: any) => i.Text == group)[0].Badges = data;
-        }, 1000);
+        row.Parts.filter((i: any) => i.Text == text)[0].Badges = data;
       });
   }
 
@@ -99,24 +99,24 @@ export class AppComponent implements OnInit {
     }
   }
 
-  BodyMaker(action: string, groupKey: string, content: any) {
-    return { Type: 0, Action: action, Metadata: { GroupKey: groupKey }, Content: content };
+  BodyMaker(action: string, groupKey: string, memberKey: string, content: any) {
+    return { Type: 0, Action: action, Metadata: { GroupKey: groupKey, MemberKey: memberKey }, Content: content };
   }
 
   SendTaskRequest() {
-    var body = this.BodyMaker('newTask', this.selected.Group, { Description: this.text, ParentId: "" });
+    var body = this.BodyMaker('newTask', this.group, this.selected.MemberKey, { Description: this.text, ParentId: "" });
     this.sent = this.SendRequest(body);
     return false;
   }
 
   SendMemoryRequest() {
-    var body = this.BodyMaker('newMemory', this.selected.Group, { Text: this.text, Hint: this.description, ParentId: "" });
+    var body = this.BodyMaker('newMemory', this.group, this.selected.MemberKey, { Text: this.text, Hint: this.description, ParentId: "" });
     this.sent = this.SendRequestCore("/Memory", body);
     return false;
   }
 
   SendGoalRequest() {
-    var body = this.BodyMaker('newGoal', this.selected.Group, { Text: this.text, ParentId: "" });
+    var body = this.BodyMaker('newGoal', this.group, this.selected.MemberKey, { Text: this.text, ParentId: "" });
     this.sent = this.SendRequestCore("/Goal", body);
     return false;
   }
@@ -140,19 +140,19 @@ export class AppComponent implements OnInit {
 
   SendGroupRequest() {
     this.selected.Group = this.text;
-    var body = this.BodyMaker('newGroup', this.selected.Group, { Group: this.text });
+    var body = this.BodyMaker('newGroup', this.group, "", { Group: this.text });
     this.sent = this.SendRequestCore("/Group", body);
     return false;
   }
 
   SendMemberRequest() {
-    var body = this.BodyMaker('newMember', this.group, { NewMember: this.text });
+    var body = this.BodyMaker('newMember', this.group, "", { NewMember: this.text });
     this.sent = this.SendRequestCore("/Group", body);
     return false;
   }
 
   SendReapeatRequest(frequency: number) {
-    var body = this.BodyMaker('registerRepeat', this.selected.Group, { ReferenceId: this.selected.Badge.Id, Frequency: frequency, ReferenceName: "Task", RepeatIfAllClosed: this.repeatIfAllClosed });
+    var body = this.BodyMaker('registerRepeat', this.group, this.selected.MemberKey, { ReferenceId: this.selected.Badge.Id, Frequency: frequency, ReferenceName: "Task", RepeatIfAllClosed: this.repeatIfAllClosed });
     this.sent = this.SendRequestCore("/Repeat", body);
     return false;
   }
@@ -205,8 +205,8 @@ export class AppComponent implements OnInit {
     return body;
   }
 
-  selectgroup(group: string) {
-    this.selected.Group = group;
+  selectgroup(memberKey: string) {
+    this.selected.MemberKey = memberKey;
     return false;
   }
 

@@ -36,8 +36,6 @@ namespace iGroup.Controllers
         [Route("GetPresentation")]
         public IEnumerable<PresentItem> GetPresentation(string groupKey, string memberKey)
         {
-            memberKey = memberKey == "" ? null : memberKey;
-            groupKey = groupKey == "" ? null : groupKey;
             return Engine.GetGroupPresentation(groupKey, memberKey);
         }
     }

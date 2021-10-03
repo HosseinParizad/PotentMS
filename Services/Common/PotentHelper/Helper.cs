@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace PotentHelper
 {
-    public class Helper
+    public static class Helper
     {
         public static dynamic GetMetadataByGroupKey(string groupKey, string memberKey)
             => GetMetadataByGroupKey(groupKey, memberKey, Guid.NewGuid().ToString());
@@ -24,6 +24,11 @@ namespace PotentHelper
             => JsonConvert.DeserializeObject<T>(content
                 , new IsoDateTimeConverter { DateTimeFormat = "yyyy/MM/dd" });
 
+        public static IEnumerable<TSource> GetGroupMember<TSource>(this IEnumerable<TSource> source, string groupKey, string memberKey)
+            => source.Cast<IMultiGroup>().Where(mg => ((mg.GroupKey == groupKey && (memberKey == null || memberKey == "" || mg.MemberKey == memberKey)) || ((groupKey == null || groupKey == "" || mg.GroupKey == groupKey) && mg.MemberKey == memberKey))).Cast<TSource>();
+
+        public static IEnumerable<TSource> GetGroupMember<TSource>(this IEnumerable<TSource> source, string groupKey, string memberKey, string parentId)
+            => source.Cast<IMultiGroupParent>().GetGroupMember(groupKey, memberKey).Where(mg => mg.ParentId == parentId).Cast<TSource>();
     }
 
     // public class DisposableAction : IDisposable
@@ -239,7 +244,7 @@ namespace PotentHelper
                 db.ReplayAll();
             }
 
-            await MapAsync();
+            MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)
@@ -247,7 +252,17 @@ namespace PotentHelper
             MessageProcessor.MapMessageToAction(AppId, e.Text, Mapping);
         }
 
-        async Task MapAsync() => await Task.Run(() => ConsumerHelper.MapTopicToMethod(Mapping, db, AppId).ToList());
+        void MapAsync() => ConsumerHelper.MapTopicToMethod(Mapping, db, AppId);
 
+    }
+    public interface IMultiGroupParent : IMultiGroup
+    {
+        string ParentId { get; }
+    }
+
+    public interface IMultiGroup
+    {
+        string GroupKey { get; }
+        string MemberKey { get; }
     }
 }

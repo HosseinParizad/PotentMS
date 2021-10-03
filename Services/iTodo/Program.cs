@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using PotentHelper;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace iTodo
 {
@@ -19,20 +18,7 @@ namespace iTodo
             var setupActions = new SetupActions();
             setupActions.Ini();
 
-            //Console.WriteLine("ooooooooooooooooooooooooooooooooooooooooooo");
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-
-            //_ = ConsumerHelper.MapTopicToMethod(setupActions.mapping, setupActions.db, setupActions.AppId);
-            //_ = new ConsumerHelper("localhost:9092", new List<string>() { "TestTask" }, token,(m) => setupActions.db.Add(m), "TTooooT");
-            //_ = ConsumerHelper.MapTopicToMethod(setupActions.mapping, setupActions.db, setupActions.AppId).ToList();
-
             CreateHostBuilder(args).Build().Run();
-            //Parallel.Invoke(
-            //        () => CreateHostBuilder(args).Build().Run(),
-            //        ConsumerHelper.MapTopicToMethod(setupActions.mapping, setupActions.db, setupActions.AppId)
-            //    );
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

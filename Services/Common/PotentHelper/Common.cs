@@ -15,7 +15,7 @@ namespace PotentHelper
         public const string Group = "Group";
         public const string Time = "Time";
         public const string MemoryFeedback = "MemoryFeedback";
-        public const string RepeatFeedback = "MemoryFeedback";
+        public const string RepeatFeedback = "RepeatFeedback";
         public const string TaskFeedback = "TaskFeedback";
         public const string PersonalAssistantFeedback = "PAFeedback";
         public const string GoalFeedback = "GoalFeedback";
@@ -84,7 +84,7 @@ namespace PotentHelper
             public static MapActionItem SetTag = Mai.SetName("setTag");
             public static MapActionItem AssignTask = Mai.SetName("assignTask");
             public static MapActionItem MoveTask = Mai.SetName("moveTask");
-            public static MapActionItem RepeatTask = Mai.SetName("repeatTask");
+            //public static MapActionItem RepeatTask = Mai.SetName("repeatTask");
 
             static MapActionItem Mai => MapActionItem.Instance("Task");
         }

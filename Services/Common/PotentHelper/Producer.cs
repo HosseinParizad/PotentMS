@@ -33,7 +33,6 @@ namespace PotentHelper
 
         public static async Task SendMessage(FullMessage message)
         {
-
             if (OnSendAMessageEvent != null)
             {
                 OnSendAMessageEvent.Invoke(null, new FullMessage(message.Topic, message.Message));

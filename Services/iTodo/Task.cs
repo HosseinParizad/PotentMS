@@ -361,7 +361,7 @@ namespace iTodo
 
         internal static IEnumerable<PresentItem> GetPresentationTask(string groupKey, string memberKey, string parentId)
         {
-            return Todos.Where(i => i.Kind != TodoType.Goal && i.Status != TodoStatus.Close && (i.MemberKey ?? i.GroupKey) == groupKey && i.ParentId == parentId)
+            return Todos.Where(i => i.Kind != TodoType.Goal && i.Status != TodoStatus.Close).GetGroupMember(groupKey, memberKey, parentId)
                 .Select(i => GetPresentationItemTask(groupKey, memberKey, i));
         }
 
@@ -411,7 +411,7 @@ namespace iTodo
 
     #region Classes
 
-    public class TodoItem
+    public class TodoItem : IMultiGroupParent
     {
         public string Id { get; set; }
         public string Description { get; set; }

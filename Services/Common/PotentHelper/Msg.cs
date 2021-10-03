@@ -16,7 +16,8 @@ namespace PotentHelper
         }
 
         public Msg(MapActionItem action, dynamic metadata, dynamic content) : this(action.Name, (object)metadata, (object)content)
-        { }
+        {
+        }
 
         public Msg(string action, dynamic metadata, dynamic content)
         {

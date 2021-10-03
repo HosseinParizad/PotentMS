@@ -26,10 +26,6 @@ namespace RepeatManager
                 _logger.LogInformation("Worker running at: {time}", Now);
                 await Task.Delay(10000, stoppingToken);
 
-                //Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-                //Console.WriteLine(JsonConvert.SerializeObject(Engine.Repeat.FirstOrDefault()));
-                //Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
                 foreach (var item in Engine.Repeat.Where(r => r.NextGeneratedTime < Now).ToArray())
                 {
                     if (item.ReferenceName == "Task")
@@ -37,7 +33,7 @@ namespace RepeatManager
                         var now = Now;
                         var dataToSend = new { Id = item.ReferenceId, LastGeneratedTime = now, Hours = (now - item.LastGeneratedTime).Hours, RepeatIfAllClosed = item.RepeatIfAllClosed };
                         item.LastGeneratedTime = now;
-                        SendMessage(type: MsgType.Apply, action: MapAction.Task.RepeatTask.Name, content: dataToSend);
+                        SendMessage(type: MsgType.Apply, action: MapAction.RepeatFeedback.RepeatNewItem.Name, content: dataToSend);
                     }
                 }
             }

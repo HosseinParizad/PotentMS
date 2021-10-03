@@ -3,12 +3,13 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PotentHelper
 {
     public class ConsumerHelper
     {
-        public static IEnumerable<ConsumerHelper> MapTopicToMethod(List<MapBinding> actions, DbText db, string groupId)
+        public static async void MapTopicToMethod(List<MapBinding> actions, DbText db, string groupId)
         {
             // return () =>
             // {
@@ -16,10 +17,10 @@ namespace PotentHelper
             var token = source.Token;
 
             var topics = actions.Topics().Where(t => t != "").Select(a => GetTopic(a)).ToList();
-            foreach (var t in topics)
-            {
-                yield return new ConsumerHelper("localhost:9092", new List<string>() { t }, token, (m) => MessageProcessor.MapMessageToAction(groupId, m, (m) => db.Add(m)), groupId);
-            }
+            Parallel.ForEach(topics, t =>
+                Task.Run(() => new ConsumerHelper("localhost:9092", new List<string>() { t }, token, (m) => MessageProcessor.MapMessageToAction(groupId, m, (m) => db.Add(m)), groupId))
+                );
+
             //};
         }
 

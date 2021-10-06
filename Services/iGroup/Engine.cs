@@ -127,9 +127,7 @@ namespace iGroup
         #endregion
 
         internal static IEnumerable<PresentItem> GetGroupPresentation(string groupKey, string memberKey)
-        {
-            return Groups.GetGroupMember(groupKey,memberKey).Select(i => GroupToPresentation(groupKey, memberKey, i));
-        }
+            => Groups.GetGroupMember(groupKey, memberKey).Select(i => GroupToPresentation(groupKey, memberKey, i));
 
         static PresentItem GroupToPresentation(string groupKey, string memberKey, GroupItem mi)
         {
@@ -173,17 +171,11 @@ namespace iGroup
             }
         }
 
-        static DateTimeOffset GetCreateDate(dynamic metadata)
-        {
-            return DateTimeOffset.Parse(metadata.CreateDate.ToString());
-        }
+        static DateTimeOffset GetCreateDate(dynamic metadata) => DateTimeOffset.Parse(metadata.CreateDate.ToString());
 
         #endregion
 
-        internal static IEnumerable<GroupItem> GetGroup(string groupKey)
-        {
-            return Groups.Where(m => m.GroupKey == groupKey);
-        }
+        internal static IEnumerable<GroupItem> GetGroup(string groupKey) => Groups.Where(m => m.GroupKey == groupKey);
 
         #region Common actions
 

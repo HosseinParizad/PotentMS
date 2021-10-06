@@ -48,20 +48,20 @@
 
 
 <ng-template #recursiveListTmpl let-list="list" let-part="part">
-  <span *ngFor="let badge of list">
-    <li [class.selectedbadge]="badge.Id === selected.Badge.Id && part.Text == selected.Part" *ngIf="badge.Status != 3"
+  <li *ngFor="let badge of list" [class.lastnode]="badge.Items.length == 0 && badge.ParentId == null">
+    <span [class.selectedbadge]="badge.Id === selected.Badge.Id && part.Text == selected.Part" *ngIf="badge.Status != 3"
       (click)="selectbadgepart($event, part.Text, badge)">
-      <mat-icon *ngIf="badge.Type != 3">attach_file</mat-icon>
+      <!-- <mat-icon *ngIf="badge.Type != 3">attach_file</mat-icon> -->
       <mat-icon *ngIf="badge.Type == 3">folder_open</mat-icon>
-      <span [class.lastnode]="badge.Items.length == 0 && badge.Type != 3">{{badge.Text}}</span>
+      <span>{{badge.Text}}</span>
       <mat-icon *ngIf="badge.Status == 2">pause</mat-icon>
       <mat-icon *ngIf="badge.Status == 1">play_arrow</mat-icon>
 
-    </li>
+    </span>
     <ul *ngIf="badge.Items.length > 0">
       <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.Items, part:part }"></ng-container>
     </ul>
-  </span>
+  </li>
 </ng-template>
 
 <br />

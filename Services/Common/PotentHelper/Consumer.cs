@@ -17,9 +17,9 @@ namespace PotentHelper
             var token = source.Token;
 
             var topics = actions.Topics().Where(t => t != "").Select(a => GetTopic(a)).ToList();
-            Parallel.ForEach(topics, t =>
+            await Task.Run(() => Parallel.ForEach(topics, t =>
                 Task.Run(() => new ConsumerHelper("localhost:9092", new List<string>() { t }, token, (m) => MessageProcessor.MapMessageToAction(groupId, m, (m) => db.Add(m)), groupId))
-                );
+            ));
 
             //};
         }

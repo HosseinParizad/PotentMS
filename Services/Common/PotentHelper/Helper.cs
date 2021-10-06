@@ -25,8 +25,11 @@ namespace PotentHelper
                 , new IsoDateTimeConverter { DateTimeFormat = "yyyy/MM/dd" });
 
         public static IEnumerable<TSource> GetGroupMember<TSource>(this IEnumerable<TSource> source, string groupKey, string memberKey)
-            => source.Cast<IMultiGroup>().Where(mg => ((mg.GroupKey == groupKey && (memberKey == null || memberKey == "" || mg.MemberKey == memberKey)) || ((groupKey == null || groupKey == "" || mg.GroupKey == groupKey) && mg.MemberKey == memberKey))).Cast<TSource>();
-
+            => source.Cast<IMultiGroup>()
+                    .Where(mg =>
+                            (mg.GroupKey == groupKey) ||
+                            (mg.MemberKey == memberKey && (mg.GroupKey == null || mg.GroupKey == "" || mg.GroupKey == groupKey || "" == groupKey))
+                          ).Cast<TSource>();
         public static IEnumerable<TSource> GetGroupMember<TSource>(this IEnumerable<TSource> source, string groupKey, string memberKey, string parentId)
             => source.Cast<IMultiGroupParent>().GetGroupMember(groupKey, memberKey).Where(mg => mg.ParentId == parentId).Cast<TSource>();
     }
@@ -244,7 +247,7 @@ namespace PotentHelper
                 db.ReplayAll();
             }
 
-            MapAsync();
+            await Task.Run(MapAsync);
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)

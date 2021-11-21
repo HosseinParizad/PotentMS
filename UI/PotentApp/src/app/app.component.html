@@ -8,19 +8,6 @@
       <!-- <mat-card-subtitle>{{dashboard | json}}</mat-card-subtitle> -->
     </mat-card-header>
     <mat-card-content *ngIf="dashboard.Text == this.selected.MemberKey">
-      <p>
-        <!-- <button *ngFor="let badge of category.badges" mat-raised-button matBadge="7" [matBadgeHidden]="hidden"
-       (click)="toggleBadgeVisibility()">
-       
-     </button> -->
-        <!-- <mat-chip-list aria-label="????" class="tagtag">
-          <p *ngFor="let part of dashboard.parts;">
-            <mat-chip mat-raised-button matBadge="{{part.badges.Count}}">
-              {{part.text}}
-            </mat-chip>
-          </p>
-        </mat-chip-list> -->
-      </p>
       <ul style="list-style-type: none;padding-inline-start: 0px ; ">
         <li *ngFor="let part of dashboard.Parts;">
           <span class="parttext" [class.selectedgrouppart]="dashboard.Text == this.selected.MemberKey"
@@ -46,17 +33,14 @@
 
 </div>
 
-
 <ng-template #recursiveListTmpl let-list="list" let-part="part">
   <li *ngFor="let badge of list" [class.lastnode]="badge.Items.length == 0 && badge.ParentId == null">
     <span [class.selectedbadge]="badge.Id === selected.Badge.Id && part.Text == selected.Part" *ngIf="badge.Status != 3"
       (click)="selectbadgepart($event, part.Text, badge)">
-      <!-- <mat-icon *ngIf="badge.Type != 3">attach_file</mat-icon> -->
       <mat-icon *ngIf="badge.Type == 3">folder_open</mat-icon>
       <span>{{badge.Text}}</span>
       <mat-icon *ngIf="badge.Status == 2">pause</mat-icon>
       <mat-icon *ngIf="badge.Status == 1">play_arrow</mat-icon>
-
     </span>
     <ul *ngIf="badge.Items.length > 0">
       <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: badge.Items, part:part }"></ng-container>
@@ -65,47 +49,62 @@
 </ng-template>
 
 <br />
-<div class="cmdPanel" style="white-space:nowrap;margin: 5px; padding: 20px;">
-  <span>New: </span>
-  <span>
-    <input id="text" [(ngModel)]="text" placeholder="name">
-    <br />
-    <span>date: </span>
-    <input type="date" [(ngModel)]="inputdate" />
-    <br />
-    <br />
-    <span>Extra info: </span>
-    <input id="description" [(ngModel)]="description">
-  </span>
-  <hr />
-  <button id="basic" type="button" class="bttn" mat-button (click)="SendTaskRequest()">
-    Add task
-  </button>
-  <button id="basic" type="button" class="bttn" mat-button (click)="SendGoalRequest()">
-    Add Goal
-  </button>
-  <button id="basic" type="button" class="bttn" mat-button (click)="SendGroupRequest()">
-    Add Group
-  </button>
-  <button id="basic" type="button" class="bttn" mat-button (click)="SendMemberRequest()">
-    Add Member
-  </button>
-  <button id="basic" type="button" class="bttn" mat-button (click)="SendMemoryRequest()">
-    Add memory item
-  </button>
-  <mat-chip-list aria-label="????" class="tagtag">
-    <p *ngFor="let lit of selected.Badge?.LinkItems;">
-      <mat-chip (click)="SendTaskRequestSpe(lit.Link)" mat-raised-button>
-        {{lit.text}}
-      </mat-chip>
-    </p>
-    <p *ngFor="let lit of selected.Badge?.Actions;">
-      <mat-chip (click)="SendTaskRequestSpe(lit)" mat-raised-button>
-        {{lit.Text}}
-      </mat-chip>
-    </p>
-  </mat-chip-list>
+<div class="groupcard">
+  <mat-card>
+    <mat-card-header (click)='extraSecVis1 = !extraSecVis1'>
+      <div mat-card-avatar>................</div>
+    </mat-card-header>
+    <mat-card-content *ngIf="extraSecVis1">
+      <div class="cmdPanel" style="white-space:nowrap;margin: 5px; padding: 20px;">
+        <span>New: </span>
+        <span>
+          <input id="text" [(ngModel)]="text" placeholder="name">
+          <br />
+          <span>date: </span>
+          <input type="date" [(ngModel)]="inputdate" />
+          <br />
+          <br />
+          <span>Extra info: </span>
+          <input id="description" [(ngModel)]="description">
+        </span>
+        <hr />
+        <button id="basic" type="button" class="bttn" mat-button (click)="SendTaskRequest()">
+          Add task
+        </button>
+        <button id="basic" type="button" class="bttn" mat-button (click)="SendGoalRequest()">
+          Add Goal
+        </button>
+        <button id="basic" type="button" class="bttn" mat-button (click)="SendGroupRequest()">
+          Add Group
+        </button>
+        <button id="basic" type="button" class="bttn" mat-button (click)="SendMemberRequest()">
+          Add Member
+        </button>
+        <button id="basic" type="button" class="bttn" mat-button (click)="SendMemoryRequest()">
+          Add memory item
+        </button>
+        <button id="basic" type="button" class="bttn" mat-button (click)="Cut()">
+          Cut To Move
+        </button>
+        <button id="basic" type="button" class="bttn" mat-button (click)="PasteToMove()">
+          Move To
+        </button>
+        <mat-chip-list aria-label="????" class="tagtag">
+          <p *ngFor="let lit of selected.Badge?.LinkItems;">
+            <mat-chip (click)="SendTaskRequestSpe(lit.Link)" mat-raised-button>
+              {{lit.text}}
+            </mat-chip>
+          </p>
+          <p *ngFor="let lit of selected.Badge?.Actions;">
+            <mat-chip (click)="SendTaskRequestSpe(lit)" mat-raised-button>
+              {{lit.Text}}
+            </mat-chip>
+          </p>
+        </mat-chip-list>
 
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
 <hr />
 <!-- <label (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for Tasks</label><br>
@@ -127,81 +126,99 @@
 <label (click)="text = 'Avoid Complaining!'">Avoid Complaining!</label> <br>
 <label (click)="text = 'Quit Your Job'">Quit Your Job</label> <br>
  -->
-<ol class="list-inline">
-  <li (click)='SendReapeatRequest(frequency.daily)'>every day</li>
-  <li (click)='SendReapeatRequest(frequency.weekly)'>weekly</li>
-  <li (click)='SendReapeatRequest(frequency.days10)'>10 days</li>
-  <li (click)='SendReapeatRequest(frequency.fortnightly)'>fortnightly</li>
-  <li (click)='SendReapeatRequest(frequency.monthly)'>monthly</li>
-  <li (click)='SendReapeatRequest(frequency.test)'>Test only :)</li>
-  <div>
-    <input type="checkbox" id="repeatIfAllClosed" name="interest" [(ngModel)]="repeatIfAllClosed">
-    <label for="repeatIfAllClosed">Only if all closed</label>
-  </div>
-</ol>
+<div class="groupcard">
+  <mat-card>
+    <mat-card-header (click)='extraSecVis2 = !extraSecVis2'>
+      <div mat-card-avatar>................</div>
+    </mat-card-header>
+    <mat-card-content *ngIf="extraSecVis2">
 
-<hr />
+      <ol>
+        <li class="lastnode" (click)='SendReapeatRequest(frequency.daily)'>every day</li>
+        <li class="lastnode" (click)='SendReapeatRequest(frequency.weekly)'>weekly</li>
+        <li class="lastnode" (click)='SendReapeatRequest(frequency.days10)'>10 days</li>
+        <li class="lastnode" (click)='SendReapeatRequest(frequency.fortnightly)'>fortnightly</li>
+        <li class="lastnode" (click)='SendReapeatRequest(frequency.monthly)'>monthly</li>
+        <li class="lastnode" (click)='SendReapeatRequest(frequency.test)'>Test only :)</li>
+        <div>
+          <input type="checkbox" id="repeatIfAllClosed" name="interest" [(ngModel)]="repeatIfAllClosed">
+          <label for="repeatIfAllClosed">Only if all closed</label>
+        </div>
+      </ol>
 
-<ol class="list-inline">
-  <li (click)='setdate(+0)'>today</li>
-  <li (click)='setdate(+1)'>tommorow</li>
-  <li (click)='setdate(+7)'>next week</li>
-  <li (click)='setdate(+10)'>10 days</li>
-  <li (click)='setdate(+14)'>two weeks</li>
-  <li (click)='setdate(+30)'>next month</li>
-</ol>
+      <hr />
 
-<hr />
+      <ol>
+        <li class="lastnode" (click)='setdate(+0)'>today</li>
+        <li class="lastnode" (click)='setdate(+1)'>tommorow</li>
+        <li class="lastnode" (click)='setdate(+7)'>next week</li>
+        <li class="lastnode" (click)='setdate(+10)'>10 days</li>
+        <li class="lastnode" (click)='setdate(+14)'>two weeks</li>
+        <li class="lastnode" (click)='setdate(+30)'>next month</li>
+      </ol>
 
-<ul>
-  <div class="newspaper">
-    <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: selectedPart.badges }">
-    </ng-container>
-  </div>
-</ul>
+      <hr />
 
-<ng-template #recursiveListTmpl2 let-list="list">
-  <span *ngFor="let item of list" class="showdetail">
-    <li *ngIf="item.items.length == 0" class="" [class.crossfont]="item.status == 3">{{item.text}}</li>
-    <span *ngIf="item.items.length > 0">
-      <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: item.items }"></ng-container>
-    </span>
-  </span>
-</ng-template>
+      <ul>
+        <div class="newspaper">
+          <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: selectedPart.badges }">
+          </ng-container>
+        </div>
+      </ul>
 
-<hr />
-<ol>
-  <li (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for Tasks</li><br>
-  <li (click)="text = 'The Unicorn Principle'">The Unicorn Principle</li> <br>
-  <li (click)="text = 'Repurpose Your Great Content'">Repurpose Your Great Content</li> <br>
-  <li (click)="text = 'Work Less'">Work Less</li> <br>
-  <li (click)="text = 'Work at Times You’re Most Productive'">Work at Times You’re Most Productive</li> <br>
-  <li (click)="text = 'Be an Intentional Procrastinator'">Be an Intentional Procrastinator</li> <br>
-  <li (click)="text = 'Prioritize Your Tasks'">Prioritize Your Tasks(4 section)</li> <br>
-  <li (click)="text = 'Let a Great Assistant Keep You Organized'">Let a Great Assistant Keep You Organized</li> <br>
-  <li (click)="text = 'Surround Yourself With Smart People'">Surround Yourself With Smart People</li> <br>
-  <li (click)="text = 'Find Tools That Automate Repetitive Tasks'">Find Tools That Automate Repetitive Tasks</li>
-  <br>
-  <li (click)="text = 'Use Productivity Apps'">Use Productivity Apps</li> <br>
-  <li (click)="text = 'Use Keyboard Shortcuts'">Use Keyboard Shortcuts</li> <br>
-  <li (click)="text = ' Be More Efficient With Emails'">Be More Efficient With Emails</li> <br>
-  <li (click)="text = 'Do More Things You Enjoy'">Do More Things You Enjoy</li> <br>
-  <li (click)="text = 'Ignore Sports'">Ignore Sports</li> <br>
-  <li (click)="text = 'Avoid Complaining!'">Avoid Complaining!</li> <br>
-  <li (click)="text = 'Quit Your Job'">Quit Your Job</li> <br>
-</ol>
-<br>
-<hr />
-<button type="button" class="bttnn" mat-button (click)="Reset()">
-  Reset
-</button>
-<button type="button" class="bttnn" mat-button (click)="DeleteAll()">
-  DeleteAll
-</button>
-<button type="button" class="bttnn" mat-button (click)="DeleteFeedback()">
-  Delete feedback
-</button>
-<!-- 
+      <ng-template #recursiveListTmpl2 let-list="list">
+        <span *ngFor="let item of list" class="showdetail">
+          <li *ngIf="item.items.length == 0" class="lastnode" [class.crossfont]="item.status == 3">{{item.text}}</li>
+          <span *ngIf="item.items.length > 0">
+            <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: item.items }"></ng-container>
+          </span>
+        </span>
+      </ng-template>
+
+      <hr />
+      <ol>
+        <li class="lastnode" (click)="text = 'Book Time in Your Calendar for Tasks'">Book Time in Your Calendar for
+          Tasks
+        </li>
+        <li class="lastnode" (click)="text = 'The Unicorn Principle'">The Unicorn Principle</li>
+        <li class="lastnode" (click)="text = 'Repurpose Your Great Content'">Repurpose Your Great Content</li>
+        <li class="lastnode" (click)="text = 'Work Less'">Work Less</li>
+        <li class="lastnode" (click)="text = 'Work at Times You’re Most Productive'">Work at Times You’re Most
+          Productive
+        </li>
+        <li class="lastnode" (click)="text = 'Be an Intentional Procrastinator'">Be an Intentional Procrastinator</li>
+        <li class="lastnode" (click)="text = 'Prioritize Your Tasks'">Prioritize Your Tasks(4 section)</li>
+        <li class="lastnode" (click)="text = 'Let a Great Assistant Keep You Organized'">Let a Great Assistant Keep You
+          Organized</li>
+        <li class="lastnode" (click)="text = 'Surround Yourself With Smart People'">Surround Yourself With Smart People
+        </li>
+        <li class="lastnode" (click)="text = 'Find Tools That Automate Repetitive Tasks'">Find Tools That Automate
+          Repetitive
+          Tasks</li>
+        <li class="lastnode" (click)="text = 'Use Productivity Apps'">Use Productivity Apps</li>
+        <li class="lastnode" (click)="text = 'Use Keyboard Shortcuts'">Use Keyboard Shortcuts</li>
+        <li class="lastnode" (click)="text = ' Be More Efficient With Emails'">Be More Efficient With Emails</li>
+        <li class="lastnode" (click)="text = 'Do More Things You Enjoy'">Do More Things You Enjoy</li>
+        <li class="lastnode" (click)="text = 'Ignore Sports'">Ignore Sports</li>
+        <li class="lastnode" (click)="text = 'Avoid Complaining!'">Avoid Complaining!</li>
+        <li class="lastnode" (click)="text = 'Quit Your Job'">Quit Your Job</li>
+      </ol>
+      <br>
+      <hr />
+      <button type="button" class="bttnn" mat-button (click)="Reset()">
+        Reset
+      </button>
+      <button type="button" class="bttnn" mat-button (click)="DeleteAll()">
+        DeleteAll
+      </button>
+      <button type="button" class="bttnn" mat-button (click)="DeleteFeedback()">
+        Delete feedback
+      </button>
+
+    </mat-card-content>
+  </mat-card>
+
+  <!-- 
 <pre>
 {{text|json}}
 </pre>
@@ -214,4 +231,9 @@
 {{cats|json}}
 </pre> -->
 
-<!-- <pre>{{selectedPart|json}}</pre> -->
+  <!-- <pre>{{selectedPart|json}}</pre> -->
+</div>
+
+<pre>
+{{selected|json}}
+</pre>

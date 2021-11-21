@@ -23,6 +23,9 @@ export class AppComponent implements OnInit {
   sent = {};
   isShowdetail: boolean = false;
   inputdate: any;
+  extraSecVis1: boolean = false;
+  extraSecVis2: boolean = false;
+  cutId: string = "";
   repeatIfAllClosed: boolean = false;
   frequency: any = {
     daily: 'D1',
@@ -122,12 +125,14 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequestSpe(body: any) {
-    if (body.Content.Description) {
-      body.Content.Description = body.Content.Description.replace('[text]', this.text)
-    }
+    var columns = ['Description', 'Tag', 'Location', 'Text']
+    columns.forEach(e => {
+      if (body.Content[e]) {
+        body.Content[e] = body.Content[e].replace('[text]', this.text)
+      }
+    });
 
     if (body.Content.Text) {
-      body.Content.Text = body.Content.Text.replace('[text]', this.text)
       body.Content.Text = body.Content.Text.replace('[date]', this.inputdate)
     }
 
@@ -225,5 +230,19 @@ export class AppComponent implements OnInit {
     var url = "https://localhost:5001/Gateway/Location";
     var body = { action: "setCurrentLocation", key: member, content: JSON.stringify(content) };
     this.SendRequestCore(url, body);
+  }
+
+  Cut() {
+    this.cutId = this.selected.Badge.Id;
+  }
+
+  PasteToMove() {
+    alert(this.selected.Badge.Id);
+    alert(this.cutId);
+    if (this.cutId && this.selected.Badge.Id && this.selected.Badge.Id != this.cutId) {
+      var body = this.BodyMaker('moveTask', this.group, this.selected.MemberKey, { Id: this.cutId, ToParentId: this.selected.Badge.Id });
+      this.sent = this.SendRequest(body);
+      this.cutId = "";
+    }
   }
 }

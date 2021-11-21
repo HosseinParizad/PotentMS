@@ -88,9 +88,16 @@ namespace iTodo
             var toid = content.ToParentId.ToString();
             var groupKey = metadata.GroupKey.ToString();
             var memberKey = metadata.MemberKey.ToString();
-            FindById(groupKey, id).ParentId = toid;
-            var dataToSend = new { GroupKey = groupKey, MemberKey = memberKey, Id = id, NewParentId = toid };
-            SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.Task.MoveTask.Name, content: dataToSend);
+            var task = Todos.SingleOrDefault(t => t.Id == id);
+            var newParent = Todos.SingleOrDefault(t => t.Id == toid);
+            if (task != null && newParent != null)
+            {
+                task.GroupKey = newParent.GroupKey;
+                task.MemberKey = newParent.MemberKey;
+                task.ParentId = toid;
+                var dataToSend = new { GroupKey = groupKey, MemberKey = memberKey, Id = id, NewParentId = toid };
+                SendFeedbackMessage(type: MsgType.Success, actionTime: GetCreateDate(metadata), action: MapAction.Task.MoveTask.Name, content: dataToSend);
+            }
         }
 
         #endregion
@@ -334,8 +341,8 @@ namespace iTodo
         static TodoItem FindById(string groupKey, dynamic id) => Todos.SingleOrDefault(t => t.GroupKey == groupKey && t.Id == id);
         static TodoItem FindFirstByCondition(string groupKey, Func<TodoItem, bool> condition) => Todos.FirstOrDefault(t => t.GroupKey == groupKey && condition(t));
 
-        static List<TodoItem> Todos = new List<TodoItem>();
-        static List<TimeItem> TimeLog = new List<TimeItem>();
+        static List<TodoItem> Todos = new();
+        static List<TimeItem> TimeLog = new();
 
         public static string GetSort => Sort;
         static string Sort = "";
@@ -362,6 +369,7 @@ namespace iTodo
         internal static IEnumerable<PresentItem> GetPresentationTask(string groupKey, string memberKey, string parentId)
         {
             return Todos.Where(i => i.Kind != TodoType.Goal && i.Status != TodoStatus.Close).GetGroupMember(groupKey, memberKey, parentId)
+            //    .Union(vvv.Where(t => t.ParentId != null && !vvv.Select(a => a.Id).Contains(t.ParentId))).Distinct()
                 .Select(i => GetPresentationItemTask(groupKey, memberKey, i));
         }
 
@@ -382,7 +390,7 @@ namespace iTodo
         static string GetInfo(TodoItem todo)
         {
             return (todo.Locations.Any() ? $"Locations: {string.Join("|", todo.Locations)}" : "") +
-                (todo.Tags.Any() ? $"Taks: {string.Join("|", todo.Tags.Select(t => $"{t.TagParentKey}-{string.Join('&', t.Value)}"))}" : "");
+                (todo.Tags.Any() ? $"Tags: {string.Join("|", todo.Tags.Select(t => $"{t.TagParentKey}-{string.Join('&', t.Value)}"))}" : "");
         }
 
         static IEnumerable<PresentItemActions> GetActions(TodoItem todo)

@@ -15,23 +15,14 @@ namespace iTodo.Controllers
     {
         private readonly ILogger<TodoQueryController> _logger;
 
-        public TodoQueryController(ILogger<TodoQueryController> logger)
-        {
-            _logger = logger;
-        }
+        public TodoQueryController(ILogger<TodoQueryController> logger) => _logger = logger;
 
         [HttpGet]
-        public IEnumerable<TodoItem> Get(string groupKey)
-        {
-            return Engine.GetTask(groupKey);
-        }
+        public IEnumerable<TodoItem> Get(string groupKey) => Engine.GetTask(groupKey);
 
         [HttpGet]
         [Route("GetPresentationTask")]
-        public IEnumerable<PresentItem> GetPresentationTask(string groupKey, string memberKey)
-        {
-            return Engine.GetPresentationTask(groupKey, memberKey, "");
-        }
+        public IEnumerable<PresentItem> GetPresentationTask(string groupKey, string memberKey) => Engine.GetPresentationTask(groupKey, memberKey, "");
 
 
         [HttpGet]
@@ -41,20 +32,14 @@ namespace iTodo.Controllers
             return Engine.GetSort;
         }
 
-        [HttpGet("/GetTaskByGroupTag/{groupKey}/{Tag}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<TodoItem>> GetTaskByGroupTag(string groupKey, string tag)
-        {
-            return Engine.GetTaskByGroupTag(groupKey, tag).ToList();
-        }
+        //[HttpGet("/GetTaskByGroupTag/{groupKey}/{Tag}")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult<IEnumerable<TodoItem>> GetTaskByGroupTag(string groupKey, string tag) => Engine.GetTaskByGroupTag(groupKey, tag).ToList();
 
-        [HttpGet("/GetTaskWhenMoveToLocation/{groupKey}/{Tag}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<TodoItem>> GetTaskWhenMoveToLocation(string groupKey, string tag)
-        {
-            return Engine.GetTaskWhenMoveToLocation(groupKey, tag).ToList();
-        }
+        //[HttpGet("/GetTaskWhenMoveToLocation/{groupKey}/{Tag}")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult<IEnumerable<TodoItem>> GetTaskWhenMoveToLocation(string groupKey, string tag) => Engine.GetTaskWhenMoveToLocation(groupKey, tag).ToList();
     }
 }

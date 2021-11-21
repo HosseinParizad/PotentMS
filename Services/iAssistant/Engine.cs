@@ -27,56 +27,56 @@ namespace iAssistant
             return presentItem;
         }
 
-        internal static void OnNewTaskAdded(dynamic metadata, dynamic content)
-        {
-            var groupKey = metadata.GroupKey.ToString();
-            var memberKey = metadata.MemberKey.ToString();
+        //internal static void OnNewTaskAdded(dynamic metadata, dynamic content)
+        //{
+        //    var groupKey = metadata.GroupKey.ToString();
+        //    var memberKey = metadata.MemberKey.ToString();
 
-            Todos.Add(new TodoItem
-            {
-                Id = content.Id.ToString(),
-                Text = content.Text.ToString(),
-                ParentId = content.ParentId.ToString(),
-                GroupKey = groupKey,
-                MemberKey = memberKey
-            });
+        //    Todos.Add(new TodoItem
+        //    {
+        //        Id = content.Id.ToString(),
+        //        Text = content.Text.ToString(),
+        //        ParentId = content.ParentId.ToString(),
+        //        GroupKey = groupKey,
+        //        MemberKey = memberKey
+        //    });
 
-            if (!MemberLocation.ContainsKey(groupKey))
-            {
-                MemberLocation.Add(groupKey, "");
-            }
-        }
+        //    if (!MemberLocation.ContainsKey(groupKey))
+        //    {
+        //        MemberLocation.Add(groupKey, "");
+        //    }
+        //}
 
-        internal static void MemberSetLocation(dynamic metadata, dynamic content)
-        {
-            var groupKey = metadata.GroupKey.ToString();
-            var memberKey = metadata.MemberKey.ToString();
-            var location = content.Location.ToString();
-            var id = content.Id.ToString();
+        //internal static void MemberSetLocation(dynamic metadata, dynamic content)
+        //{
+        //    var groupKey = metadata.GroupKey.ToString();
+        //    var memberKey = metadata.MemberKey.ToString();
+        //    var location = content.Location.ToString();
+        //    var id = content.Id.ToString();
 
-            var todo = Todos.SingleOrDefault(t => t.Id == id);
-            if (todo != null)
-            {
-                todo.Location = location;
-            }
-        }
+        //    var todo = Todos.SingleOrDefault(t => t.Id == id);
+        //    if (todo != null)
+        //    {
+        //        todo.Location = location;
+        //    }
+        //}
 
-        static Dictionary<string, string> MemberLocation = new();
+        //static Dictionary<string, string> MemberLocation = new();
 
-        internal static void MemberMoved(dynamic metadata, dynamic content)
-        {
-            var groupKey = metadata.GroupKey.ToString();
-            var memberKey = metadata.MemberKey.ToString();
-            var newLocation = content.NewLocation.ToString();
-            if (MemberLocation.ContainsKey(groupKey))
-            {
-                MemberLocation[groupKey] = newLocation;
-            }
-            else
-            {
-                MemberLocation.Add(groupKey, newLocation);
-            }
-        }
+        //internal static void MemberMoved(dynamic metadata, dynamic content)
+        //{
+        //    var groupKey = metadata.GroupKey.ToString();
+        //    var memberKey = metadata.MemberKey.ToString();
+        //    var newLocation = content.NewLocation.ToString();
+        //    if (MemberLocation.ContainsKey(groupKey))
+        //    {
+        //        MemberLocation[groupKey] = newLocation;
+        //    }
+        //    else
+        //    {
+        //        MemberLocation.Add(groupKey, newLocation);
+        //    }
+        //}
 
         #region Implement
 

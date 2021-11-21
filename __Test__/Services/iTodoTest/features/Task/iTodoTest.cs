@@ -45,23 +45,26 @@ namespace iTest.Task
         public void ThenIShouldSeeTheFollowingTodoListDirectly(Table table)
         {
             var tableColumns = table.Header.ToArray();
-
             foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
                 var i = 0;
                 var todos = new TodoQueryController(null).GetPresentationTask(row.Key.GroupKey, row.Key.MemberKey).ToArray();
                 Assert.AreEqual(todos.Select(t => t.Text).ToList(), row.Select(r => r["Text"]));
-                if (tableColumns.Contains("Children"))
+                var column = "Children";
+                if (tableColumns.Contains(column))
                 {
-                    Assert.AreEqual(todos.Select(t => t.Items.Count).ToList(), row.Select(r => int.Parse(r["Children"])));
+                    Assert.AreEqual(todos.Select(t => t.Items.Count).ToList(), row.Select(r => int.Parse(r[column])));
                 }
-                if (tableColumns.Contains("Info"))
+
+                column = "Info";
+                if (tableColumns.Contains(column))
                 {
-                    foreach (var item in row)
-                    {
-                        Assert.AreEqual(todos[i].Info.ToString(), item["Info"].ToString());
-                        i++;
-                    }
+                    //foreach (var item in row)
+                    //{
+                    //    Assert.AreEqual(todos[i].Info.ToString(), item[column].ToString());
+                    //    i++;
+                    //}
+                    Assert.AreEqual(todos.Select(t => t.Info.ToString()).ToList(), row.Select(r => r[column].ToString()));
                 }
                 //Assert.AreEqual(RestHelper.DynamicToList(todos, expectedColums), row.ToList(tableColumns, new Dictionary<string, string> { { "[selectedid]", SelectedId } }));
 

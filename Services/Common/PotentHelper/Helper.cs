@@ -27,8 +27,8 @@ namespace PotentHelper
         public static IEnumerable<TSource> GetGroupMember<TSource>(this IEnumerable<TSource> source, string groupKey, string memberKey)
             => source.Cast<IMultiGroup>()
                     .Where(mg =>
-                            (mg.GroupKey == groupKey) ||
-                            (mg.MemberKey == memberKey && (mg.GroupKey == null || mg.GroupKey == "" || mg.GroupKey == groupKey || "" == groupKey))
+                            (mg.GroupKey == groupKey && (string.IsNullOrEmpty(mg.MemberKey) || (mg.MemberKey == memberKey) || string.IsNullOrEmpty(memberKey))) ||
+                            (mg.MemberKey == memberKey && (string.IsNullOrEmpty(mg.GroupKey) || mg.GroupKey == groupKey || string.IsNullOrEmpty(groupKey)))
                           ).Cast<TSource>();
         public static IEnumerable<TSource> GetGroupMember<TSource>(this IEnumerable<TSource> source, string groupKey, string memberKey, string parentId)
             => source.Cast<IMultiGroupParent>().GetGroupMember(groupKey, memberKey).Where(mg => mg.ParentId == parentId).Cast<TSource>();
@@ -247,7 +247,7 @@ namespace PotentHelper
                 db.ReplayAll();
             }
 
-            await Task.Run(MapAsync);
+            MapAsync();
         }
 
         public void Db_DbNewDataEvent(object sender, DbNewDataEventArgs e)

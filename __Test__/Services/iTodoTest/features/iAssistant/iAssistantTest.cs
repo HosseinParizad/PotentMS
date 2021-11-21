@@ -1,4 +1,5 @@
 ﻿using iAssistant.Controllers;
+using iTodo.Controllers;
 using NUnit.Framework;
 using SpecFlowDemo.Steps;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace iAssistant
             var tableColumns = table.Header.ToArray();
             foreach (var row in table.Rows.GroupBy(r => new { GroupKey = r["GroupKey"].ToString(), MemberKey = r["MemberKey"].ToString() }))
             {
-                var todos = new AssistantController(null).GetPresentation(row.Key.GroupKey, row.Key.MemberKey).ToArray();
+                var todos = new TodoQueryController(null).GetPresentationTask(row.Key.GroupKey, row.Key.MemberKey).ToArray();
                 Assert.AreEqual(todos.Select(t => t.Text).ToList(), row.Select(r => r["Text"]));
             }
         }

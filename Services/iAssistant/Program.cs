@@ -34,9 +34,9 @@ namespace iAssistant
         public override List<MapBinding> Mapping => new()
         {
             new MapBinding(MapAction.Common.Reset, Engine.Reset),
-            new MapBinding(MapAction.TaskFeedback.NewTaskAdded, Engine.OnNewTaskAdded),
-            new MapBinding(MapAction.LocationFeedback.LocationChanged, Engine.MemberMoved),
-            new MapBinding(MapAction.TaskFeedback.NewLocationAdded, Engine.MemberSetLocation),
+            //new MapBinding(MapAction.TaskFeedback.NewTaskAdded, Engine.OnNewTaskAdded),
+            //new MapBinding(MapAction.LocationFeedback.LocationChanged, Engine.MemberMoved),
+            //new MapBinding(MapAction.TaskFeedback.NewLocationAdded, Engine.MemberSetLocation),
         };
 
         public override string AppGroupId => "iAssistant";

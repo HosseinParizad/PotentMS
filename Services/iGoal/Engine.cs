@@ -23,7 +23,7 @@ namespace iGoal
         public static void UpdateGoal(dynamic metadata, dynamic content)
         {
             var text = content.Text.ToString();
-            var id = metadata.ReferenceKey.ToString();
+            var id = content.Id.ToString();
             var groupKey = metadata.GroupKey.ToString();
             var memberKey = metadata.MemberKey.ToString();
             var goal = Goals.SingleOrDefault(t => t.Id == id);
@@ -35,7 +35,6 @@ namespace iGoal
             {
                 SendFeedbackMessage(type: MsgType.Error, actionTime: GetCreateDate(metadata), action: MapAction.GoalFeedback.CannotUpdateGoal.Name, content: "Cannot update Goal");
             }
-
         }
 
         #endregion
@@ -93,6 +92,7 @@ namespace iGoal
             yield return createStep("step", MapAction.Goal.NewGoal.Name, new { Text = "[text]", ParentId = mi.Id });
             yield return createStep("update", MapAction.Goal.UpdateGoal.Name, new { Text = "[text]", Id = mi.Id });
             yield return createStep("delete", MapAction.Goal.DelGoal.Name, new { Id = mi.Id });
+            yield return createStep("task", MapAction.Task.NewTask.Name, new { Description = "[text]", ParentId = mi.Id });
         }
 
         #region Implement

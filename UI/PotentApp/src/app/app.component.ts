@@ -53,9 +53,9 @@ export class AppComponent implements OnInit {
               var partClone = JSON.parse(JSON.stringify(parts));
               row.Parts = partClone;
 
-              this.addSection(row, "Goals", 'https://localhost:5010/Goal/GetPresentation?groupKey=' + this.group + '&memberKey=' + row.Text);
-              this.addSection(row, "Memorizes", 'https://localhost:5008/Memory/GetPresentation?groupKey=' + this.group + '&memberKey=' + row.Text);
-              this.addSection(row, "Todos", 'https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=' + this.group + '&memberKey=' + row.Text);
+              this.addSection(row, "Goals", ['https://localhost:5010/Goal/GetPresentation?groupKey=' + this.group + '&memberKey=' + row.Text]);
+              this.addSection(row, "Memorizes", ['https://localhost:5008/Memory/GetPresentation?groupKey=' + this.group + '&memberKey=' + row.Text]);
+              this.addSection(row, "Todos", this.GetTodosUrls(row));
 
               this.cats.push(row);
 
@@ -68,11 +68,22 @@ export class AppComponent implements OnInit {
       });
   }
 
-  addSection(row: any, text: string, url: string) {
-    this.http.get<any>(url)
-      .subscribe(data => {
-        row.Parts.filter((i: any) => i.Text == text)[0].Badges = data;
-      });
+  GetTodosUrls(row: any): string[] {
+    return ['https://localhost:5003/TodoQuery/GetPresentationTask?groupKey=' + this.group + '&memberKey=' + row.Text,
+    'https://localhost:5010/Goal/GetTodos?groupKey=' + this.group + '&memberKey=' + row.Text];
+  }
+
+  addSection(row: any, text: string, urls: string[]) {
+    var badges = row.Parts.filter((i: any) => i.Text == text)[0];
+    badges.Badges = [];
+    urls.forEach(url => {
+      if (url != '') {
+        this.http.get<any>(url)
+          .subscribe(data => {
+            badges.Badges = badges.Badges.concat(data);
+          });
+      }
+    });
   }
 
   showDetail(part: any) {
@@ -125,22 +136,27 @@ export class AppComponent implements OnInit {
   }
 
   SendTaskRequestSpe(body: any) {
-    var columns = ['Description', 'Tag', 'Location', 'Text']
-    columns.forEach(e => {
-      if (body.Content[e]) {
-        body.Content[e] = body.Content[e].replace('[text]', this.text)
-      }
-    });
-
-    if (body.Content.Text) {
-      body.Content.Text = body.Content.Text.replace('[date]', this.inputdate)
-    }
-
     if (body.Content.Hint) {
-      body.Content.Hint = body.Content.Hint.replace('[hint]', this.description)
+      window.open(body.Content.Hint);
     }
+    else {
+      var columns = ['Description', 'Tag', 'Location', 'Text']
+      columns.forEach(e => {
+        if (body.Content[e]) {
+          body.Content[e] = body.Content[e].replace('[text]', this.text)
+        }
+      });
 
-    this.sent = this.SendRequestCore(body.Group, body);
+      if (body.Content.Text) {
+        body.Content.Text = body.Content.Text.replace('[date]', this.inputdate)
+      }
+
+      if (body.Content.Hint) {
+        body.Content.Hint = body.Content.Hint.replace('[hint]', this.description)
+      }
+
+      this.sent = this.SendRequestCore(body.Group, body);
+    }
   }
 
   SendGroupRequest() {

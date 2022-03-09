@@ -369,7 +369,6 @@ namespace iTodo
         internal static IEnumerable<PresentItem> GetPresentationTask(string groupKey, string memberKey, string parentId)
         {
             return Todos.Where(i => i.Kind != TodoType.Goal && i.Status != TodoStatus.Close).GetGroupMember(groupKey, memberKey, parentId)
-            //    .Union(vvv.Where(t => t.ParentId != null && !vvv.Select(a => a.Id).Contains(t.ParentId))).Distinct()
                 .Select(i => GetPresentationItemTask(groupKey, memberKey, i));
         }
 

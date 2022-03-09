@@ -31,5 +31,12 @@ namespace iGoal.Controllers
         {
             return Engine.GetGoalPresentation(groupKey, memberKey, "");
         }
+
+        [HttpGet]
+        [Route("GetTodos")]
+        public IEnumerable<PresentItem> GetTodos(string groupKey, string memberKey)
+        {
+            return Engine.GetTodos(groupKey, memberKey, "");
+        }
     }
 }

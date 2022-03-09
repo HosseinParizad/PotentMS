@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace PotentHelper
 {
@@ -13,7 +9,7 @@ namespace PotentHelper
         public string Text { get; set; }
         public string Link { get; set; }
         public List<PresentItemActions> Actions { get; set; }
-        public List<PresentItem> Items { get; set; } = new List<PresentItem>();
+        public List<PresentItem> Items { get; set; } = new List<PresentItem>(); 
         public string Info { get; set; }
 
     }

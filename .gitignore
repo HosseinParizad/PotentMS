@@ -7,3 +7,5 @@ obj/
 settings.json
 *.blob
 UserPrefs.xml
+.vs
+.venv

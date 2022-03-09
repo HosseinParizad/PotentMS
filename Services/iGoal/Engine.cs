@@ -65,6 +65,23 @@ namespace iGoal
             return Goals.Where(i => i.GroupKey == groupKey && i.MemberKey == memberKey && i.ParentId == parentid).Select(i => GoalToPresentation(groupKey, memberKey, i));
         }
 
+        internal static IEnumerable<PresentItem> GetTodos(string groupKey, string memberKey, string parentid)
+        {
+            return Goals.Where(i => i.GroupKey == groupKey && i.MemberKey == memberKey && !Goals.Any(g => g.ParentId == i.Id)).Select(i => GoalToPresentation2(groupKey, memberKey, i));
+        }
+
+        static PresentItem GoalToPresentation2(string groupKey, string memberKey, GoalItem mi)
+        {
+            var presentItem = new PresentItem
+            {
+                Id = mi.Id,
+                Text = "Goal: " + mi.Text,
+                Link = "",
+                Actions = GetActions(mi).ToList(),
+            };
+            return presentItem;
+        }
+
         static PresentItem GoalToPresentation(string groupKey, string memberKey, GoalItem mi)
         {
             var presentItem = new PresentItem
@@ -149,6 +166,7 @@ namespace iGoal
         }
 
         public static List<GoalItem> Goals { get; private set; } = new List<GoalItem>();
+
         #endregion
     }
     public class GoalItem

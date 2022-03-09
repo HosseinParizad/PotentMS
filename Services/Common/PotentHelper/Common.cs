@@ -155,6 +155,7 @@ namespace PotentHelper
             public static MapActionItem NewMemoryCategory = Mai.SetName("newMemoryCategory");
             public static MapActionItem DelMemory = Mai.SetName("delMemory");
             public static MapActionItem LearntMemory = Mai.SetName("lrnMemory");
+            public static MapActionItem HintMemory = Mai.SetName("hintMemory");
 
             static MapActionItem Mai => MapActionItem.Instance(MessageTopic.Memory);
         }

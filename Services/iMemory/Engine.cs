@@ -136,6 +136,10 @@ namespace iMemory
             yield return createStep("update", MapAction.Memory.UpdateMemory.Name, new { Text = "[text]", Hint = "[hint]", Id = mi.Id });
             yield return createStep("delete", MapAction.Memory.DelMemory.Name, new { Id = mi.Id });
             yield return createStep("learnt", MapAction.Memory.LearntMemory.Name, new { Id = mi.Id });
+            if (!string.IsNullOrEmpty(mi.Hint))
+            {
+                yield return createStep("hint", MapAction.Memory.HintMemory.Name, new { Hint = mi.Hint });
+            }
         }
 
         #region Implement
